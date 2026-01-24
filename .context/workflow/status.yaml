@@ -1,0 +1,45 @@
+project:
+  name: "fase1"
+  scale: QUICK
+  started: "2026-01-24T19:24:34.391Z"
+  current_phase: E
+
+phases:
+  P:
+    status: skipped
+    reason: "Not required for scale QUICK"
+  R:
+    status: skipped
+    reason: "Not required for scale QUICK"
+  E:
+    status: in_progress
+    started_at: "2026-01-24T19:24:34.391Z"
+  V:
+    status: pending
+  C:
+    status: skipped
+    reason: "Not required for scale QUICK"
+
+execution:
+  history:
+    - timestamp: "2026-01-24T19:24:34.391Z"
+      phase: E
+      action: started
+    - timestamp: "2026-01-24T19:24:34.394Z"
+      phase: P
+      action: phase_skipped
+    - timestamp: "2026-01-24T19:24:34.394Z"
+      phase: R
+      action: phase_skipped
+    - timestamp: "2026-01-24T19:24:34.394Z"
+      phase: C
+      action: phase_skipped
+  last_activity: "2026-01-24T19:24:34.394Z"
+  resume_context: "Plano aprovado - pronto para execução"
+
+approval:
+  plan_created: false
+  plan_approved: true
+  approved_by: "system-migration"
+  approved_at: "2026-01-24T19:24:34.394Z"
+
