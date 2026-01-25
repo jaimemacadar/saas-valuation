@@ -166,6 +166,14 @@ export async function signOut(): Promise<ActionResult> {
     const supabase = await createClient();
     await supabase.auth.signOut();
 
+    // Limpar dados sensíveis do lado do cliente (localStorage, sessionStorage)
+    if (typeof window !== "undefined") {
+      localStorage.clear();
+      sessionStorage.clear();
+      // Se houver cookies customizados, limpar aqui também
+      // document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
     revalidatePath("/", "layout");
     redirect("/login");
   } catch (error) {
@@ -301,13 +309,23 @@ export async function signInWithOAuth(
     });
 
     if (error) {
+      // Tratamento detalhado de erro/cancelamento
+      if (error.message?.toLowerCase().includes("cancel")) {
+        return {
+          error: `Autenticação cancelada pelo usuário no ${provider}`,
+        };
+      }
       return {
-        error: `Erro ao autenticar com ${provider}`,
+        error: `Erro ao autenticar com ${provider}: ${error.message}`,
       };
     }
 
-    if (data.url) {
+    if (data?.url) {
       redirect(data.url);
+    } else {
+      return {
+        error: "URL de redirecionamento não fornecida pelo provedor OAuth.",
+      };
     }
 
     return { success: true };
