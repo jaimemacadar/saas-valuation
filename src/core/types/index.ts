@@ -79,3 +79,131 @@ export interface APIResponse<T = unknown> {
   error?: string;
   message?: string;
 }
+
+// Additional types for calculation engine
+export interface CalculationResult<T> {
+  success: boolean;
+  data?: T;
+  errors?: string[];
+}
+
+export interface DREBaseInputs {
+  receita: number;
+  custoMercadoriaVendida: number;
+  despesasOperacionais: number;
+  despesasFinanceiras: number;
+  taxaImposto: number;
+}
+
+export interface DREProjectionInputs {
+  taxaCrescimentoReceita: number[];
+  taxaCMV: number[];
+  taxaDespesasOperacionais: number[];
+  taxaDespesasFinanceiras: number[];
+}
+
+export interface DRECalculated {
+  ano: number;
+  receita: number;
+  cmv: number;
+  lucrobruto: number;
+  despesasOperacionais: number;
+  ebit: number;
+  despesasFinanceiras: number;
+  lucroAntesImpostos: number;
+  impostos: number;
+  lucroLiquido: number;
+}
+
+export interface BalanceSheetBaseInputs {
+  caixa: number;
+  contasReceber: number;
+  estoques: number;
+  ativoCirculante: number;
+  imobilizado: number;
+  ativoTotal: number;
+  contasPagar: number;
+  passivoCirculante: number;
+  passivoNaoCirculante: number;
+  dividasLongoPrazo: number; // Mantido para compatibilidade, mas será somado em passivoNaoCirculante
+  passivoTotal: number;
+  patrimonioLiquido: number;
+}
+
+export interface BalanceSheetProjectionInputs {
+  taxaCrescimentoAtivos: number[];
+  taxaCrescimentoPassivos: number[];
+  taxaDepreciacao: number;
+  taxaCapex: number;
+}
+
+export interface BalanceSheetCalculated {
+  ano: number;
+  caixa: number;
+  contasReceber: number;
+  estoques: number;
+  ativoCirculante: number;
+  imobilizado: number;
+  ativoTotal: number;
+  contasPagar: number;
+  passivoCirculante: number;
+  passivoNaoCirculante: number;
+  dividasLongoPrazo: number;
+  passivoTotal: number;
+  patrimonioLiquido: number;
+  depreciacao: number;
+  capex: number;
+  capitalDeGiro: number;
+}
+
+export interface FCFFCalculated {
+  ano: number;
+  ebit: number;
+  impostos: number;
+  nopat: number;
+  depreciacao: number;
+  capex: number;
+  variacaoNecessidadeCapitalGiro: number;
+  fcff: number;
+}
+
+export interface WACCCalculation {
+  custoCapitalProprio: number;
+  custoCapitalTerceiros: number;
+  wacc: number;
+  pesoCapitalProprio: number;
+  pesoCapitalTerceiros: number;
+}
+
+export interface ValuationInputs {
+  fcff: FCFFCalculated[];
+  wacc: number;
+  taxaCrescimentoPerpetuo: number;
+  anoBase: number;
+}
+
+export interface ValuationCalculated {
+  valorPresenteFCFF: number[];
+  valorTerminal: number;
+  valorPresenteTerminal: number;
+  valorEmpresa: number;
+  valorPatrimonioLiquido: number;
+}
+
+export interface FullValuationInput {
+  dreBase: DREBaseInputs;
+  dreProjection: DREProjectionInputs;
+  balanceSheetBase: BalanceSheetBaseInputs;
+  balanceSheetProjection: BalanceSheetProjectionInputs;
+  wacc: WACCCalculation;
+  taxaCrescimentoPerpetuo: number;
+  anosProjecao: number;
+}
+
+export interface FullValuationResult {
+  dre: DRECalculated[];
+  balanceSheet: BalanceSheetCalculated[];
+  fcff: FCFFCalculated[];
+  valuation: ValuationCalculated;
+  wacc: WACCCalculation;
+}

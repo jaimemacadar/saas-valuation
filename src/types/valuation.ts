@@ -1,5 +1,4 @@
 // src/types/valuation.ts
-import { Decimal } from "decimal.js";
 
 export interface ValuationModel {
   id: string;
@@ -29,15 +28,15 @@ export interface DCFAssumptions {
 }
 
 export interface DCFResult {
-  projectedCashFlows: Decimal[];
-  discountFactors: Decimal[];
-  presentValues: Decimal[];
-  terminalValue: Decimal;
-  terminalValuePV: Decimal;
-  enterpriseValue: Decimal;
-  equityValue: Decimal;
-  sharePrice?: Decimal;
-  sharesOutstanding?: Decimal;
+  projectedCashFlows: number[];
+  discountFactors: number[];
+  presentValues: number[];
+  terminalValue: number;
+  terminalValuePV: number;
+  enterpriseValue: number;
+  equityValue: number;
+  sharePrice?: number;
+  sharesOutstanding?: number;
 }
 
 export interface SensitivityAnalysis {
@@ -45,12 +44,12 @@ export interface SensitivityAnalysis {
   variable2: string;
   variable1Range: number[];
   variable2Range: number[];
-  results: Decimal[][];
+  results: number[][];
 }
 
 export interface ValuationSummary {
   method: string;
-  value: Decimal;
-  valuePerShare?: Decimal;
+  value: number;
+  valuePerShare?: number;
   createdAt: Date;
 }

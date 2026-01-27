@@ -5,7 +5,7 @@
       "path": "plans/fase-2-motor-calculo.md",
       "title": "Fase 2: Motor de Cálculo no Servidor",
       "summary": "Implementar motor de cálculo financeiro server-side isolado, com API REST e Server Actions para valuation de empresas usando FCD. Garantir precisão, cobertura de testes e zero dependências de React/DOM no core/.",
-      "linkedAt": "2026-01-25T21:08:40.895Z",
+      "linkedAt": "2026-01-25T21:03:21.069Z",
       "status": "active"
     }
   ],

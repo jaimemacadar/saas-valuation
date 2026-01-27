@@ -1,46 +1,45 @@
 // src/types/financial.ts
-import { Decimal } from "decimal.js";
 
 export interface IncomeStatementLine {
   label: string;
-  values: Decimal[];
+  values: number[];
   isCalculated?: boolean;
 }
 
 export interface IncomeStatement {
-  revenue: Decimal[];
-  cogs: Decimal[];
-  grossProfit: Decimal[];
-  operatingExpenses: Decimal[];
-  ebitda: Decimal[];
-  depreciation: Decimal[];
-  ebit: Decimal[];
-  interestExpense: Decimal[];
-  ebt: Decimal[];
-  taxes: Decimal[];
-  netIncome: Decimal[];
+  revenue: number[];
+  cogs: number[];
+  grossProfit: number[];
+  operatingExpenses: number[];
+  ebitda: number[];
+  depreciation: number[];
+  ebit: number[];
+  interestExpense: number[];
+  ebt: number[];
+  taxes: number[];
+  netIncome: number[];
 }
 
 export interface BalanceSheet {
-  cash: Decimal[];
-  receivables: Decimal[];
-  inventory: Decimal[];
-  currentAssets: Decimal[];
-  ppe: Decimal[];
-  totalAssets: Decimal[];
-  payables: Decimal[];
-  shortTermDebt: Decimal[];
-  currentLiabilities: Decimal[];
-  longTermDebt: Decimal[];
-  totalLiabilities: Decimal[];
-  equity: Decimal[];
+  cash: number[];
+  receivables: number[];
+  inventory: number[];
+  currentAssets: number[];
+  ppe: number[];
+  totalAssets: number[];
+  payables: number[];
+  shortTermDebt: number[];
+  currentLiabilities: number[];
+  longTermDebt: number[];
+  totalLiabilities: number[];
+  equity: number[];
 }
 
 export interface CashFlow {
-  operatingCashFlow: Decimal[];
-  capex: Decimal[];
-  freeCashFlow: Decimal[];
-  changeInWorkingCapital: Decimal[];
+  operatingCashFlow: number[];
+  capex: number[];
+  freeCashFlow: number[];
+  changeInWorkingCapital: number[];
 }
 
 export interface ProjectionAssumptions {
