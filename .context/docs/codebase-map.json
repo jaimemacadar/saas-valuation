@@ -1,51 +1,1435 @@
 {
   "version": "1.0.0",
-  "generated": "2026-01-24T18:26:09.366Z",
+  "generated": "2026-01-27T02:46:29.027Z",
   "stack": {
-    "primaryLanguage": null,
-    "languages": [],
-    "frameworks": [],
+    "primaryLanguage": "typescript",
+    "languages": [
+      "javascript",
+      "typescript"
+    ],
+    "frameworks": [
+      "nextjs"
+    ],
     "buildTools": [],
-    "testFrameworks": [],
-    "packageManager": null,
+    "testFrameworks": [
+      "jest",
+      "vitest"
+    ],
+    "packageManager": "npm",
     "isMonorepo": false,
     "hasDocker": false,
     "hasCI": false
   },
   "structure": {
-    "totalFiles": 1,
+    "totalFiles": 102,
     "topDirectories": [
       {
-        "name": "saas-valuation-mvp.md",
+        "name": "AGENTS.md",
+        "fileCount": 1
+      },
+      {
+        "name": "components.json",
+        "fileCount": 1
+      },
+      {
+        "name": "docs",
+        "fileCount": 1
+      },
+      {
+        "name": "eslint.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "FASE_1_5_COMPLETA.md",
+        "fileCount": 1
+      },
+      {
+        "name": "jest.config.js",
+        "fileCount": 1
+      },
+      {
+        "name": "jest.setup.js",
+        "fileCount": 1
+      },
+      {
+        "name": "middleware.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "next-env.d.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "next.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "package-lock.json",
+        "fileCount": 1
+      },
+      {
+        "name": "package.json",
+        "fileCount": 1
+      },
+      {
+        "name": "postcss.config.mjs",
+        "fileCount": 1
+      },
+      {
+        "name": "public",
+        "fileCount": 5
+      },
+      {
+        "name": "README.md",
+        "fileCount": 1
+      },
+      {
+        "name": "scripts",
+        "fileCount": 2
+      },
+      {
+        "name": "src",
+        "fileCount": 76
+      },
+      {
+        "name": "supabase",
+        "fileCount": 2
+      },
+      {
+        "name": "tailwind.config.ts",
+        "fileCount": 1
+      },
+      {
+        "name": "tsconfig.json",
+        "fileCount": 1
+      },
+      {
+        "name": "vitest.config.ts",
         "fileCount": 1
       }
     ],
     "languageDistribution": [
       {
+        "extension": ".ts",
+        "count": 41
+      },
+      {
+        "extension": ".tsx",
+        "count": 37
+      },
+      {
         "extension": ".md",
+        "count": 5
+      },
+      {
+        "extension": ".svg",
+        "count": 5
+      },
+      {
+        "extension": ".json",
+        "count": 4
+      },
+      {
+        "extension": ".mjs",
+        "count": 3
+      },
+      {
+        "extension": ".js",
+        "count": 2
+      },
+      {
+        "extension": ".css",
+        "count": 2
+      },
+      {
+        "extension": ".sh",
+        "count": 1
+      },
+      {
+        "extension": ".sql",
         "count": 1
       }
     ]
   },
   "architecture": {
-    "layers": [],
+    "layers": [
+      {
+        "name": "Utils",
+        "description": "Shared utilities and helpers",
+        "directories": [
+          "src\\lib",
+          "src\\lib\\supabase",
+          "src\\lib\\actions"
+        ],
+        "symbolCount": 14,
+        "dependsOn": []
+      },
+      {
+        "name": "Models",
+        "description": "Data structures and domain objects",
+        "directories": [
+          "src\\lib\\actions"
+        ],
+        "symbolCount": 9,
+        "dependsOn": []
+      },
+      {
+        "name": "Components",
+        "description": "UI components and views",
+        "directories": [
+          "src\\components\\layout",
+          "src\\components",
+          "src\\app",
+          "src\\components\\ui",
+          "src\\components\\forms",
+          "src\\app\\(auth)\\forgot-password",
+          "src\\app\\(auth)\\reset-password",
+          "src\\app\\(auth)\\signup",
+          "src\\app\\(auth)\\login"
+        ],
+        "symbolCount": 18,
+        "dependsOn": []
+      },
+      {
+        "name": "Controllers",
+        "description": "Request handling and routing",
+        "directories": [
+          "src\\app\\auth\\callback"
+        ],
+        "symbolCount": 1,
+        "dependsOn": []
+      }
+    ],
     "patterns": [],
-    "entryPoints": []
+    "entryPoints": [
+      "src\\types\\index.ts",
+      "src\\core\\index.ts",
+      "src\\styles\\design-system\\index.ts",
+      "src\\lib\\supabase\\server.ts",
+      "src\\lib\\supabase\\index.ts",
+      "src\\core\\validators\\index.ts",
+      "src\\core\\types\\index.ts",
+      "src\\components\\layout\\index.ts"
+    ]
   },
   "symbols": {
     "classes": [],
-    "interfaces": [],
-    "functions": [],
-    "types": [],
+    "interfaces": [
+      {
+        "name": "ApiError",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "name": "APIRequest",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 71,
+        "exported": true
+      },
+      {
+        "name": "ApiResponse",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 14,
+        "exported": true
+      },
+      {
+        "name": "APIResponse",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 76,
+        "exported": true
+      },
+      {
+        "name": "Assumptions",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 49,
+        "exported": true
+      },
+      {
+        "name": "AuthSession",
+        "kind": "interface",
+        "file": "src\\types\\user.ts",
+        "line": 39,
+        "exported": true
+      },
+      {
+        "name": "BalanceSheet",
+        "kind": "interface",
+        "file": "src\\types\\financial.ts",
+        "line": 23,
+        "exported": true
+      },
+      {
+        "name": "BalanceSheet",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "BalanceSheetBaseInputs",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 118,
+        "exported": true
+      },
+      {
+        "name": "BalanceSheetCalculated",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 140,
+        "exported": true
+      },
+      {
+        "name": "BalanceSheetProjectionInputs",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 133,
+        "exported": true
+      },
+      {
+        "name": "ButtonProps",
+        "kind": "interface",
+        "file": "src\\components\\ui\\button.tsx",
+        "line": 37,
+        "exported": true
+      },
+      {
+        "name": "CalculationResult",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "CalculationResult",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 84,
+        "exported": true
+      },
+      {
+        "name": "CashFlow",
+        "kind": "interface",
+        "file": "src\\types\\financial.ts",
+        "line": 38,
+        "exported": true
+      },
+      {
+        "name": "CashFlowStatement",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 42,
+        "exported": true
+      },
+      {
+        "name": "Company",
+        "kind": "interface",
+        "file": "src\\types\\company.ts",
+        "line": 2,
+        "exported": true
+      },
+      {
+        "name": "CompanyCreate",
+        "kind": "interface",
+        "file": "src\\types\\company.ts",
+        "line": 20,
+        "exported": true
+      },
+      {
+        "name": "CompanyUpdate",
+        "kind": "interface",
+        "file": "src\\types\\company.ts",
+        "line": 34,
+        "exported": true
+      },
+      {
+        "name": "Currency",
+        "kind": "interface",
+        "file": "src\\types\\financial.ts",
+        "line": 59,
+        "exported": true
+      },
+      {
+        "name": "DCFAssumptions",
+        "kind": "interface",
+        "file": "src\\types\\valuation.ts",
+        "line": 19,
+        "exported": true
+      },
+      {
+        "name": "DCFResult",
+        "kind": "interface",
+        "file": "src\\types\\valuation.ts",
+        "line": 30,
+        "exported": true
+      },
+      {
+        "name": "DREBaseInputs",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 90,
+        "exported": true
+      },
+      {
+        "name": "DRECalculated",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 105,
+        "exported": true
+      },
+      {
+        "name": "DREProjectionInputs",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 98,
+        "exported": true
+      },
+      {
+        "name": "FCFFCalculated",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 159,
+        "exported": true
+      },
+      {
+        "name": "FinancialModel",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 2,
+        "exported": true
+      },
+      {
+        "name": "FullValuationInput",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 193,
+        "exported": true
+      },
+      {
+        "name": "FullValuationResult",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 203,
+        "exported": true
+      },
+      {
+        "name": "IncomeStatement",
+        "kind": "interface",
+        "file": "src\\types\\financial.ts",
+        "line": 9,
+        "exported": true
+      },
+      {
+        "name": "IncomeStatement",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "name": "IncomeStatementLine",
+        "kind": "interface",
+        "file": "src\\types\\financial.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "PaginationParams",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 34,
+        "exported": true
+      },
+      {
+        "name": "ProjectionAssumptions",
+        "kind": "interface",
+        "file": "src\\types\\financial.ts",
+        "line": 45,
+        "exported": true
+      },
+      {
+        "name": "ResponseMeta",
+        "kind": "interface",
+        "file": "src\\types\\index.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "SensitivityAnalysis",
+        "kind": "interface",
+        "file": "src\\types\\valuation.ts",
+        "line": 42,
+        "exported": true
+      },
+      {
+        "name": "SensitivityBivariateInput",
+        "kind": "interface",
+        "file": "src\\core\\calculations\\sensitivity.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "SensitivityBivariateResult",
+        "kind": "interface",
+        "file": "src\\core\\calculations\\sensitivity.ts",
+        "line": 35,
+        "exported": true
+      },
+      {
+        "name": "SensitivityUnivariateInput",
+        "kind": "interface",
+        "file": "src\\core\\calculations\\sensitivity.ts",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "name": "SensitivityUnivariateResult",
+        "kind": "interface",
+        "file": "src\\core\\calculations\\sensitivity.ts",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "name": "User",
+        "kind": "interface",
+        "file": "src\\types\\user.ts",
+        "line": 2,
+        "exported": true
+      },
+      {
+        "name": "UserPreferences",
+        "kind": "interface",
+        "file": "src\\types\\user.ts",
+        "line": 31,
+        "exported": true
+      },
+      {
+        "name": "UserProfile",
+        "kind": "interface",
+        "file": "src\\types\\user.ts",
+        "line": 17,
+        "exported": true
+      },
+      {
+        "name": "ValuationCalculated",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 185,
+        "exported": true
+      },
+      {
+        "name": "ValuationInputs",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 178,
+        "exported": true
+      },
+      {
+        "name": "ValuationModel",
+        "kind": "interface",
+        "file": "src\\types\\valuation.ts",
+        "line": 3,
+        "exported": true
+      },
+      {
+        "name": "ValuationResults",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 61,
+        "exported": true
+      },
+      {
+        "name": "ValuationSummary",
+        "kind": "interface",
+        "file": "src\\types\\valuation.ts",
+        "line": 50,
+        "exported": true
+      },
+      {
+        "name": "WACCCalculation",
+        "kind": "interface",
+        "file": "src\\core\\types\\index.ts",
+        "line": 170,
+        "exported": true
+      },
+      {
+        "name": "WACCInputs",
+        "kind": "interface",
+        "file": "src\\core\\calculations\\wacc.ts",
+        "line": 13,
+        "exported": true
+      }
+    ],
+    "functions": [
+      {
+        "name": "AppSidebar",
+        "kind": "function",
+        "file": "src\\components\\app-sidebar.tsx",
+        "line": 159,
+        "exported": true
+      },
+      {
+        "name": "calculateAllBalanceSheet",
+        "kind": "function",
+        "file": "src\\core\\calculations\\balanceSheet.ts",
+        "line": 140,
+        "exported": true
+      },
+      {
+        "name": "calculateAllDRE",
+        "kind": "function",
+        "file": "src\\core\\calculations\\dre.ts",
+        "line": 145,
+        "exported": true
+      },
+      {
+        "name": "calculateAllFCFF",
+        "kind": "function",
+        "file": "src\\core\\calculations\\fcff.ts",
+        "line": 107,
+        "exported": true
+      },
+      {
+        "name": "calculateBalanceSheet",
+        "kind": "function",
+        "file": "src\\core\\calculations\\balanceSheet.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "calculateCAPM",
+        "kind": "function",
+        "file": "src\\core\\calculations\\wacc.ts",
+        "line": 120,
+        "exported": true
+      },
+      {
+        "name": "calculateDRE",
+        "kind": "function",
+        "file": "src\\core\\calculations\\dre.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "calculateFCFF",
+        "kind": "function",
+        "file": "src\\core\\calculations\\fcff.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "calculateSensitivityBivariate",
+        "kind": "function",
+        "file": "src\\core\\calculations\\sensitivity.ts",
+        "line": 110,
+        "exported": true
+      },
+      {
+        "name": "calculateSensitivityUnivariate",
+        "kind": "function",
+        "file": "src\\core\\calculations\\sensitivity.ts",
+        "line": 49,
+        "exported": true
+      },
+      {
+        "name": "calculateSharePrice",
+        "kind": "function",
+        "file": "src\\core\\calculations\\valuation.ts",
+        "line": 125,
+        "exported": true
+      },
+      {
+        "name": "calculateValuation",
+        "kind": "function",
+        "file": "src\\core\\calculations\\valuation.ts",
+        "line": 21,
+        "exported": true
+      },
+      {
+        "name": "calculateWACC",
+        "kind": "function",
+        "file": "src\\core\\calculations\\wacc.ts",
+        "line": 27,
+        "exported": true
+      },
+      {
+        "name": "cn",
+        "kind": "function",
+        "file": "src\\lib\\utils.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "createClient",
+        "kind": "function",
+        "file": "src\\lib\\supabase\\server.ts",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "createClient",
+        "kind": "function",
+        "file": "src\\lib\\supabase\\client.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "createModel",
+        "kind": "function",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 122,
+        "exported": true
+      },
+      {
+        "name": "deleteModel",
+        "kind": "function",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 243,
+        "exported": true
+      },
+      {
+        "name": "duplicateModel",
+        "kind": "function",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 275,
+        "exported": true
+      },
+      {
+        "name": "executeFullValuation",
+        "kind": "function",
+        "file": "src\\core\\calculations\\fullValuation.ts",
+        "line": 35,
+        "exported": true
+      },
+      {
+        "name": "executeQuickValuation",
+        "kind": "function",
+        "file": "src\\core\\calculations\\fullValuation.ts",
+        "line": 148,
+        "exported": true
+      },
+      {
+        "name": "ForgotPasswordPage",
+        "kind": "function",
+        "file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "GET",
+        "kind": "function",
+        "file": "src\\app\\auth\\callback\\route.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "getCurrentUser",
+        "kind": "function",
+        "file": "src\\lib\\auth.ts",
+        "line": 26,
+        "exported": true
+      },
+      {
+        "name": "getModelById",
+        "kind": "function",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 80,
+        "exported": true
+      },
+      {
+        "name": "getModels",
+        "kind": "function",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 44,
+        "exported": true
+      },
+      {
+        "name": "Header",
+        "kind": "function",
+        "file": "src\\components\\layout\\Header.tsx",
+        "line": 6,
+        "exported": true
+      },
+      {
+        "name": "isAuthenticated",
+        "kind": "function",
+        "file": "src\\lib\\auth.ts",
+        "line": 38,
+        "exported": true
+      },
+      {
+        "name": "MainContent",
+        "kind": "function",
+        "file": "src\\components\\layout\\MainContent.tsx",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "middleware",
+        "kind": "function",
+        "file": "middleware.ts",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "NavProjects",
+        "kind": "function",
+        "file": "src\\components\\nav-projects.tsx",
+        "line": 28,
+        "exported": true
+      },
+      {
+        "name": "NavUser",
+        "kind": "function",
+        "file": "src\\components\\nav-user.tsx",
+        "line": 33,
+        "exported": true
+      },
+      {
+        "name": "requireAuth",
+        "kind": "function",
+        "file": "src\\lib\\auth.ts",
+        "line": 9,
+        "exported": true
+      },
+      {
+        "name": "resetPassword",
+        "kind": "function",
+        "file": "src\\lib\\actions\\auth.ts",
+        "line": 192,
+        "exported": true
+      },
+      {
+        "name": "ResetPasswordPage",
+        "kind": "function",
+        "file": "src\\app\\(auth)\\reset-password\\page.tsx",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "RootLayout",
+        "kind": "function",
+        "file": "src\\app\\layout.tsx",
+        "line": 16,
+        "exported": true
+      },
+      {
+        "name": "Sidebar",
+        "kind": "function",
+        "file": "src\\components\\layout\\Sidebar.tsx",
+        "line": 7,
+        "exported": true
+      },
+      {
+        "name": "signIn",
+        "kind": "function",
+        "file": "src\\lib\\actions\\auth.ts",
+        "line": 50,
+        "exported": true
+      },
+      {
+        "name": "signInWithOAuth",
+        "kind": "function",
+        "file": "src\\lib\\actions\\auth.ts",
+        "line": 299,
+        "exported": true
+      },
+      {
+        "name": "signOut",
+        "kind": "function",
+        "file": "src\\lib\\actions\\auth.ts",
+        "line": 164,
+        "exported": true
+      },
+      {
+        "name": "signUp",
+        "kind": "function",
+        "file": "src\\lib\\actions\\auth.ts",
+        "line": 96,
+        "exported": true
+      },
+      {
+        "name": "SignupPage",
+        "kind": "function",
+        "file": "src\\app\\(auth)\\signup\\page.tsx",
+        "line": 4,
+        "exported": true
+      },
+      {
+        "name": "TeamSwitcher",
+        "kind": "function",
+        "file": "src\\components\\team-switcher.tsx",
+        "line": 22,
+        "exported": true
+      },
+      {
+        "name": "updateModel",
+        "kind": "function",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 172,
+        "exported": true
+      },
+      {
+        "name": "updatePassword",
+        "kind": "function",
+        "file": "src\\lib\\actions\\auth.ts",
+        "line": 255,
+        "exported": true
+      },
+      {
+        "name": "updateSession",
+        "kind": "function",
+        "file": "src\\lib\\supabase\\middleware.ts",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "useIsMobile",
+        "kind": "function",
+        "file": "src\\hooks\\use-mobile.tsx",
+        "line": 5,
+        "exported": true
+      },
+      {
+        "name": "validateInput",
+        "kind": "function",
+        "file": "src\\core\\validators\\index.ts",
+        "line": 144,
+        "exported": true
+      },
+      {
+        "name": "balanceSheetBaseToCalculated",
+        "kind": "function",
+        "file": "src\\core\\calculations\\balanceSheet.test.ts",
+        "line": 12,
+        "exported": false
+      },
+      {
+        "name": "dreBaseToCalculated",
+        "kind": "function",
+        "file": "src\\core\\calculations\\dre.test.ts",
+        "line": 14,
+        "exported": false
+      }
+    ],
+    "types": [
+      {
+        "name": "BalanceSheetBaseInputsValidated",
+        "kind": "type",
+        "file": "src\\core\\validators\\index.ts",
+        "line": 73,
+        "exported": true
+      },
+      {
+        "name": "BalanceSheetProjectionInputsValidated",
+        "kind": "type",
+        "file": "src\\core\\validators\\index.ts",
+        "line": 96,
+        "exported": true
+      },
+      {
+        "name": "CompanySector",
+        "kind": "type",
+        "file": "src\\types\\company.ts",
+        "line": 38,
+        "exported": true
+      },
+      {
+        "name": "DREBaseInputsValidated",
+        "kind": "type",
+        "file": "src\\core\\validators\\index.ts",
+        "line": 20,
+        "exported": true
+      },
+      {
+        "name": "DREProjectionInputsValidated",
+        "kind": "type",
+        "file": "src\\core\\validators\\index.ts",
+        "line": 44,
+        "exported": true
+      },
+      {
+        "name": "FinancialModelBasic",
+        "kind": "type",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 8,
+        "exported": true
+      },
+      {
+        "name": "FullValuationInputValidated",
+        "kind": "type",
+        "file": "src\\core\\validators\\index.ts",
+        "line": 139,
+        "exported": true
+      },
+      {
+        "name": "Period",
+        "kind": "type",
+        "file": "src\\types\\financial.ts",
+        "line": 65,
+        "exported": true
+      },
+      {
+        "name": "Status",
+        "kind": "type",
+        "file": "src\\types\\index.ts",
+        "line": 41,
+        "exported": true
+      },
+      {
+        "name": "SubscriptionTier",
+        "kind": "type",
+        "file": "src\\types\\user.ts",
+        "line": 15,
+        "exported": true
+      },
+      {
+        "name": "UserRole",
+        "kind": "type",
+        "file": "src\\types\\user.ts",
+        "line": 13,
+        "exported": true
+      },
+      {
+        "name": "ValuationMethod",
+        "kind": "type",
+        "file": "src\\types\\valuation.ts",
+        "line": 17,
+        "exported": true
+      },
+      {
+        "name": "WACCCalculationValidated",
+        "kind": "type",
+        "file": "src\\core\\validators\\index.ts",
+        "line": 119,
+        "exported": true
+      },
+      {
+        "name": "ActionResult",
+        "kind": "type",
+        "file": "src\\lib\\actions\\models.ts",
+        "line": 19,
+        "exported": false
+      },
+      {
+        "name": "ActionResult",
+        "kind": "type",
+        "file": "src\\lib\\actions\\auth.ts",
+        "line": 41,
+        "exported": false
+      },
+      {
+        "name": "DREProjectionInputsWithReceitaBase",
+        "kind": "type",
+        "file": "src\\core\\calculations\\dre.ts",
+        "line": 15,
+        "exported": false
+      },
+      {
+        "name": "ResetPasswordFormData",
+        "kind": "type",
+        "file": "src\\components\\forms\\ResetPasswordForm.tsx",
+        "line": 24,
+        "exported": false
+      },
+      {
+        "name": "SidebarContextProps",
+        "kind": "type",
+        "file": "src\\components\\ui\\sidebar.tsx",
+        "line": 35,
+        "exported": false
+      },
+      {
+        "name": "ToasterProps",
+        "kind": "type",
+        "file": "src\\components\\ui\\sonner.tsx",
+        "line": 6,
+        "exported": false
+      }
+    ],
     "enums": []
   },
-  "publicAPI": [],
+  "publicAPI": [
+    {
+      "name": "ApiError",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 21,
+      "exported": true
+    },
+    {
+      "name": "APIRequest",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 71,
+      "exported": true
+    },
+    {
+      "name": "ApiResponse",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 14,
+      "exported": true
+    },
+    {
+      "name": "APIResponse",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 76,
+      "exported": true
+    },
+    {
+      "name": "AppSidebar",
+      "kind": "function",
+      "file": "src\\components\\app-sidebar.tsx",
+      "line": 159,
+      "exported": true
+    },
+    {
+      "name": "Assumptions",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 49,
+      "exported": true
+    },
+    {
+      "name": "AuthSession",
+      "kind": "interface",
+      "file": "src\\types\\user.ts",
+      "line": 39,
+      "exported": true
+    },
+    {
+      "name": "BalanceSheet",
+      "kind": "interface",
+      "file": "src\\types\\financial.ts",
+      "line": 23,
+      "exported": true
+    },
+    {
+      "name": "BalanceSheet",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 27,
+      "exported": true
+    },
+    {
+      "name": "BalanceSheetBaseInputs",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 118,
+      "exported": true
+    },
+    {
+      "name": "BalanceSheetBaseInputsValidated",
+      "kind": "type",
+      "file": "src\\core\\validators\\index.ts",
+      "line": 73,
+      "exported": true
+    },
+    {
+      "name": "BalanceSheetCalculated",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 140,
+      "exported": true
+    },
+    {
+      "name": "BalanceSheetProjectionInputs",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 133,
+      "exported": true
+    },
+    {
+      "name": "BalanceSheetProjectionInputsValidated",
+      "kind": "type",
+      "file": "src\\core\\validators\\index.ts",
+      "line": 96,
+      "exported": true
+    },
+    {
+      "name": "ButtonProps",
+      "kind": "interface",
+      "file": "src\\components\\ui\\button.tsx",
+      "line": 37,
+      "exported": true
+    },
+    {
+      "name": "calculateAllBalanceSheet",
+      "kind": "function",
+      "file": "src\\core\\calculations\\balanceSheet.ts",
+      "line": 140,
+      "exported": true
+    },
+    {
+      "name": "calculateAllDRE",
+      "kind": "function",
+      "file": "src\\core\\calculations\\dre.ts",
+      "line": 145,
+      "exported": true
+    },
+    {
+      "name": "calculateAllFCFF",
+      "kind": "function",
+      "file": "src\\core\\calculations\\fcff.ts",
+      "line": 107,
+      "exported": true
+    },
+    {
+      "name": "calculateBalanceSheet",
+      "kind": "function",
+      "file": "src\\core\\calculations\\balanceSheet.ts",
+      "line": 26,
+      "exported": true
+    },
+    {
+      "name": "calculateCAPM",
+      "kind": "function",
+      "file": "src\\core\\calculations\\wacc.ts",
+      "line": 120,
+      "exported": true
+    },
+    {
+      "name": "calculateDRE",
+      "kind": "function",
+      "file": "src\\core\\calculations\\dre.ts",
+      "line": 27,
+      "exported": true
+    },
+    {
+      "name": "calculateFCFF",
+      "kind": "function",
+      "file": "src\\core\\calculations\\fcff.ts",
+      "line": 26,
+      "exported": true
+    },
+    {
+      "name": "calculateSensitivityBivariate",
+      "kind": "function",
+      "file": "src\\core\\calculations\\sensitivity.ts",
+      "line": 110,
+      "exported": true
+    },
+    {
+      "name": "calculateSensitivityUnivariate",
+      "kind": "function",
+      "file": "src\\core\\calculations\\sensitivity.ts",
+      "line": 49,
+      "exported": true
+    },
+    {
+      "name": "calculateSharePrice",
+      "kind": "function",
+      "file": "src\\core\\calculations\\valuation.ts",
+      "line": 125,
+      "exported": true
+    },
+    {
+      "name": "calculateValuation",
+      "kind": "function",
+      "file": "src\\core\\calculations\\valuation.ts",
+      "line": 21,
+      "exported": true
+    },
+    {
+      "name": "calculateWACC",
+      "kind": "function",
+      "file": "src\\core\\calculations\\wacc.ts",
+      "line": 27,
+      "exported": true
+    },
+    {
+      "name": "CalculationResult",
+      "kind": "interface",
+      "file": "src\\types\\index.ts",
+      "line": 8,
+      "exported": true
+    },
+    {
+      "name": "CalculationResult",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 84,
+      "exported": true
+    },
+    {
+      "name": "CashFlow",
+      "kind": "interface",
+      "file": "src\\types\\financial.ts",
+      "line": 38,
+      "exported": true
+    },
+    {
+      "name": "CashFlowStatement",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 42,
+      "exported": true
+    },
+    {
+      "name": "cn",
+      "kind": "function",
+      "file": "src\\lib\\utils.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "Company",
+      "kind": "interface",
+      "file": "src\\types\\company.ts",
+      "line": 2,
+      "exported": true
+    },
+    {
+      "name": "CompanyCreate",
+      "kind": "interface",
+      "file": "src\\types\\company.ts",
+      "line": 20,
+      "exported": true
+    },
+    {
+      "name": "CompanySector",
+      "kind": "type",
+      "file": "src\\types\\company.ts",
+      "line": 38,
+      "exported": true
+    },
+    {
+      "name": "CompanyUpdate",
+      "kind": "interface",
+      "file": "src\\types\\company.ts",
+      "line": 34,
+      "exported": true
+    },
+    {
+      "name": "createClient",
+      "kind": "function",
+      "file": "src\\lib\\supabase\\server.ts",
+      "line": 5,
+      "exported": true
+    },
+    {
+      "name": "createClient",
+      "kind": "function",
+      "file": "src\\lib\\supabase\\client.ts",
+      "line": 4,
+      "exported": true
+    },
+    {
+      "name": "createModel",
+      "kind": "function",
+      "file": "src\\lib\\actions\\models.ts",
+      "line": 122,
+      "exported": true
+    },
+    {
+      "name": "Currency",
+      "kind": "interface",
+      "file": "src\\types\\financial.ts",
+      "line": 59,
+      "exported": true
+    },
+    {
+      "name": "DCFAssumptions",
+      "kind": "interface",
+      "file": "src\\types\\valuation.ts",
+      "line": 19,
+      "exported": true
+    },
+    {
+      "name": "DCFResult",
+      "kind": "interface",
+      "file": "src\\types\\valuation.ts",
+      "line": 30,
+      "exported": true
+    },
+    {
+      "name": "deleteModel",
+      "kind": "function",
+      "file": "src\\lib\\actions\\models.ts",
+      "line": 243,
+      "exported": true
+    },
+    {
+      "name": "DREBaseInputs",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 90,
+      "exported": true
+    },
+    {
+      "name": "DREBaseInputsValidated",
+      "kind": "type",
+      "file": "src\\core\\validators\\index.ts",
+      "line": 20,
+      "exported": true
+    },
+    {
+      "name": "DRECalculated",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 105,
+      "exported": true
+    },
+    {
+      "name": "DREProjectionInputs",
+      "kind": "interface",
+      "file": "src\\core\\types\\index.ts",
+      "line": 98,
+      "exported": true
+    },
+    {
+      "name": "DREProjectionInputsValidated",
+      "kind": "type",
+      "file": "src\\core\\validators\\index.ts",
+      "line": 44,
+      "exported": true
+    },
+    {
+      "name": "duplicateModel",
+      "kind": "function",
+      "file": "src\\lib\\actions\\models.ts",
+      "line": 275,
+      "exported": true
+    },
+    {
+      "name": "executeFullValuation",
+      "kind": "function",
+      "file": "src\\core\\calculations\\fullValuation.ts",
+      "line": 35,
+      "exported": true
+    }
+  ],
   "dependencies": {
-    "mostImported": []
+    "mostImported": [
+      {
+        "file": "C:\\Dev\\3-Projeto Saas Valuation\\saas-valuation\\.next\\dev\\types\\routes.d.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Dev\\3-Projeto Saas Valuation\\saas-valuation\\src\\lib\\supabase\\middleware.ts",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Dev\\3-Projeto Saas Valuation\\saas-valuation\\src\\app\\globals.css",
+        "importedBy": 1
+      },
+      {
+        "file": "C:\\Dev\\3-Projeto Saas Valuation\\saas-valuation\\src\\components\\layout\\UserMenu.tsx",
+        "importedBy": 1
+      }
+    ]
   },
   "stats": {
-    "totalSymbols": 0,
-    "exportedSymbols": 0,
-    "analysisTimeMs": 6
+    "totalSymbols": 126,
+    "exportedSymbols": 111,
+    "analysisTimeMs": 251
   }
 }

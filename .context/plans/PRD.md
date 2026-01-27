@@ -1347,7 +1347,7 @@ São taxas percentuais ou prazos médios aplicados para calcular as projeções.
 
 ### 🧮 Fase 2: Motor de Cálculo no Servidor (3-4 semanas)
 
-**Status:** 🔲 Não Iniciado  
+**Status:** ✅ Concluída em 2026-01-26  
 **Esforço:** 3-4 pessoa-semanas
 
 > 📌 **Referência:** As fórmulas detalhadas de DRE, Balanço Patrimonial, FCFF e WACC estão documentadas na seção [Motor de Cálculo](#motor-de-calculo). Use essa seção como fonte canônica para implementação das funções de cálculo.

@@ -3,60 +3,43 @@ type: doc
 name: tooling
 description: Scripts, IDE settings, automation, and developer productivity tips
 category: tooling
-generated: 2026-01-24
+generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
 ## Tooling & Productivity Guide
 
-Este documento reúne scripts, automações e configurações de editor que mantêm os contribuidores eficientes.
+This project uses a modern toolchain to maximize developer productivity and code quality. Scripts and automation are provided for common tasks, and recommended editor settings help catch issues early.
 
 ## Required Tooling
 
-- **Node.js**: v18+ (recomendado v20 LTS)
-  - Instalação: [nodejs.org](https://nodejs.org)
-- **npm**: Incluído com Node.js
-- **Git**: Para controle de versão
-- **VS Code**: Editor recomendado (opcional mas preferido)
+- **Node.js** (v18+): JavaScript runtime
+- **npm**: Package manager
+- **Supabase CLI** (optional): For local database and auth emulation
+- **Jest**: Testing framework
+- **ESLint**: Linting
+- **Prettier**: Code formatting
+- **Tailwind CSS**: Styling
 
 ## Recommended Automation
 
-- **Pre-commit Hooks**: Considerar Husky para lint e format automáticos
-- **Linting**: `npm run lint` antes de commits
-- **Formatting**: ESLint com auto-fix `npm run lint -- --fix`
-- **Type Checking**: `npx tsc --noEmit` para verificação rápida
-- **Watch Mode**: `npm run dev` para desenvolvimento com hot reload
+- Pre-commit hooks: Run lint and format checks before commits
+- `npm run lint`: Lint all files
+- `npm run format`: Format codebase
+- `npm run test -- --watch`: Run tests in watch mode
 
 ## IDE / Editor Setup
 
-### VS Code Extensions Recomendadas:
-
-- **ESLint**: dbaeumer.vscode-eslint
-- **TypeScript**: Incluído nativamente
-- **Tailwind CSS IntelliSense**: bradlc.vscode-tailwindcss
-- **Prettier**: esbenp.prettier-vscode (opcional)
-- **GitLens**: eamodio.gitlens (opcional)
-
-### Configurações do Workspace:
-
-```json
-{
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
-}
-```
+- VS Code: Recommended editor
+- Extensions: ESLint, Prettier, Tailwind CSS IntelliSense, Supabase
 
 ## Productivity Tips
 
-- Use `npm run dev` para desenvolvimento local com hot reload
-- Utilize TypeScript IntelliSense para autocompletar
-- Configure snippets personalizados para componentes React
-- Use `git stash` para trocar rapidamente entre branches
+- Use terminal aliases for common scripts
+- Leverage Supabase CLI for local development
+- Review scripts in `package.json` for more automation
 
 ---
 
-Veja também: [Development Workflow](./development-workflow.md)
+See also: [Development Workflow](./development-workflow.md)

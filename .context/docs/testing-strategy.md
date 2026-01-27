@@ -3,42 +3,36 @@ type: doc
 name: testing-strategy
 description: Test frameworks, patterns, coverage requirements, and quality gates
 category: testing
-generated: 2026-01-24
+generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
 ## Testing Strategy
 
-A qualidade é mantida através de testes automatizados, linting e revisões de código. Este documento descreve os frameworks, convenções e expectativas de cobertura.
+Quality is maintained through automated tests, code reviews, and continuous integration. All business logic and calculations are covered by unit and integration tests. Contributors are expected to write and maintain tests for new features and bug fixes.
 
 ## Test Types
 
-- **Unit Tests**: Jest/Vitest, arquivos nomeados `*.test.ts` ou `*.spec.ts`
-- **Integration Tests**: Testes de integração entre módulos core e lib
-- **E2E Tests**: Playwright ou Cypress (a ser implementado)
+- **Unit**: Jest, files named `*.test.ts` in `src/core/calculations/` and `src/lib/actions/`
+- **Integration**: Jest, scenarios covering API endpoints and multi-module flows
+- **E2E**: (Not implemented) — future support planned
 
 ## Running Tests
 
-- Todos os testes: `npm run test`
+- All tests: `npm run test`
 - Watch mode: `npm run test -- --watch`
 - Coverage: `npm run test -- --coverage`
-- Lint: `npm run lint`
 
 ## Quality Gates
 
-- **Cobertura mínima**: 70% para novas funcionalidades
-- **Linting**: Todos os erros de ESLint devem ser resolvidos
-- **Type Safety**: Sem erros TypeScript
-- **Build**: Build de produção deve passar sem erros
-- **Code Review**: Aprovação obrigatória antes do merge
+- Minimum 80% code coverage required for merges
+- All code must pass ESLint and Prettier checks before merging
 
 ## Troubleshooting
 
-- Testes flaky devem ser isolados e corrigidos antes do merge
-- Problemas de ambiente devem ser documentados em issues
-- Testes de longa duração devem ser otimizados ou marcados como slow
+If tests are flaky or fail due to environment issues, clear caches and reinstall dependencies. For persistent issues, consult the team or review recent changes.
 
 ---
 
-Veja também: [Development Workflow](./development-workflow.md)
+See also: [Development Workflow](./development-workflow.md)

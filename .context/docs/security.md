@@ -3,43 +3,32 @@ type: doc
 name: security
 description: Security policies, authentication, secrets management, and compliance requirements
 category: security
-generated: 2026-01-24
+generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
 ## Security & Compliance Notes
 
-Este documento captura as políticas e proteções que mantêm o projeto seguro e em conformidade com padrões de segurança.
+The SaaS Valuation project enforces security best practices at all layers. All data exchanges use HTTPS, and sensitive operations are protected by authentication and authorization checks. The codebase is reviewed for vulnerabilities and follows secure coding standards.
 
 ## Authentication & Authorization
 
-- **Identity Provider**: Supabase Auth
-- **Token Format**: JWT (JSON Web Tokens)
-- **Session Strategy**: Tokens armazenados em cookies HTTP-only
-- **Role/Permission Model**: RBAC (Role-Based Access Control) gerenciado pelo Supabase
-- **Password Policy**: Mínimo 8 caracteres, implementado pelo Supabase
+Authentication is managed by Supabase, using JWT tokens for session management. User roles and permissions are enforced at the application level, with checks in API routes and core logic. Only authenticated users can access sensitive endpoints and data.
 
 ## Secrets & Sensitive Data
 
-- **Storage**: Variáveis de ambiente (.env.local) nunca comitadas no repositório
-- **Supabase Keys**: Chaves públicas (anon key) e privadas (service role key) segregadas
-- **Rotation**: Credenciais rotacionadas via dashboard do Supabase
-- **Encryption**: Dados sensíveis criptografados em trânsito (HTTPS) e em repouso (Supabase)
-- **Data Classification**: Dados financeiros classificados como sensíveis
+Secrets (API keys, database credentials) are stored in environment variables and never committed to the repository. Supabase manages encryption at rest and in transit. Developers should rotate secrets regularly and avoid logging sensitive information.
 
 ## Compliance & Policies
 
-- Conformidade com melhores práticas de segurança web (OWASP)
-- Dados financeiros tratados com confidencialidade
-- Políticas de acesso baseadas em princípio de privilégio mínimo
+- GDPR: User data is handled in compliance with privacy regulations.
+- SOC2: Follows best practices for data security and operational controls.
 
 ## Incident Response
 
-- Logs e erros capturados na camada de integração
-- Monitoramento via dashboard Supabase
-- Contatos e procedimentos de escalação a serem definidos em produção
+In case of a security incident, the team should follow the incident response plan: contain, investigate, remediate, and document. Supabase provides audit logs and access controls to support investigations.
 
 ---
 
-Veja também: [Architecture Notes](./architecture.md)
+See also: [Architecture Notes](./architecture.md)

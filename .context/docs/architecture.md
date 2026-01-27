@@ -1,90 +1,112 @@
+---
 type: doc
 name: architecture
 description: System architecture, layers, patterns, and design decisions
 category: architecture
-generated: 2026-01-24
+generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
+---
 
 ## Architecture Notes
 
-A aplicação SaaS Valuation é estruturada para fornecer uma plataforma robusta, sustentável e escalável para análise financeira e avaliação de empresas. A arquitetura aproveita design modular, separação clara de responsabilidades e melhores práticas modernas de desenvolvimento web. O design atual existe para suportar desenvolvimento rápido de funcionalidades, forte tipagem e integração perfeita com serviços externos como Supabase.
+The SaaS Valuation system is designed as a modular web application using Next.js, with a clear separation between UI components, domain logic, and infrastructure integrations. The architecture emphasizes maintainability, testability, and scalability, leveraging TypeScript for type safety and Supabase for backend services.
 
 ## System Architecture Overview
 
-O sistema segue uma abordagem de monólito modular, com separação clara entre lógica de negócio central, componentes de UI e integrações de infraestrutura. A aplicação é construída com Next.js (React) para o frontend, TypeScript para segurança de tipos e Supabase para backend-as-a-service (autenticação, banco de dados e armazenamento). As requisições fluem da UI (em `src/app/` e `src/components/`) através dos módulos de negócio centrais (`src/core/`), com acesso a dados e integração com serviços externos tratados em `src/lib/`.
+The application follows a modular monolith approach, where all core modules reside in a single codebase but are organized by domain and responsibility. User requests flow from the frontend (React/Next.js) through domain logic in `src/core/` and interact with Supabase for authentication, data persistence, and file storage. All business logic is isolated from infrastructure concerns.
 
 ## Architectural Layers
 
-- **App Layer**: Gerencia roteamento, estilos globais e layout ([src/app/](../../src/app/))
-- **UI Components**: Elementos de UI reutilizáveis ([src/components/ui/](../../src/components/ui/))
-- **Core Domain Logic**: Regras de negócio e modelos de domínio ([src/core/](../../src/core/))
-- **Lib/Integrations**: Serviços externos, cliente Supabase e funções utilitárias ([src/lib/](../../src/lib/))
-- **Styles/Design System**: Temas, tokens e primitivas de design ([src/styles/design-system/](../../src/styles/design-system/))
+- **App Layer**: User interface and routing (`src/app/`, `src/components/`)
+- **Core Layer**: Domain logic, calculations, and business rules (`src/core/`)
+- **Lib Layer**: Utilities, integrations, and shared helpers (`src/lib/`)
+- **Types Layer**: Shared type definitions (`src/types/`, `src/core/types/`)
+- **Styles Layer**: Design system and global styles (`src/styles/`)
 
-> Veja [codebase-map.json](./codebase-map.json) para contagem completa de símbolos e grafos de dependência.
+> See [`codebase-map.json`](./codebase-map.json) for complete symbol counts and dependency graphs.
 
 ## Detected Design Patterns
 
-| Pattern        | Confidence | Locations                                  | Description                            |
-| -------------- | ---------- | ------------------------------------------ | -------------------------------------- |
-| Modularization | 90%        | `src/core/`, `src/lib/`, `src/components/` | Separação de domínio, UI e integrações |
-| Adapter        | 80%        | `src/lib/supabase/`                        | Abstrai cliente e API do Supabase      |
-| Design System  | 85%        | `src/styles/design-system/`                | Centraliza tokens de UI e temas        |
+| Pattern        | Confidence | Locations                                  | Description                                     |
+| -------------- | ---------- | ------------------------------------------ | ----------------------------------------------- |
+| Modularization | High       | `src/core/`, `src/lib/`, `src/components/` | Separation of concerns by domain/responsibility |
+| Adapter        | Medium     | `src/lib/supabase/`, `src/lib/actions/`    | Abstracts external service integration          |
+| Factory        | Medium     | `src/lib/supabase/client.ts`, `server.ts`  | Creates configured Supabase clients             |
+| Validation     | High       | `src/core/validators/`                     | Centralized input validation logic              |
 
 ## Entry Points
 
-- [src/app/page.tsx](../../src/app/page.tsx)
+- [middleware.ts](../../middleware.ts)
 - [src/app/layout.tsx](../../src/app/layout.tsx)
-- [src/lib/supabase/server.ts](../../src/lib/supabase/server.ts)
+- [src/app/(auth)/login/page.tsx](<../../src/app/(auth)/login/page.tsx>)
+- [src/app/(dashboard)/model/[id]/](<../../src/app/(dashboard)/model/[id]/>)
 
 ## Public API
 
-| Symbol             | Type     | Location                                                       |
-| ------------------ | -------- | -------------------------------------------------------------- |
-| SupabaseClient     | function | [src/lib/supabase/client.ts](../../src/lib/supabase/client.ts) |
-| getCompanyData     | function | [src/core/company/](../../src/core/company/)                   |
-| getFinancials      | function | [src/core/financial/](../../src/core/financial/)               |
-| calculateValuation | function | [src/core/valuation/](../../src/core/valuation/)               |
+| Symbol             | Type      | Location                                                                           |
+| ------------------ | --------- | ---------------------------------------------------------------------------------- |
+| ApiError           | type      | [src/types/index.ts](../../src/types/index.ts#L21)                                 |
+| APIRequest         | type      | [src/core/types/index.ts](../../src/core/types/index.ts#L71)                       |
+| ApiResponse        | type      | [src/types/index.ts](../../src/types/index.ts#L14)                                 |
+| APIResponse        | type      | [src/core/types/index.ts](../../src/core/types/index.ts#L76)                       |
+| AppSidebar         | component | [src/components/app-sidebar.tsx](../../src/components/app-sidebar.tsx#L159)        |
+| Assumptions        | type      | [src/core/types/index.ts](../../src/core/types/index.ts#L49)                       |
+| AuthSession        | type      | [src/types/user.ts](../../src/types/user.ts#L39)                                   |
+| BalanceSheet       | type      | [src/types/financial.ts](../../src/types/financial.ts#L23)                         |
+| BalanceSheet       | type      | [src/core/types/index.ts](../../src/core/types/index.ts#L27)                       |
+| calculateValuation | function  | [src/core/calculations/valuation.ts](../../src/core/calculations/valuation.ts#L21) |
+| calculateWACC      | function  | [src/core/calculations/wacc.ts](../../src/core/calculations/wacc.ts#L27)           |
+| createClient       | function  | [src/lib/supabase/server.ts](../../src/lib/supabase/server.ts#L5)                  |
+| createModel        | function  | [src/lib/actions/models.ts](../../src/lib/actions/models.ts#L122)                  |
+| duplicateModel     | function  | [src/lib/actions/models.ts](../../src/lib/actions/models.ts#L275)                  |
 
 ## Internal System Boundaries
 
-O sistema é organizado por domínio (company, financial, valuation), com cada domínio encapsulado em seu próprio módulo em `src/core/`. Acesso a dados e integrações externas são abstraídos em `src/lib/`, garantindo que a lógica de negócio permaneça desacoplada de preocupações de infraestrutura.
+Domain logic in `src/core/` is decoupled from infrastructure and UI. Integrations with Supabase are abstracted in `src/lib/supabase/`. Shared types enforce contracts between layers.
 
 ## External Service Dependencies
 
-- **Supabase**: Autenticação, banco de dados e armazenamento. Usa tokens JWT e acesso baseado em roles. Gerencia rate limits e retries via SDK integrado.
+- **Supabase**: Auth, database, and file storage. Uses JWT for authentication and SDK for API calls.
 
 ## Key Decisions & Trade-offs
 
-Escolhemos um monólito modular para simplicidade e manutenibilidade em estágios iniciais, com caminhos claros para futura modularização ou microserviços se a escala exigir. Supabase foi selecionado para habilitação rápida de backend e infraestrutura gerenciada.
+- Chose modular monolith for simplicity and maintainability.
+- TypeScript for type safety and developer tooling.
+- Supabase for rapid backend provisioning and managed auth.
 
 ## Diagrams
 
 ```mermaid
-graph TD
-	UI[UI Layer] --> Core[Core Domain Logic]
-	Core --> Lib[Lib/Integrations]
-	Lib --> Supabase[(Supabase)]
-	UI --> Styles[Design System]
+flowchart TD
+	UI[UI Layer]
+	CORE[Core Logic]
+	LIB[Lib/Integrations]
+	SUPA[Supabase]
+	UI --> CORE
+	CORE --> LIB
+	LIB --> SUPA
+	SUPA --> LIB
+	LIB --> CORE
+	CORE --> UI
 ```
 
 ## Risks & Constraints
 
-- Dependência do Supabase para serviços de backend introduz vendor lock-in e SLAs externos.
-- Escalar além da arquitetura atual pode requerer refatoração para microserviços.
+- Scaling is limited by Supabase plan and Next.js serverless model.
+- All operations are synchronous; no event-driven or queue-based processing.
 
 ## Top Directories Snapshot
 
-- `src/app/` — 3 arquivos
-- `src/components/` — 2 arquivos
-- `src/core/` — 3 módulos de domínio
-- `src/lib/` — 4 módulos de integração
-- `src/styles/` — 2 diretórios principais de estilos
-- `public/` — assets estáticos
+- `src/app/` — UI, routing, and pages
+- `src/components/` — UI components and layout
+- `src/core/` — Domain logic and calculations
+- `src/lib/` — Utilities and integrations
+- `src/types/` — Shared type definitions
+- `src/styles/` — Design system and global styles
 
 ## Related Resources
 
 - [Project Overview](./project-overview.md)
-- [Data Flow & Integrations](./data-flow.md)
+- [Data Flow](./data-flow.md)
 - [codebase-map.json](./codebase-map.json)

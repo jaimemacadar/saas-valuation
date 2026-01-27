@@ -1,7 +1,7 @@
 ---
 slug: getting-started
 category: getting-started
-generatedAt: 2026-01-24T18:26:09.401Z
+generatedAt: 2026-01-27T02:46:29.286Z
 ---
 
 # How do I set up and run this project?
@@ -10,6 +10,8 @@ generatedAt: 2026-01-24T18:26:09.401Z
 
 ### Prerequisites
 
+- Node.js (LTS version recommended)
+- npm
 
 ### Installation
 
@@ -18,11 +20,13 @@ generatedAt: 2026-01-24T18:26:09.401Z
 git clone <repository-url>
 cd saas-valuation
 
+# Install dependencies
+npm install
 ```
 
 ### Running
 
 ```bash
-# See package.json for available scripts
-npm run <script-name>
+# Development
+npm run dev
 ```

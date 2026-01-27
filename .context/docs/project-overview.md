@@ -3,92 +3,58 @@ type: doc
 name: project-overview
 description: High-level overview of the project, its purpose, and key components
 category: overview
-generated: 2026-01-24
+generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
 ## Project Overview
 
-SaaS Valuation é uma plataforma web moderna para análise financeira e avaliação de empresas SaaS. A aplicação oferece ferramentas para profissionais financeiros, investidores e empreendedores calcularem o valor de empresas baseadas em métricas específicas do modelo SaaS, projeções financeiras e metodologias reconhecidas de valuation.
+SaaS Valuation is a web application that empowers founders, investors, and analysts to model, analyze, and value SaaS businesses. By combining financial statements, projections, and industry assumptions, it delivers robust valuation outputs and scenario analysis.
 
 ## Codebase Reference
 
-> **Análise Detalhada**: Para contagens completas de símbolos, camadas de arquitetura e grafos de dependência, veja [`codebase-map.json`](./codebase-map.json).
+> **Detailed Analysis**: For complete symbol counts, architecture layers, and dependency graphs, see [`codebase-map.json`](./codebase-map.json).
 
 ## Quick Facts
 
-- Root: `c:\Users\jaime\Dropbox\Desenvolvimento\3-Projeto Saas Valuation\saas-valuation`
-- Linguagens: TypeScript/TSX (arquivos principais)
-- Entry Points: [src/app/page.tsx](../../src/app/page.tsx), [src/app/layout.tsx](../../src/app/layout.tsx)
-- Análise completa: [`codebase-map.json`](./codebase-map.json)
+- Root: `/c/Dev/3-Projeto Saas Valuation/saas-valuation`
+- Languages: TypeScript (majority), JavaScript, CSS
+- Entry: [src/app/layout.tsx](../../src/app/layout.tsx)
+- Full analysis: [`codebase-map.json`](./codebase-map.json)
 
 ## Entry Points
 
-- [src/app/page.tsx](../../src/app/page.tsx) — Página inicial da aplicação
-- [src/app/layout.tsx](../../src/app/layout.tsx) — Layout raiz e configurações globais
-- [middleware.ts](../../middleware.ts) — Middleware Next.js para autenticação e roteamento
+- [middleware.ts](../../middleware.ts)
+- [src/app/layout.tsx](../../src/app/layout.tsx)
+- [src/app/(auth)/login/page.tsx](<../../src/app/(auth)/login/page.tsx>)
+- [src/app/(dashboard)/model/[id]/](<../../src/app/(dashboard)/model/[id]/>)
 
 ## Key Exports
 
-Veja [`codebase-map.json`](./codebase-map.json) para lista completa de exports públicos.
+See [`codebase-map.json`](./codebase-map.json) for the complete list of exports, types, and functions.
 
 ## File Structure & Code Organization
 
-- `src/app/` — Rotas e páginas Next.js (App Router)
-- `src/components/` — Componentes React reutilizáveis
-- `src/core/` — Lógica de negócio e domínios (company, financial, valuation)
-- `src/lib/` — Integrações externas (Supabase) e utilitários
-- `src/styles/` — Design system, tokens e estilos globais
-- `src/types/` — Definições de tipos TypeScript
-- `src/utils/` — Funções utilitárias
-- `public/` — Assets estáticos
+- `src/app/` — UI, routing, and pages
+- `src/components/` — UI components and layout
+- `src/core/` — Domain logic and calculations
+- `src/lib/` — Utilities and integrations
+- `src/types/` — Shared type definitions
+- `src/styles/` — Design system and global styles
 
 ## Technology Stack Summary
 
-- **Runtime**: Node.js 18+
-- **Framework**: Next.js 14+ (React 18+)
-- **Linguagem**: TypeScript
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Styling**: Tailwind CSS + Design System customizado
-- **Build**: Next.js build system
-- **Linting**: ESLint
-- **Formatting**: Prettier (implícito)
-
-## Core Framework Stack
-
-- **Frontend**: Next.js App Router com React Server Components
-- **Backend**: Supabase (BaaS) para autenticação, database e storage
-- **State Management**: React hooks e contextos
-- **Styling**: Tailwind CSS com sistema de design tokens
-
-## UI & Interaction Libraries
-
-Sistema de design customizado em `src/styles/design-system/` com tokens para cores, tipografia, espaçamento, borders e shadows. Componentes UI base em `src/components/ui/`.
-
-## Development Tools Overview
-
-- **Package Manager**: npm
-- **Dev Server**: Next.js dev server
-- **Type Checking**: TypeScript compiler
-- **Linting**: ESLint com configurações Next.js
-
-Veja [Tooling Guide](./tooling.md) para configuração detalhada.
+The project is built with Next.js (React) and TypeScript, using Supabase for backend services (auth, database, storage). Tooling includes Jest for testing, ESLint for linting, and Tailwind CSS for styling.
 
 ## Getting Started Checklist
 
-1. Instale dependências com `npm install`
-2. Configure variáveis de ambiente (Supabase credentials)
-3. Execute o servidor de desenvolvimento com `npm run dev`
-4. Acesse `http://localhost:3000`
-5. Revise [Development Workflow](./development-workflow.md) para processos diários
-
-## Next Steps
-
-- Consulte [Architecture Notes](./architecture.md) para entender a estrutura do sistema
-- Leia [Glossary](./glossary.md) para terminologia do domínio
-- Veja [Testing Strategy](./testing-strategy.md) para práticas de qualidade
+1. Install dependencies with `npm install`.
+2. Run the development server with `npm run dev`.
+3. Build for production with `npm run build`.
+4. Run tests with `npm run test`.
+5. Review [Development Workflow](./development-workflow.md) for day-to-day tasks.
 
 ---
 
-Veja também: [Architecture](./architecture.md), [Development Workflow](./development-workflow.md), [Tooling](./tooling.md)
+See also: [Architecture Notes](./architecture.md), [Development Workflow](./development-workflow.md), [Tooling](./tooling.md), [`codebase-map.json`](./codebase-map.json)
