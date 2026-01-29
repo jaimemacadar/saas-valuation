@@ -1,6 +1,16 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getModelById } from '@/lib/actions/models';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DRETable } from '@/components/tables/DRETable';
 import { RevenueChart } from '@/components/charts/RevenueChart';
@@ -21,15 +31,31 @@ export default async function DREPage({ params }: { params: { id: string } }) {
   const dreData = modelData?.dre || [];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold">DRE Projetado</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Demonstração do Resultado do Exercício projetada
-        </p>
-      </div>
+    <>
+      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mr-2 h-4" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/model/${params.id}/view/dre`}>
+                {result.data.company_name}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbPage>DRE Projetado</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </header>
 
-      <Tabs defaultValue="table" className="w-full">
+      <div className="flex flex-1 flex-col gap-4 p-4">
+        <Tabs defaultValue="table" className="w-full">
         <TabsList>
           <TabsTrigger value="table">Tabela</TabsTrigger>
           <TabsTrigger value="charts">Gráficos</TabsTrigger>
@@ -53,7 +79,8 @@ export default async function DREPage({ params }: { params: { id: string } }) {
           </Suspense>
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </>
   );
 }
 
