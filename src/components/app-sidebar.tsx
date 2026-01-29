@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import {
   AudioWaveform,
   BookOpen,
@@ -18,6 +19,7 @@ import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
+import { ModelSidebarNav } from "@/components/model-sidebar-nav"
 import {
   Sidebar,
   SidebarContent,
@@ -157,14 +159,27 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+
+  // Detecta se está em uma página de modelo
+  const modelIdMatch = pathname?.match(/\/model\/([^\/]+)/)
+  const modelId = modelIdMatch?.[1]
+  const isModelView = !!modelId
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {isModelView ? (
+          <ModelSidebarNav modelId={modelId} />
+        ) : (
+          <>
+            <NavMain items={data.navMain} />
+            <NavProjects projects={data.projects} />
+          </>
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
