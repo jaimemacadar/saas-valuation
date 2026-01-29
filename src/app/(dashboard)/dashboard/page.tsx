@@ -113,7 +113,7 @@ export default async function DashboardPage() {
                 Crie seu primeiro modelo de valuation para começar
               </p>
               <Link
-                href="/models/new"
+                href="/model/new"
                 className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               >
                 Criar Primeiro Modelo

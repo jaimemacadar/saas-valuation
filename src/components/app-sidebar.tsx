@@ -3,16 +3,12 @@
 import * as React from "react"
 import { usePathname } from "next/navigation"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
+  BarChart3,
+  FileDown,
+  LayoutDashboard,
+  Plus,
   Settings2,
-  SquareTerminal,
+  GalleryVerticalEnd,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -28,7 +24,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
+// Dados da aplicação
 const data = {
   user: {
     name: "shadcn",
@@ -37,125 +33,64 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "SaaS Valuation",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      plan: "Professional",
     },
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Valuation",
       url: "#",
-      icon: SquareTerminal,
+      icon: BarChart3,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Meus Modelos",
+          url: "/dashboard",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
+          title: "Novo Modelo",
+          url: "/model/new",
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
+      title: "Configuração",
       url: "#",
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Premissas Padrão",
           url: "#",
+          isDisabled: true,
         },
         {
-          title: "Team",
+          title: "Perfil",
           url: "#",
+          isDisabled: true,
+        },
+      ],
+    },
+    {
+      title: "Exportação",
+      url: "#",
+      icon: FileDown,
+      items: [
+        {
+          title: "Exportar PDF",
+          url: "#",
+          isDisabled: true,
         },
         {
-          title: "Billing",
+          title: "Exportar Excel",
           url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          isDisabled: true,
         },
       ],
     },
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
+  projects: [],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

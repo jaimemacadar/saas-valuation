@@ -15,15 +15,5 @@ export default async function ViewLayout({
     notFound();
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="border-b pb-4">
-        <h1 className="text-2xl font-bold">{result.data.company_name}</h1>
-        {result.data.description && (
-          <p className="text-muted-foreground mt-1">{result.data.description}</p>
-        )}
-      </div>
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }

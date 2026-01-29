@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "fase-3",
+      "path": "plans/fase-3.md",
+      "title": "Fase 3: Visualização de Demonstrações",
+      "summary": "Criar componentes de visualização para demonstrações financeiras projetadas (DRE, Balanço Patrimonial, FCFF), implementar gráficos interativos com Recharts e navegação fluida entre seções do modelo.",
+      "linkedAt": "2026-01-29T01:19:58.317Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "fase-3"
+}
