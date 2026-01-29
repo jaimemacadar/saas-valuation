@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated": "2026-01-27T02:46:29.027Z",
+  "generated": "2026-01-29T00:26:47.201Z",
   "stack": {
     "primaryLanguage": "typescript",
     "languages": [
@@ -21,7 +21,7 @@
     "hasCI": false
   },
   "structure": {
-    "totalFiles": 102,
+    "totalFiles": 111,
     "topDirectories": [
       {
         "name": "AGENTS.md",
@@ -33,7 +33,7 @@
       },
       {
         "name": "docs",
-        "fileCount": 1
+        "fileCount": 10
       },
       {
         "name": "eslint.config.mjs",
@@ -119,7 +119,7 @@
       },
       {
         "extension": ".md",
-        "count": 5
+        "count": 14
       },
       {
         "extension": ".svg",
@@ -182,10 +182,10 @@
           "src\\app",
           "src\\components\\ui",
           "src\\components\\forms",
-          "src\\app\\(auth)\\forgot-password",
-          "src\\app\\(auth)\\reset-password",
           "src\\app\\(auth)\\signup",
-          "src\\app\\(auth)\\login"
+          "src\\app\\(auth)\\reset-password",
+          "src\\app\\(auth)\\login",
+          "src\\app\\(auth)\\forgot-password"
         ],
         "symbolCount": 18,
         "dependsOn": []
@@ -207,9 +207,9 @@
       "src\\styles\\design-system\\index.ts",
       "src\\lib\\supabase\\server.ts",
       "src\\lib\\supabase\\index.ts",
+      "src\\components\\layout\\index.ts",
       "src\\core\\validators\\index.ts",
-      "src\\core\\types\\index.ts",
-      "src\\components\\layout\\index.ts"
+      "src\\core\\types\\index.ts"
     ]
   },
   "symbols": {
@@ -1410,7 +1410,7 @@
   "dependencies": {
     "mostImported": [
       {
-        "file": "C:\\Dev\\3-Projeto Saas Valuation\\saas-valuation\\.next\\dev\\types\\routes.d.ts",
+        "file": "C:\\Dev\\3-Projeto Saas Valuation\\saas-valuation\\.next\\types\\routes.d.ts",
         "importedBy": 1
       },
       {
@@ -1430,6 +1430,6 @@
   "stats": {
     "totalSymbols": 126,
     "exportedSymbols": 111,
-    "analysisTimeMs": 251
+    "analysisTimeMs": 238
   }
 }
