@@ -28,7 +28,7 @@ phases:
   - id: "phase-3"
     name: "Navegação, UX e Validação"
     prevc: "V"
-lastUpdated: "2026-01-29T18:25:38.194Z"
+lastUpdated: "2026-01-29T18:30:26.459Z"
 ---
 
 # Fase 3: Visualização de Demonstrações
@@ -161,7 +161,7 @@ lastUpdated: "2026-01-29T18:25:38.194Z"
 #### 2.3 — Server Pages (Data Fetching)
 
 Cada page em `/model/[id]/view/*` será um Server Component que:
-1. Carrega o modelo do Supabase via `getModelById(id)`
+1. [x] Carrega o modelo do Supabase via `getModelById(id)` *(completed: 2026-01-29T18:30:26.459Z)*
 2. Passa os dados calculados para o Client Component (tabela/gráfico)
 3. Usa `<Suspense>` com skeleton para loading state
 
@@ -257,7 +257,7 @@ Análise de Sensibilidade
 
 ## Execution History
 
-> Last updated: 2026-01-29T18:25:38.194Z | Progress: 100%
+> Last updated: 2026-01-29T18:30:26.459Z | Progress: 100%
 
 ### phase-1 [DONE]
 - Started: 2026-01-29T18:25:38.194Z
@@ -267,10 +267,10 @@ Análise de Sensibilidade
   - Output: src/lib/utils/formatters.ts
   - Notes: Formatadores criados: formatCurrency, formatPercentage, formatCompactNumber, formatNumber, formatMultiple, formatCellWithColor
 
+### phase-2 [DONE]
+- Started: 2026-01-29T18:30:26.459Z
+- Completed: 2026-01-29T18:30:26.459Z
 
-## Evidence & Follow-up
-
-- PR links para cada fase de implementação
-- Screenshots das tabelas e gráficos renderizados
-- Resultados dos testes unitários
-- Lighthouse performance score das páginas de visualização
+- [x] Step 1: Step 1 *(2026-01-29T18:30:26.459Z)*
+  - Output: src/components/tables/, src/components/charts/, src/app/(dashboard)/model/[id]/view/
+  - Notes: Implementadas todas as tabelas (DRE, Balanço, FCFF) e gráficos (Revenue, CostComposition, EBITDA, FCFF). Navegação sidebar atualizada. Loading states e error handling adicionados.
