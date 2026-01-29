@@ -95,35 +95,11 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Detecta se está em uma página de modelo
   const modelIdMatch = pathname?.match(/\/model\/([^\/]+)/)
   const modelId = modelIdMatch?.[1]
-  const isModelView = !!modelId
-
-  // Evita hidratação diferente entre servidor e cliente
-  if (!mounted) {
-    return (
-      <Sidebar collapsible="icon" {...props}>
-        <SidebarHeader>
-          <TeamSwitcher teams={data.teams} />
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMain items={data.navMain} />
-          <NavProjects projects={data.projects} />
-        </SidebarContent>
-        <SidebarFooter>
-          <NavUser user={data.user} />
-        </SidebarFooter>
-        <SidebarRail />
-      </Sidebar>
-    )
-  }
+  const isModelView = !!modelId && modelId !== "new"
 
   return (
     <Sidebar collapsible="icon" {...props}>
