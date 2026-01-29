@@ -1,4 +1,24 @@
 {
+  "planSlug": "fase-3",
+  "progress": 100,
+  "phases": {
+    "phase-1": {
+      "phaseId": "phase-1",
+      "status": "completed",
+      "startedAt": "2026-01-29T18:25:38.194Z",
+      "steps": [
+        {
+          "stepIndex": 1,
+          "description": "Step 1",
+          "status": "completed",
+          "completedAt": "2026-01-29T18:25:38.194Z",
+          "output": "src/lib/utils/formatters.ts",
+          "notes": "Formatadores criados: formatCurrency, formatPercentage, formatCompactNumber, formatNumber, formatMultiple, formatCellWithColor"
+        }
+      ],
+      "completedAt": "2026-01-29T18:25:38.194Z"
+    }
+  },
   "decisions": [
     {
       "title": "Plano aprovado com observações na revisão",
@@ -24,5 +44,6 @@
       "id": "dec-1769707936627",
       "decidedAt": "2026-01-29T17:32:16.627Z"
     }
-  ]
+  ],
+  "lastUpdated": "2026-01-29T18:25:38.194Z"
 }
