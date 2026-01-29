@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "mcp__ai-context__context"
+      "mcp__ai-context__context",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(test:*)",
+      "mcp__ai-context__workflow-manage",
+      "mcp__ai-context__workflow-advance",
+      "mcp__ai-context__plan",
+      "mcp__ai-context__workflow-status",
+      "Bash(npx tsc:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm test:*)"
     ]
   }
 }

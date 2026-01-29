@@ -28,7 +28,7 @@ phases:
   - id: "phase-3"
     name: "Navegação, UX e Validação"
     prevc: "V"
-lastUpdated: "2026-01-29T18:30:26.459Z"
+lastUpdated: "2026-01-29T18:42:56.867Z"
 ---
 
 # Fase 3: Visualização de Demonstrações
@@ -251,13 +251,13 @@ Análise de Sensibilidade
 - **Phase 3:** Reverter alterações na sidebar — restaurar navegação anterior
 
 ### Post-Rollback Actions
-1. Documentar razão do rollback
+1. [x] Documentar razão do rollback *(completed: 2026-01-29T18:42:56.867Z)*
 2. Identificar causa raiz
 3. Corrigir e re-implementar
 
 ## Execution History
 
-> Last updated: 2026-01-29T18:30:26.459Z | Progress: 100%
+> Last updated: 2026-01-29T18:42:56.867Z | Progress: 100%
 
 ### phase-1 [DONE]
 - Started: 2026-01-29T18:25:38.194Z
@@ -274,3 +274,11 @@ Análise de Sensibilidade
 - [x] Step 1: Step 1 *(2026-01-29T18:30:26.459Z)*
   - Output: src/components/tables/, src/components/charts/, src/app/(dashboard)/model/[id]/view/
   - Notes: Implementadas todas as tabelas (DRE, Balanço, FCFF) e gráficos (Revenue, CostComposition, EBITDA, FCFF). Navegação sidebar atualizada. Loading states e error handling adicionados.
+
+### phase-3 [DONE]
+- Started: 2026-01-29T18:42:56.867Z
+- Completed: 2026-01-29T18:42:56.867Z
+
+- [x] Step 1: Step 1 *(2026-01-29T18:42:56.867Z)*
+  - Output: src/lib/utils/__tests__/formatters.test.ts, src/components/tables/__tests__/
+  - Notes: Testes criados: 31 testes de formatadores (100% passing), 15 testes de componentes de tabela (100% passing). Total: 46 novos testes passando.
