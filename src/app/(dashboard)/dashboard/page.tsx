@@ -1,122 +1,145 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { getModels } from '@/lib/actions/models';
-import { Button } from '@/components/ui/button';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DRETable } from '@/components/tables/DRETable';
+import { BalanceSheetTable } from '@/components/tables/BalanceSheetTable';
+import { FCFFTable } from '@/components/tables/FCFFTable';
+import { RevenueChart } from '@/components/charts/RevenueChart';
+import { FCFFChart } from '@/components/charts/FCFFChart';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, FileText, ArrowRight } from 'lucide-react';
+import { DRECalculated, BalanceSheetCalculated, FCFFCalculated } from '@/core/types';
 
 export default async function DashboardPage() {
   const modelsResult = await getModels();
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
-            Gerencie seus modelos de valuation
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/models/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Modelo
-          </Link>
-        </Button>
-      </div>
-
-      <Suspense fallback={<ModelsGridSkeleton />}>
-        <ModelsGrid models={modelsResult.success && modelsResult.data ? modelsResult.data : []} />
-      </Suspense>
-    </div>
-  );
-}
-
-function ModelsGrid({
-  models,
-}: {
-  models: Array<{
-    id: string;
-    company_name: string;
-    description?: string | null;
-    updated_at: string;
-  }>;
-}) {
-  if (models.length === 0) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Nenhum modelo criado</h3>
-          <p className="text-sm text-muted-foreground mb-4 text-center max-w-md">
-            Comece criando seu primeiro modelo de valuation para uma empresa.
-          </p>
-          <Button asChild>
-            <Link href="/models/new">
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Primeiro Modelo
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  // Pega o primeiro modelo para demonstração (você pode modificar isso depois)
+  const firstModel = modelsResult.success && modelsResult.data?.[0] ? modelsResult.data[0] : null;
+  const modelData = firstModel ? (firstModel.model_data as {
+    dre?: DRECalculated[];
+    balanceSheet?: BalanceSheetCalculated[];
+    fcff?: FCFFCalculated[];
+  } | undefined) : undefined;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {models.map((model) => (
-        <Card key={model.id} className="hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <CardTitle>{model.company_name}</CardTitle>
-            <CardDescription>
-              {model.description || 'Sem descrição'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Atualizado em{' '}
-              {new Date(model.updated_at).toLocaleDateString('pt-BR')}
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild variant="outline" className="w-full">
-              <Link href={`/model/${model.id}/view/dre`}>
-                Abrir Modelo
-                <ArrowRight className="h-4 w-4 ml-2" />
+    <>
+      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mr-2 h-4" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem className="hidden md:block">
+              <BreadcrumbLink href="/dashboard">
+                Dashboard
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Demonstrações Financeiras</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </header>
+
+      <div className="flex flex-1 flex-col gap-4 p-4">
+        {firstModel ? (
+          <Tabs defaultValue="dre" className="w-full">
+            <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsTrigger value="dre">DRE</TabsTrigger>
+              <TabsTrigger value="balanco">Balanço Patrimonial</TabsTrigger>
+              <TabsTrigger value="fcff">Fluxo de Caixa</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="dre" className="space-y-4">
+              <div className="rounded-xl bg-muted/50 p-4">
+                <h2 className="text-lg font-semibold mb-4">
+                  DRE Projetado - {firstModel.company_name}
+                </h2>
+                <Suspense fallback={<TableSkeleton />}>
+                  <DRETable data={modelData?.dre || []} />
+                </Suspense>
+              </div>
+
+              <div className="rounded-xl bg-muted/50 p-4 min-h-[400px]">
+                <Suspense fallback={<ChartSkeleton />}>
+                  <RevenueChart data={modelData?.dre || []} />
+                </Suspense>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="balanco" className="space-y-4">
+              <div className="rounded-xl bg-muted/50 p-4">
+                <h2 className="text-lg font-semibold mb-4">
+                  Balanço Patrimonial - {firstModel.company_name}
+                </h2>
+                <Suspense fallback={<TableSkeleton />}>
+                  <BalanceSheetTable data={modelData?.balanceSheet || []} />
+                </Suspense>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="fcff" className="space-y-4">
+              <div className="rounded-xl bg-muted/50 p-4">
+                <h2 className="text-lg font-semibold mb-4">
+                  Fluxo de Caixa Livre (FCFF) - {firstModel.company_name}
+                </h2>
+                <Suspense fallback={<TableSkeleton />}>
+                  <FCFFTable data={modelData?.fcff || []} />
+                </Suspense>
+              </div>
+
+              <div className="rounded-xl bg-muted/50 p-4 min-h-[400px]">
+                <Suspense fallback={<ChartSkeleton />}>
+                  <FCFFChart data={modelData?.fcff || []} />
+                </Suspense>
+              </div>
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <div className="flex flex-1 items-center justify-center rounded-xl bg-muted/50 p-8">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold mb-2">Nenhum modelo encontrado</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Crie seu primeiro modelo de valuation para começar
+              </p>
+              <Link
+                href="/models/new"
+                className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Criar Primeiro Modelo
               </Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function TableSkeleton() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-96 w-full" />
     </div>
   );
 }
 
-function ModelsGridSkeleton() {
+function ChartSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {[1, 2, 3].map((i) => (
-        <Card key={i}>
-          <CardHeader>
-            <Skeleton className="h-6 w-48" />
-            <Skeleton className="h-4 w-full mt-2" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-4 w-32" />
-          </CardContent>
-          <CardFooter>
-            <Skeleton className="h-10 w-full" />
-          </CardFooter>
-        </Card>
-      ))}
+    <div className="space-y-3">
+      <Skeleton className="h-8 w-64" />
+      <Skeleton className="h-[400px] w-full" />
     </div>
   );
 }
