@@ -1,0 +1,28 @@
+{
+  "decisions": [
+    {
+      "title": "Plano aprovado com observações na revisão",
+      "description": "Revisão identificou: (1) rotas de dashboard/model inexistentes - criar antes das views; (2) sidebar com dados placeholder - reescrever com dados reais; (3) model_data sem tipagem - criar Server Action de bridge; (4) DRECalculated sem campos ebitda/receitaBruta/dividendos do PRD - adaptar tabela aos campos reais",
+      "phase": "R",
+      "alternatives": [
+        "Estender DRECalculated com campos extras",
+        "Adaptar tabela DRE para usar apenas campos existentes"
+      ],
+      "status": "accepted",
+      "id": "dec-1769649969047",
+      "decidedAt": "2026-01-29T01:26:09.047Z"
+    },
+    {
+      "title": "Review arquitetural aprovado",
+      "description": "Todas as suposições do plano foram validadas contra o codebase. Tipos, cálculos, Server Actions, dependências NPM e componentes shadcn/ui estão prontos. Gaps identificados (rotas vazias, formatadores ausentes) são esperados e estão cobertos pelo plano. Sem bloqueios técnicos.",
+      "phase": "R",
+      "alternatives": [
+        "Adiar para adicionar mais testes na Fase 2 antes de visualização",
+        "Usar biblioteca de tabelas alternativa (ag-grid)"
+      ],
+      "status": "accepted",
+      "id": "dec-1769707936627",
+      "decidedAt": "2026-01-29T17:32:16.627Z"
+    }
+  ]
+}

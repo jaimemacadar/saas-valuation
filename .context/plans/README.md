@@ -3,7 +3,8 @@
 This directory contains plans for coordinating work across documentation and playbooks.
 
 ## Plan Queue
-1. [Fase 2 Motor Calculo](./fase-2-motor-calculo.md)
+1. [Fase 3](./fase-3.md)
+2. [PRD](./PRD.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.
