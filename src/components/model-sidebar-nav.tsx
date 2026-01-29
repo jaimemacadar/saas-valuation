@@ -138,12 +138,12 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
                     <SidebarMenuItem key={item.title}>
                       {item.items ? (
                         <Collapsible className="group/nested">
-                          <CollapsibleTrigger className="w-full">
-                            <SidebarMenuButton>
+                          <SidebarMenuButton asChild>
+                            <CollapsibleTrigger className="w-full">
                               {item.title}
                               <ChevronRight className="ml-auto h-3 w-3 transition-transform duration-200 group-data-[state=open]/nested:rotate-90" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
+                            </CollapsibleTrigger>
+                          </SidebarMenuButton>
                           <CollapsibleContent>
                             <SidebarMenuSub>
                               {item.items.map((subItem) => (
