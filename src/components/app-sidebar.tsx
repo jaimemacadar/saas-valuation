@@ -95,11 +95,16 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Detecta se está em uma página de modelo
   const modelIdMatch = pathname?.match(/\/model\/([^\/]+)/)
   const modelId = modelIdMatch?.[1]
-  const isModelView = !!modelId && modelId !== "new"
+  const isModelView = mounted && !!modelId && modelId !== "new"
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -107,7 +112,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        {isModelView ? (
+        {!mounted ? (
+          // Skeleton durante SSR/hidratação
+          <div className="space-y-2 p-2">
+            <div className="h-10 w-full animate-pulse rounded-md bg-sidebar-accent" />
+            <div className="h-10 w-full animate-pulse rounded-md bg-sidebar-accent" />
+            <div className="h-10 w-full animate-pulse rounded-md bg-sidebar-accent" />
+          </div>
+        ) : isModelView ? (
           <ModelSidebarNav modelId={modelId} />
         ) : (
           <>
