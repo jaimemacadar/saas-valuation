@@ -1,8 +1,8 @@
-import { Suspense } from 'react';
-import Link from 'next/link';
-import { getModels } from '@/lib/actions/models';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
+import { Suspense } from "react";
+import Link from "next/link";
+import { getModels } from "@/lib/actions/models";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,26 +10,37 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DRETable } from '@/components/tables/DRETable';
-import { BalanceSheetTable } from '@/components/tables/BalanceSheetTable';
-import { FCFFTable } from '@/components/tables/FCFFTable';
-import { RevenueChart } from '@/components/charts/RevenueChart';
-import { FCFFChart } from '@/components/charts/FCFFChart';
-import { Skeleton } from '@/components/ui/skeleton';
-import { DRECalculated, BalanceSheetCalculated, FCFFCalculated } from '@/core/types';
+} from "@/components/ui/breadcrumb";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DRETable } from "@/components/tables/DRETable";
+import { BalanceSheetTable } from "@/components/tables/BalanceSheetTable";
+import { FCFFTable } from "@/components/tables/FCFFTable";
+import { RevenueChart } from "@/components/charts/RevenueChart";
+import { FCFFChart } from "@/components/charts/FCFFChart";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DRECalculated,
+  BalanceSheetCalculated,
+  FCFFCalculated,
+} from "@/core/types";
 
 export default async function DashboardPage() {
   const modelsResult = await getModels();
 
   // Pega o primeiro modelo para demonstração (você pode modificar isso depois)
-  const firstModel = modelsResult.success && modelsResult.data?.[0] ? modelsResult.data[0] : null;
-  const modelData = firstModel ? (firstModel.model_data as {
-    dre?: DRECalculated[];
-    balanceSheet?: BalanceSheetCalculated[];
-    fcff?: FCFFCalculated[];
-  } | undefined) : undefined;
+  const firstModel =
+    modelsResult.success && modelsResult.data?.[0]
+      ? modelsResult.data[0]
+      : null;
+  const modelData = firstModel
+    ? (firstModel.model_data as
+        | {
+            dre?: DRECalculated[];
+            balanceSheet?: BalanceSheetCalculated[];
+            fcff?: FCFFCalculated[];
+          }
+        | undefined)
+    : undefined;
 
   return (
     <>
@@ -39,9 +50,7 @@ export default async function DashboardPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/dashboard">
-                Dashboard
-              </BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
@@ -108,7 +117,9 @@ export default async function DashboardPage() {
         ) : (
           <div className="flex flex-1 items-center justify-center rounded-xl bg-muted/50 p-8">
             <div className="text-center">
-              <h3 className="text-lg font-semibold mb-2">Nenhum modelo encontrado</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Nenhum modelo encontrado
+              </h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Crie seu primeiro modelo de valuation para começar
               </p>
