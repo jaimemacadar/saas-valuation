@@ -155,7 +155,7 @@ export async function createModel(formData: {
     }
 
     revalidatePath("/dashboard");
-    redirect(`/model/${data.id}`);
+    redirect(`/model/${data.id}/view/dre`);
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;
@@ -311,7 +311,7 @@ export async function duplicateModel(id: string): Promise<ActionResult> {
     }
 
     revalidatePath("/dashboard");
-    redirect(`/model/${duplicate.id}`);
+    redirect(`/model/${duplicate.id}/view/dre`);
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;
