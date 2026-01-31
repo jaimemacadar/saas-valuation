@@ -5,7 +5,8 @@ This directory contains plans for coordinating work across documentation and pla
 ## Plan Queue
 1. [Fase 3](./fase-3.md)
 2. [Fase 3 1 Ajustes](./fase-3-1-ajustes.md)
-3. [PRD](./PRD.md)
+3. [Fase 3 2 Ajustes](./fase-3-2-ajustes.md)
+4. [PRD](./PRD.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

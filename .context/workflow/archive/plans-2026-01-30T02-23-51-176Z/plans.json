@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "fase-3-1-ajustes",
+      "path": "plans/fase-3-1-ajustes.md",
+      "title": "Fase 3.1 — Ajustes e Revisões",
+      "summary": "Otimizar estrutura de pastas, reestruturar sidebar com menus úteis para valuation e corrigir sobreposição de layout.",
+      "linkedAt": "2026-01-29T20:03:40.190Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "fase-3-1-ajustes"
+}

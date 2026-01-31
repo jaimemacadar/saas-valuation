@@ -1,38 +1,33 @@
 project:
-  name: "Fase 3.1 - Ajustes"
+  name: "fase-3-2-ajustes"
   scale: SMALL
-  started: "2026-01-29T19:32:42.968Z"
-  current_phase: V
+  started: "2026-01-30T02:23:51.181Z"
+  current_phase: E
 
 phases:
   P:
     status: filled
-    started_at: "2026-01-29T19:32:42.968Z"
-    completed_at: "2026-01-29T20:03:42.998Z"
+    started_at: "2026-01-30T02:23:51.181Z"
+    completed_at: "2026-01-30T02:32:08.441Z"
   R:
     status: skipped
     reason: "Not required for scale SMALL"
   E:
-    status: filled
-    started_at: "2026-01-29T20:03:42.999Z"
-    completed_at: "2026-01-29T20:08:36.112Z"
+    status: in_progress
+    started_at: "2026-01-30T02:32:08.443Z"
   V:
-    status: filled
-    started_at: "2026-01-29T20:08:36.115Z"
-    completed_at: "2026-01-29T23:52:20.517Z"
+    status: pending
   C:
     status: skipped
     reason: "Not required for scale SMALL"
 
 execution:
   history:
-    - timestamp: "2026-01-30T01:36:28.921Z"
-      phase: V
-      action: plan_phase_updated
-      plan: "fase-3-1-ajustes"
-      description: "Plan phase phase-3 updated to completed"
-  last_activity: "2026-01-30T01:36:28.921Z"
-  resume_context: "Fase do plano atualizada"
+    - timestamp: "2026-01-30T02:32:08.443Z"
+      phase: E
+      action: started
+  last_activity: "2026-01-30T02:32:08.443Z"
+  resume_context: "Fase E (Execução) em progresso"
 
 approval:
   plan_created: true

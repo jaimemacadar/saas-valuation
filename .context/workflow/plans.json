@@ -1,14 +1,14 @@
 {
   "active": [
     {
-      "slug": "fase-3-1-ajustes",
-      "path": "plans/fase-3-1-ajustes.md",
-      "title": "Fase 3.1 — Ajustes e Revisões",
-      "summary": "Otimizar estrutura de pastas, reestruturar sidebar com menus úteis para valuation e corrigir sobreposição de layout.",
-      "linkedAt": "2026-01-29T20:03:40.190Z",
+      "slug": "fase-3-2-ajustes",
+      "path": "plans/fase-3-2-ajustes.md",
+      "title": "Página de Gerenciamento de Modelos (Meus Modelos)",
+      "summary": "Transformar o menu \"Meus Modelos\" em uma página de gerenciamento CRUD de modelos de valuation, e remover o menu \"Novo Modelo\" do sidebar.",
+      "linkedAt": "2026-01-30T02:32:06.210Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "fase-3-1-ajustes"
+  "primary": "fase-3-2-ajustes"
 }

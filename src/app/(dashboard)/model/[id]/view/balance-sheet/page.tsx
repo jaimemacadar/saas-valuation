@@ -1,16 +1,7 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getModelById } from '@/lib/actions/models';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import { PageHeader } from '@/components/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BalanceSheetTable } from '@/components/tables/BalanceSheetTable';
 import { BalanceSheetCalculated } from '@/core/types';
@@ -34,27 +25,13 @@ export default async function BalanceSheetPage({
 
   return (
     <>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/model/${params.id}/view/balance-sheet`}>
-                {result.data.company_name}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Balanço Patrimonial</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </header>
+      <PageHeader
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: result.data.company_name, href: `/model/${params.id}/view/balance-sheet` },
+          { label: "Balanço Patrimonial" },
+        ]}
+      />
 
       <div className="flex flex-1 flex-col gap-4 p-4">
         <Suspense fallback={<BalanceSheetSkeleton />}>
