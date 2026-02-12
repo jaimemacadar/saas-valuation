@@ -1,3 +1,4 @@
+---
 type: agent
 name: Code Reviewer
 description: Review code changes for quality, style, and best practices
@@ -6,6 +7,7 @@ phases: [R, V]
 generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
+---
 
 ## Mission
 

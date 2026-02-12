@@ -1,3 +1,4 @@
+---
 type: agent
 name: Database Specialist
 description: Design and optimize database schemas
@@ -6,6 +7,7 @@ phases: [P, E]
 generated: 2026-01-24
 status: unfilled
 scaffoldVersion: "2.0.0"
+---
 
 ## Mission
 

@@ -1,3 +1,4 @@
+---
 type: agent
 name: Frontend Specialist
 description: Design and implement user interfaces
@@ -6,6 +7,7 @@ phases: [P, E]
 generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
+---
 
 ## Mission
 

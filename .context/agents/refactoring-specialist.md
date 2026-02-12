@@ -1,3 +1,4 @@
+---
 type: agent
 name: Refactoring Specialist
 description: Identify code smells and improvement opportunities
@@ -6,6 +7,7 @@ phases: [E]
 generated: 2026-01-27
 status: unfilled
 scaffoldVersion: "2.0.0"
+---
 
 ## Mission
 
