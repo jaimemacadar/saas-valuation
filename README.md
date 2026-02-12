@@ -2,6 +2,23 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Desenvolvimento com Mock Data 🚧
+
+Para desenvolver sem conexão com Supabase, ative o modo mock:
+
+1. Configure no `.env.local`:
+   ```env
+   NEXT_PUBLIC_USE_MOCK_DATA=true
+   ```
+
+2. Reinicie o servidor
+
+Você verá um badge "🚧 MOCK MODE" indicando que está usando dados simulados.
+
+📖 **Documentação completa:** [MOCK_MODE.md](./MOCK_MODE.md)
+
+### Desenvolvimento Normal
+
 First, run the development server:
 
 ```bash
