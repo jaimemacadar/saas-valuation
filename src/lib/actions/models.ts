@@ -3,6 +3,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import {
+  isMockMode,
+  getMockUser,
+  mockStore,
+  mockDelay,
+} from "@/lib/mock";
 
 // Types
 export type FinancialModelBasic = {
@@ -26,6 +32,16 @@ type ActionResult<T = unknown> = {
  * Get authenticated user or redirect to login
  */
 async function requireAuth() {
+  // Mock mode: retorna usuário mock
+  if (isMockMode()) {
+    const mockUser = await getMockUser();
+    if (!mockUser) {
+      redirect("/login");
+    }
+    return { id: mockUser.id, email: mockUser.email };
+  }
+
+  // Produção: usa Supabase
   const supabase = await createClient();
   const {
     data: { user },
@@ -46,8 +62,19 @@ export async function getModels(): Promise<
 > {
   try {
     const user = await requireAuth();
-    const supabase = await createClient();
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("NORMAL");
+      const models = mockStore.getModels(user.id);
+      return {
+        success: true,
+        data: models,
+      };
+    }
+
+    // Produção
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("financial_models")
       .select("*")
@@ -82,8 +109,24 @@ export async function getModelById(
 ): Promise<ActionResult<FinancialModelBasic>> {
   try {
     const user = await requireAuth();
-    const supabase = await createClient();
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("FAST");
+      const model = mockStore.getModelById(id, user.id);
+      if (!model) {
+        return {
+          error: "Modelo não encontrado",
+        };
+      }
+      return {
+        success: true,
+        data: model,
+      };
+    }
+
+    // Produção
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("financial_models")
       .select("*")
@@ -127,7 +170,6 @@ export async function createModel(formData: {
 }): Promise<ActionResult<FinancialModelBasic>> {
   try {
     const user = await requireAuth();
-    const supabase = await createClient();
 
     // Validação básica
     if (!formData.company_name || formData.company_name.trim().length === 0) {
@@ -136,6 +178,22 @@ export async function createModel(formData: {
       };
     }
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("NORMAL");
+      const newModel = mockStore.createModel(user.id, {
+        company_name: formData.company_name.trim(),
+        ticker_symbol: formData.ticker_symbol?.trim(),
+        description: formData.description?.trim(),
+        model_data: formData.model_data || {},
+      });
+
+      revalidatePath("/dashboard");
+      redirect(`/model/${newModel.id}/view/dre`);
+    }
+
+    // Produção
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("financial_models")
       .insert({
@@ -180,7 +238,6 @@ export async function updateModel(
 ): Promise<ActionResult> {
   try {
     const user = await requireAuth();
-    const supabase = await createClient();
 
     // Validação básica
     if (
@@ -191,6 +248,33 @@ export async function updateModel(
         error: "Nome da empresa não pode ser vazio",
       };
     }
+
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("NORMAL");
+      const updated = mockStore.updateModel(id, user.id, {
+        company_name: formData.company_name?.trim(),
+        ticker_symbol: formData.ticker_symbol?.trim(),
+        description: formData.description?.trim(),
+        model_data: formData.model_data,
+      });
+
+      if (!updated) {
+        return {
+          error: "Erro ao atualizar modelo",
+        };
+      }
+
+      revalidatePath(`/model/${id}`);
+      revalidatePath("/dashboard");
+
+      return {
+        success: true,
+      };
+    }
+
+    // Produção
+    const supabase = await createClient();
 
     const updateData: Partial<FinancialModelBasic> = {
       updated_at: new Date().toISOString(),
@@ -243,8 +327,24 @@ export async function updateModel(
 export async function deleteModel(id: string): Promise<ActionResult> {
   try {
     const user = await requireAuth();
-    const supabase = await createClient();
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("SLOW");
+      const deleted = mockStore.deleteModel(id, user.id);
+
+      if (!deleted) {
+        return {
+          error: "Erro ao excluir modelo",
+        };
+      }
+
+      revalidatePath("/dashboard");
+      redirect("/dashboard");
+    }
+
+    // Produção
+    const supabase = await createClient();
     const { error } = await supabase
       .from("financial_models")
       .delete()
@@ -275,6 +375,23 @@ export async function deleteModel(id: string): Promise<ActionResult> {
 export async function duplicateModel(id: string): Promise<ActionResult> {
   try {
     const user = await requireAuth();
+
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("SLOW");
+      const duplicate = mockStore.duplicateModel(id, user.id);
+
+      if (!duplicate) {
+        return {
+          error: "Modelo não encontrado",
+        };
+      }
+
+      revalidatePath("/dashboard");
+      redirect(`/model/${duplicate.id}/view/dre`);
+    }
+
+    // Produção
     const supabase = await createClient();
 
     // Buscar modelo original
