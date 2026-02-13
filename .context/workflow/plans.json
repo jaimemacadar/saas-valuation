@@ -4,8 +4,8 @@
       "slug": "fase-3-2-ajustes",
       "path": "plans/fase-3-2-ajustes.md",
       "title": "Página de Gerenciamento de Modelos (Meus Modelos)",
-      "summary": "Transformar o menu \"Meus Modelos\" em uma página de gerenciamento CRUD de modelos de valuation, e remover o menu \"Novo Modelo\" do sidebar.",
-      "linkedAt": "2026-01-30T02:32:06.210Z",
+      "summary": "Transformar o menu \"Meus Modelos\" em uma página de gerenciamento CRUD de modelos de valuation, remover o menu \"Novo Modelo\" do sidebar, e padronizar o cabeçalho de todas as páginas via componente reutilizável.",
+      "linkedAt": "2026-02-13T01:36:06.826Z",
       "status": "active"
     }
   ],

@@ -1,0 +1,22 @@
+{
+  "active": [
+    {
+      "slug": "fase-3-2-ajustes",
+      "path": "plans/fase-3-2-ajustes.md",
+      "title": "Página de Gerenciamento de Modelos (Meus Modelos)",
+      "summary": "Transformar o menu \"Meus Modelos\" em uma página de gerenciamento CRUD de modelos de valuation, e remover o menu \"Novo Modelo\" do sidebar.",
+      "linkedAt": "2026-01-30T02:32:06.210Z",
+      "status": "active"
+    },
+    {
+      "slug": "mock-data-system",
+      "path": "plans/mock-data-system.md",
+      "title": "Sistema de Mock de Dados para Desenvolvimento",
+      "summary": "Criar um sistema de mock de dados que permita testar a aplicação em modo de desenvolvimento sem acessar o Supabase de produção, com alternância fácil entre modos dev/prod",
+      "linkedAt": "2026-02-12T23:27:30.477Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "fase-3-2-ajustes"
+}

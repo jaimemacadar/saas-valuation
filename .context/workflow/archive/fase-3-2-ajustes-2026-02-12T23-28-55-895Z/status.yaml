@@ -1,0 +1,36 @@
+project:
+  name: "fase-3-2-ajustes"
+  scale: SMALL
+  started: "2026-01-30T02:23:51.181Z"
+  current_phase: E
+
+phases:
+  P:
+    status: filled
+    started_at: "2026-01-30T02:23:51.181Z"
+    completed_at: "2026-01-30T02:32:08.441Z"
+  R:
+    status: skipped
+    reason: "Not required for scale SMALL"
+  E:
+    status: in_progress
+    started_at: "2026-01-30T02:32:08.443Z"
+  V:
+    status: pending
+  C:
+    status: skipped
+    reason: "Not required for scale SMALL"
+
+execution:
+  history:
+    - timestamp: "2026-02-12T23:27:30.480Z"
+      phase: E
+      action: plan_linked
+      plan: "mock-data-system"
+  last_activity: "2026-02-12T23:27:30.480Z"
+  resume_context: "Plano vinculado - aguardando revisão"
+
+approval:
+  plan_created: true
+  plan_approved: false
+

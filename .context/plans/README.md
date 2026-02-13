@@ -2,10 +2,13 @@
 
 This directory contains plans for coordinating work across documentation and playbooks.
 
-## Plan Queue
+## Planos Concluídos
+1. ✅ [Fase 3 2 Ajustes](./fase-3-2-ajustes.md) - Sistema de Mock Data implementado (2026-02-13)
+
+## Planos Ativos
 1. [Fase 3](./fase-3.md)
 2. [Fase 3 1 Ajustes](./fase-3-1-ajustes.md)
-3. [Fase 3 2 Ajustes](./fase-3-2-ajustes.md)
+3. [Mock Data System](./mock-data-system.md)
 4. [PRD](./PRD.md)
 
 ## How To Create Or Update Plans
