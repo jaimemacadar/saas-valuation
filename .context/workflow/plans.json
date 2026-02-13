@@ -1,14 +1,14 @@
 {
   "active": [
     {
-      "slug": "fase-3-2-ajustes",
-      "path": "plans/fase-3-2-ajustes.md",
-      "title": "Página de Gerenciamento de Modelos (Meus Modelos)",
-      "summary": "Transformar o menu \"Meus Modelos\" em uma página de gerenciamento CRUD de modelos de valuation, remover o menu \"Novo Modelo\" do sidebar, e padronizar o cabeçalho de todas as páginas via componente reutilizável.",
-      "linkedAt": "2026-02-13T01:43:44.777Z",
+      "slug": "entrada-de-dados",
+      "path": "plans/entrada-de-dados.md",
+      "title": "Plano: Reorganização do Menu Entrada de Dados",
+      "summary": "Reorganizar o menu \"Entrada de Dados\" no sidebar, removendo submenus aninhados e criando páginas com tabs horizontais para DRE e Balanço Patrimonial",
+      "linkedAt": "2026-02-13T02:44:14.721Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "fase-3-2-ajustes"
+  "primary": "entrada-de-dados"
 }

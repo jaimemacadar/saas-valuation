@@ -10,8 +10,9 @@ import { EBITDAChart } from '@/components/charts/EBITDAChart';
 import { DRECalculated } from '@/core/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export default async function DREPage({ params }: { params: { id: string } }) {
-  const result = await getModelById(params.id);
+export default async function DREPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const result = await getModelById(id);
 
   if (!result.success || !result.data) {
     notFound();
@@ -26,7 +27,7 @@ export default async function DREPage({ params }: { params: { id: string } }) {
       <PageHeader
         breadcrumbs={[
           { label: "Meus Modelos", href: "/dashboard/models" },
-          { label: result.data.company_name, href: `/model/${params.id}/view/dre` },
+          { label: result.data.company_name, href: `/model/${id}/view/dre` },
           { label: "DRE Projetado" },
         ]}
       />

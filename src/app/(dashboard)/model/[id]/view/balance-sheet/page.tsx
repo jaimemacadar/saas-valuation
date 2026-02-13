@@ -9,9 +9,10 @@ import { BalanceSheetCalculated } from '@/core/types';
 export default async function BalanceSheetPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const result = await getModelById(params.id);
+  const { id } = await params;
+  const result = await getModelById(id);
 
   if (!result.success || !result.data) {
     notFound();
@@ -28,7 +29,7 @@ export default async function BalanceSheetPage({
       <PageHeader
         breadcrumbs={[
           { label: "Meus Modelos", href: "/dashboard/models" },
-          { label: result.data.company_name, href: `/model/${params.id}/view/balance-sheet` },
+          { label: result.data.company_name, href: `/model/${id}/view/balance-sheet` },
           { label: "Balanço Patrimonial" },
         ]}
       />

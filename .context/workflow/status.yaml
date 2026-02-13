@@ -1,49 +1,49 @@
 project:
-  name: "fase-3-2-ajustes"
-  scale: MEDIUM
-  started: "2026-02-13T01:43:39.398Z"
-  current_phase: V
+  name: "Entrada de Dados"
+  scale: QUICK
+  started: "2026-02-13T02:27:17.460Z"
+  current_phase: E
 
 phases:
   P:
-    status: filled
-    started_at: "2026-02-13T01:43:39.398Z"
-    completed_at: "2026-02-13T01:43:49.057Z"
+    status: skipped
+    reason: "Not required for scale QUICK"
   R:
-    status: filled
-    started_at: "2026-02-13T01:43:49.061Z"
-    completed_at: "2026-02-13T01:45:15.909Z"
+    status: skipped
+    reason: "Not required for scale QUICK"
   E:
-    status: filled
-    started_at: "2026-02-13T01:45:15.913Z"
-    completed_at: "2026-02-13T01:54:11.304Z"
+    status: in_progress
+    started_at: "2026-02-13T02:27:17.460Z"
   V:
-    status: completed
-    started_at: "2026-02-13T01:54:11.310Z"
-    completed_at: "2026-02-13T01:54:17.183Z"
-    outputs:
-      - path: "Implementação validada e funcionando"
-        status: filled
-      - path: "Build bem-sucedido"
-        status: filled
-      - path: "Todas as funcionalidades testadas manualmente"
-        status: filled
+    status: pending
   C:
     status: skipped
-    reason: "Not required for scale MEDIUM"
+    reason: "Not required for scale QUICK"
 
 execution:
   history:
-    - timestamp: "2026-02-13T01:54:17.183Z"
-      phase: V
-      action: completed
-  last_activity: "2026-02-13T01:54:17.183Z"
-  resume_context: "Fase V (Validação) concluída"
+    - timestamp: "2026-02-13T02:27:17.460Z"
+      phase: E
+      action: started
+    - timestamp: "2026-02-13T02:44:14.727Z"
+      phase: P
+      action: phase_skipped
+    - timestamp: "2026-02-13T02:44:14.727Z"
+      phase: R
+      action: phase_skipped
+    - timestamp: "2026-02-13T02:44:14.727Z"
+      phase: C
+      action: phase_skipped
+    - timestamp: "2026-02-13T02:44:14.727Z"
+      phase: E
+      action: plan_linked
+      plan: "entrada-de-dados"
+  last_activity: "2026-02-13T02:44:14.727Z"
+  resume_context: "Plano vinculado - aguardando revisão"
 
 approval:
   plan_created: true
   plan_approved: true
-  approved_by: "solo-dev"
-  approved_at: "2026-02-13T01:45:13.063Z"
-  approval_notes: "Plano aprovado pelo usuário para implementação da página de gerenciamento de modelos"
+  approved_by: "system-migration"
+  approved_at: "2026-02-13T02:44:14.727Z"
 

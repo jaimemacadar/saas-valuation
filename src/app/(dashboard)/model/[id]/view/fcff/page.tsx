@@ -8,8 +8,9 @@ import { FCFFChart } from '@/components/charts/FCFFChart';
 import { FCFFCalculated } from '@/core/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-export default async function FCFFPage({ params }: { params: { id: string } }) {
-  const result = await getModelById(params.id);
+export default async function FCFFPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const result = await getModelById(id);
 
   if (!result.success || !result.data) {
     notFound();
@@ -24,7 +25,7 @@ export default async function FCFFPage({ params }: { params: { id: string } }) {
       <PageHeader
         breadcrumbs={[
           { label: "Meus Modelos", href: "/dashboard/models" },
-          { label: result.data.company_name, href: `/model/${params.id}/view/fcff` },
+          { label: result.data.company_name, href: `/model/${id}/view/fcff` },
           { label: "Fluxo de Caixa Livre" },
         ]}
       />
