@@ -7,33 +7,43 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+  // Mock mode: simula usuário autenticado em rotas protegidas
+  const isMockMode = process.env.NEXT_PUBLIC_USE_MOCK_DATA === "true";
+
+  let user = null;
+
+  if (isMockMode) {
+    // Em mock mode, considera usuário sempre autenticado
+    user = { id: "demo-user-001", email: "demo@saasvaluation.com" };
+  } else {
+    // Produção: verifica autenticação real
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              request.cookies.set(name, value),
+            );
+            supabaseResponse = NextResponse.next({
+              request,
+            });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options),
+            );
+          },
         },
       },
-    },
-  );
+    );
 
-  // Refresh session if expired - required for Server Components
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    // Refresh session if expired - required for Server Components
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  }
 
   // Protected routes
   const isAuthRoute = request.nextUrl.pathname.startsWith("/auth");

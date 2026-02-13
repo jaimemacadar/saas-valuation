@@ -4,6 +4,16 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import {
+  isMockMode,
+  mockSignIn,
+  mockSignUp,
+  mockSignOut,
+  mockResetPassword,
+  mockUpdatePassword,
+  mockSignInWithOAuth,
+  mockDelay,
+} from "@/lib/mock";
 
 // Schemas de validação
 const signInSchema = z.object({
@@ -66,6 +76,20 @@ export async function signIn(
 
     const { email, password } = validatedFields.data;
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("NORMAL");
+      const result = await mockSignIn(email, password);
+
+      if (result.error) {
+        return { error: result.error };
+      }
+
+      revalidatePath("/", "layout");
+      redirect("/dashboard");
+    }
+
+    // Produção
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -114,6 +138,20 @@ export async function signUp(
 
     const { email, password, name } = validatedFields.data;
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("NORMAL");
+      const result = await mockSignUp(email, password, name);
+
+      if (result.error) {
+        return { error: result.error };
+      }
+
+      revalidatePath("/", "layout");
+      redirect("/dashboard");
+    }
+
+    // Produção
     const supabase = await createClient();
 
     // Criar usuário
@@ -163,6 +201,16 @@ export async function signUp(
  */
 export async function signOut(): Promise<ActionResult> {
   try {
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("FAST");
+      await mockSignOut();
+
+      revalidatePath("/", "layout");
+      redirect("/login");
+    }
+
+    // Produção
     const supabase = await createClient();
     await supabase.auth.signOut();
 
@@ -206,6 +254,18 @@ export async function resetPassword(
 
     const { email } = validatedFields.data;
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("NORMAL");
+      const result = await mockResetPassword(email);
+
+      return {
+        success: result.success,
+        message: "Email de recuperação enviado! (modo mock - simulado)",
+      };
+    }
+
+    // Produção
     const supabase = await createClient();
 
     console.log("🔄 Iniciando reset de senha para:", email);
@@ -270,6 +330,20 @@ export async function updatePassword(
 
     const { password } = validatedFields.data;
 
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("NORMAL");
+      const result = await mockUpdatePassword(password);
+
+      if (!result.success) {
+        return { error: result.error };
+      }
+
+      revalidatePath("/", "layout");
+      redirect("/dashboard");
+    }
+
+    // Produção
     const supabase = await createClient();
     const { error } = await supabase.auth.updateUser({
       password,
@@ -300,6 +374,21 @@ export async function signInWithOAuth(
   provider: "google" | "github",
 ): Promise<ActionResult> {
   try {
+    // Mock mode
+    if (isMockMode()) {
+      await mockDelay("SLOW");
+      const result = await mockSignInWithOAuth(provider);
+
+      if (result.error) {
+        return { error: result.error };
+      }
+
+      // Em mock mode, redireciona direto para dashboard
+      revalidatePath("/", "layout");
+      redirect("/dashboard");
+    }
+
+    // Produção
     const supabase = await createClient();
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
