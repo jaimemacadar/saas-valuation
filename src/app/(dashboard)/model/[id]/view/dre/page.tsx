@@ -25,7 +25,7 @@ export default async function DREPage({ params }: { params: { id: string } }) {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/dashboard" },
+          { label: "Meus Modelos", href: "/dashboard/models" },
           { label: result.data.company_name, href: `/model/${params.id}/view/dre` },
           { label: "DRE Projetado" },
         ]}

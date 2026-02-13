@@ -27,7 +27,7 @@ export default async function BalanceSheetPage({
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/dashboard" },
+          { label: "Meus Modelos", href: "/dashboard/models" },
           { label: result.data.company_name, href: `/model/${params.id}/view/balance-sheet` },
           { label: "Balanço Patrimonial" },
         ]}

@@ -47,11 +47,7 @@ const data = {
       items: [
         {
           title: "Meus Modelos",
-          url: "/dashboard",
-        },
-        {
-          title: "Novo Modelo",
-          url: "/model/new",
+          url: "/dashboard/models",
         },
       ],
     },

@@ -23,7 +23,7 @@ export default async function FCFFPage({ params }: { params: { id: string } }) {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/dashboard" },
+          { label: "Meus Modelos", href: "/dashboard/models" },
           { label: result.data.company_name, href: `/model/${params.id}/view/fcff` },
           { label: "Fluxo de Caixa Livre" },
         ]}

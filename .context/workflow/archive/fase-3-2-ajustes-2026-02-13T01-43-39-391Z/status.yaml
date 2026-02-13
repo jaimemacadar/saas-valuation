@@ -1,0 +1,44 @@
+project:
+  name: "fase-3-2-ajustes"
+  scale: MEDIUM
+  started: "2026-02-12T23:28:55.901Z"
+  current_phase: V
+
+phases:
+  P:
+    status: filled
+    started_at: "2026-02-12T23:28:55.901Z"
+    completed_at: "2026-02-13T01:31:09.092Z"
+  R:
+    status: filled
+    started_at: "2026-02-13T01:31:09.095Z"
+    completed_at: "2026-02-13T01:31:12.938Z"
+  E:
+    status: filled
+    started_at: "2026-02-13T01:31:12.939Z"
+    completed_at: "2026-02-13T01:31:17.169Z"
+  V:
+    status: completed
+    started_at: "2026-02-13T01:31:17.172Z"
+    completed_at: "2026-02-13T01:40:52.515Z"
+    outputs:
+      - path: "Sistema de mock data implementado e integrado ao dashboard"
+        status: filled
+  C:
+    status: skipped
+    reason: "Not required for scale MEDIUM"
+
+execution:
+  history:
+    - timestamp: "2026-02-13T01:40:52.515Z"
+      phase: V
+      action: completed
+  last_activity: "2026-02-13T01:40:52.515Z"
+  resume_context: "Fase V (Validação) concluída"
+
+approval:
+  plan_created: true
+  plan_approved: true
+  approved_by: "system-migration"
+  approved_at: "2026-02-13T01:31:17.169Z"
+

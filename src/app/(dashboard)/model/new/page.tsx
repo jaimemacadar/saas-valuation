@@ -56,7 +56,7 @@ export default function NewModelPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/dashboard" },
+          { label: "Meus Modelos", href: "/dashboard/models" },
           { label: "Novo Modelo" },
         ]}
       />

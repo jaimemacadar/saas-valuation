@@ -252,12 +252,22 @@ export async function updateModel(
     // Mock mode
     if (isMockMode()) {
       await mockDelay("NORMAL");
-      const updated = mockStore.updateModel(id, user.id, {
+      const mockUpdateData: {
+        company_name?: string;
+        ticker_symbol?: string;
+        description?: string;
+        model_data?: unknown;
+      } = {
         company_name: formData.company_name?.trim(),
         ticker_symbol: formData.ticker_symbol?.trim(),
         description: formData.description?.trim(),
-        model_data: formData.model_data,
-      });
+      };
+
+      if (formData.model_data !== undefined) {
+        mockUpdateData.model_data = formData.model_data;
+      }
+
+      const updated = mockStore.updateModel(id, user.id, mockUpdateData as any);
 
       if (!updated) {
         return {
