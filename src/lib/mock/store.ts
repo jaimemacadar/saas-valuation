@@ -12,7 +12,7 @@ import type {
 } from "./types";
 import { MOCK_FINANCIAL_MODELS } from "./data/models";
 import { mockLog } from "./config";
-import { processModelData } from "./utils";
+import { processModelDataSync } from "./utils";
 
 /**
  * Implementação do Mock Data Store
@@ -38,10 +38,12 @@ class MockDataStore implements IMockDataStore {
 
     mockLog("Inicializando store com dados de exemplo");
     MOCK_FINANCIAL_MODELS.forEach((model) => {
-      this.models.set(model.id, { ...model });
+      // Pré-processa cada modelo ao carregar
+      const processed = processModelDataSync(model);
+      this.models.set(model.id, processed);
     });
     this.isSeeded = true;
-    mockLog(`${this.models.size} modelos carregados`);
+    mockLog(`${this.models.size} modelos carregados e processados`);
   }
 
   /**
@@ -60,7 +62,7 @@ class MockDataStore implements IMockDataStore {
     mockLog(`Buscando modelos para usuário ${userId}`);
     const userModels = Array.from(this.models.values())
       .filter((model) => model.user_id === userId)
-      .map((model) => processModelData(model)) // Processa cada modelo
+      .map((model) => processModelDataSync(model)) // Processa cada modelo
       .sort(
         (a, b) =>
           new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
@@ -88,7 +90,7 @@ class MockDataStore implements IMockDataStore {
     }
 
     // Processa model_data antes de retornar
-    return processModelData({ ...model });
+    return processModelDataSync({ ...model });
   }
 
   /**
