@@ -15,7 +15,8 @@
       "Bash(git commit:*)",
       "Bash(npm test:*)",
       "mcp__ai-context__sync",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "mcp__ai-context__workflow-init"
     ]
   }
 }

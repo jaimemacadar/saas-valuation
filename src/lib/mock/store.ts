@@ -12,6 +12,7 @@ import type {
 } from "./types";
 import { MOCK_FINANCIAL_MODELS } from "./data/models";
 import { mockLog } from "./config";
+import { processModelData } from "./utils";
 
 /**
  * Implementação do Mock Data Store
@@ -59,6 +60,7 @@ class MockDataStore implements IMockDataStore {
     mockLog(`Buscando modelos para usuário ${userId}`);
     const userModels = Array.from(this.models.values())
       .filter((model) => model.user_id === userId)
+      .map((model) => processModelData(model)) // Processa cada modelo
       .sort(
         (a, b) =>
           new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
@@ -85,7 +87,8 @@ class MockDataStore implements IMockDataStore {
       return null;
     }
 
-    return { ...model };
+    // Processa model_data antes de retornar
+    return processModelData({ ...model });
   }
 
   /**
