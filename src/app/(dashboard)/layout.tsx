@@ -2,17 +2,25 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { isMockMode, getMockUser } from "@/lib/mock";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  let user = null;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Mock mode: usa usuário mock
+  if (isMockMode()) {
+    const mockUser = await getMockUser();
+    user = mockUser ? { id: mockUser.id, email: mockUser.email } : null;
+  } else {
+    // Produção: verifica auth real
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  }
 
   if (!user) {
     redirect("/login");
