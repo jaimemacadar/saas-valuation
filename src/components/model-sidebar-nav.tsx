@@ -39,7 +39,7 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       url: '/dashboard',
     },
     {
-      title: 'Premissas do Valuation',
+      title: 'Premissas Valuation',
       icon: Database,
       url: `/model/${modelId}/input/base`,
     },
@@ -64,7 +64,7 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       url: `/model/${modelId}/view/valuation`,
     },
     {
-      title: 'Análise de Sensibilidade',
+      title: 'Sensibilidade',
       icon: Activity,
       url: `/model/${modelId}/sensitivity`,
     },

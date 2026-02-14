@@ -29,7 +29,7 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="peer-data-[state=collapsed]:pl-0 md:pl-47 md:peer-data-[state=collapsed]:pl-20 transition-[padding] duration-200 ease-linear">
+      <SidebarInset className="peer-data-[state=collapsed]:pl-0 md:pl-47 md:peer-data-[state=collapsed]:pl-12 transition-[padding] duration-200 ease-linear">
         {children}
       </SidebarInset>
     </SidebarProvider>
