@@ -28,10 +28,10 @@ export function CostCompositionChart({ data }: CostCompositionChartProps) {
 
   // Formata dados para Recharts
   const chartData = data.map((year) => ({
-    ano: year.ano === 0 ? 'Base' : `Ano ${year.ano}`,
+    ano: year.year === 0 ? 'Base' : `Ano ${year.year}`,
     cmv: year.cmv,
     despesasOperacionais: year.despesasOperacionais,
-    impostos: year.impostos,
+    impostos: year.irCSLL,
   }));
 
   // Custom tooltip

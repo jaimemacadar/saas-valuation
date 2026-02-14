@@ -27,15 +27,14 @@ export function EBITDAChart({ data }: EBITDAChartProps) {
     );
   }
 
-  // Calcula EBITDA (aproximação: EBIT sem depreciação, mas aqui usamos EBIT)
-  // Em uma implementação real, você adicionaria depreciação de volta ao EBIT
+  // Calcula EBITDA e margem
   const chartData = data.map((year) => {
-    const receitaLiquida = year.receita - year.impostos;
-    const ebitda = year.ebit; // Simplificado - idealmente EBIT + Depreciação
+    const receitaLiquida = year.receitaLiquida;
+    const ebitda = year.ebitda;
     const margemEbitda = receitaLiquida > 0 ? (ebitda / receitaLiquida) * 100 : 0;
 
     return {
-      ano: year.ano === 0 ? 'Base' : `Ano ${year.ano}`,
+      ano: year.year === 0 ? 'Base' : `Ano ${year.year}`,
       ebitda,
       margemEbitda,
     };

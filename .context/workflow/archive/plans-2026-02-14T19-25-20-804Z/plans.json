@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "entrada-de-dados",
+      "path": "plans/entrada-de-dados.md",
+      "title": "Plano: Reorganização do Menu Entrada de Dados",
+      "summary": "Reorganizar o menu \"Entrada de Dados\" no sidebar, removendo submenus aninhados e criando páginas com tabs horizontais para DRE e Balanço Patrimonial",
+      "linkedAt": "2026-02-13T02:44:14.721Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "entrada-de-dados"
+}

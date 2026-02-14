@@ -1,7 +1,7 @@
 /**
  * Cálculos de Balanço Patrimonial
  *
- * Implementa projeções de Balanço Patrimonial integradas com DRE.
+ * Implementa projeções de Balanço Patrimonial integradas com DRE conforme PRD.
  * Usa decimal.js para precisão financeira.
  */
 
@@ -15,183 +15,412 @@ import type {
 } from "../types/index.js";
 
 /**
- * Calcula Balanço Patrimonial de um ano baseado no ano anterior, DRE e premissas
+ * Calcula Balanço Patrimonial do ano base a partir dos inputs
  *
- * @param bpAnterior - BP do ano anterior
- * @param dreAno - DRE do ano atual
- * @param premissas - Premissas de projeção
- * @param anoIndex - Índice do ano na projeção
- * @returns Resultado do cálculo com BP do ano atual
+ * @param bpBase - Dados de entrada do ano base
+ * @returns BP calculado do ano base (year 0)
  */
-export function calculateBalanceSheet(
-  bpAnterior: BalanceSheetCalculated,
-  dreAno: DRECalculated,
-  premissas: BalanceSheetProjectionInputs,
-  anoIndex: number,
+export function calculateBPBase(
+  bpBase: BalanceSheetBaseInputs,
 ): CalculationResult<BalanceSheetCalculated> {
   try {
-    // Validar índice
-    if (anoIndex < 0 || anoIndex >= premissas.taxaCrescimentoAtivos.length) {
-      return {
-        success: false,
-        errors: [`Índice de ano inválido: ${anoIndex}`],
-      };
-    }
-
-    // Taxas de crescimento
-    const taxaCrescAtivos = new Decimal(
-      premissas.taxaCrescimentoAtivos[anoIndex],
+    // Ativo Circulante
+    const acCaixa = new Decimal(bpBase.ativoCirculante.caixaEquivalentes);
+    const acAplicacoes = new Decimal(
+      bpBase.ativoCirculante.aplicacoesFinanceiras,
     );
-    const taxaCrescPassivos = new Decimal(
-      premissas.taxaCrescimentoPassivos[anoIndex],
+    const acContasReceber = new Decimal(bpBase.ativoCirculante.contasReceber);
+    const acEstoques = new Decimal(bpBase.ativoCirculante.estoques);
+    const acAtivosBio = new Decimal(bpBase.ativoCirculante.ativosBiologicos);
+    const acOutros = new Decimal(bpBase.ativoCirculante.outrosCreditos);
+    const totalAC = acCaixa
+      .plus(acAplicacoes)
+      .plus(acContasReceber)
+      .plus(acEstoques)
+      .plus(acAtivosBio)
+      .plus(acOutros);
+
+    // Ativo Realizável LP
+    const arlpInvestimentos = new Decimal(
+      bpBase.ativoRealizavelLP.investimentos,
     );
-    const taxaDepreciacao = new Decimal(premissas.taxaDepreciacao);
-
-    // Ativos
-    const caixa = new Decimal(bpAnterior.caixa).times(
-      new Decimal(1).plus(taxaCrescAtivos),
+    const arlpImobBruto = new Decimal(
+      bpBase.ativoRealizavelLP.ativoImobilizadoBruto,
     );
-    const contasReceber = new Decimal(bpAnterior.contasReceber).times(
-      new Decimal(1).plus(taxaCrescAtivos),
+    const arlpDeprecAcum = new Decimal(
+      bpBase.ativoRealizavelLP.depreciacaoAcumulada,
     );
-    const estoques = new Decimal(bpAnterior.estoques).times(
-      new Decimal(1).plus(taxaCrescAtivos),
+    const arlpImobilizado = arlpImobBruto.minus(arlpDeprecAcum);
+    const arlpIntangivel = new Decimal(bpBase.ativoRealizavelLP.intangivel);
+    const totalARLP = arlpInvestimentos
+      .plus(arlpImobilizado)
+      .plus(arlpIntangivel);
+
+    // Passivo Circulante
+    const pcFornecedores = new Decimal(bpBase.passivoCirculante.fornecedores);
+    const pcImpostos = new Decimal(bpBase.passivoCirculante.impostosAPagar);
+    const pcObrigacoes = new Decimal(
+      bpBase.passivoCirculante.obrigacoesSociaisETrabalhistas,
     );
-    const ativoCirculante = caixa.plus(contasReceber).plus(estoques);
-
-    // Calcular depreciação: Imobilizado Anterior * Taxa Depreciação
-    const depreciacao = new Decimal(bpAnterior.imobilizado).times(
-      taxaDepreciacao,
+    const pcEmprestimosCP = new Decimal(
+      bpBase.passivoCirculante.emprestimosFinanciamentosCP,
     );
+    const pcOutras = new Decimal(bpBase.passivoCirculante.outrasObrigacoes);
+    const totalPC = pcFornecedores
+      .plus(pcImpostos)
+      .plus(pcObrigacoes)
+      .plus(pcEmprestimosCP)
+      .plus(pcOutras);
 
-    // CAPEX: receita do DRE * taxaCapex
-    const capexFinal = new Decimal(dreAno.receita).times(premissas.taxaCapex);
-
-    // Imobilizado: Imobilizado Anterior + CAPEX - Depreciação
-    const imobilizado = new Decimal(bpAnterior.imobilizado)
-      .plus(capexFinal)
-      .minus(depreciacao);
-
-    const ativoTotal = ativoCirculante.plus(imobilizado);
-
-    // Passivos
-    const contasPagar = new Decimal(bpAnterior.contasPagar).times(
-      new Decimal(1).plus(taxaCrescPassivos),
+    // Passivo Realizável LP
+    const prlpEmprestimosLP = new Decimal(
+      bpBase.passivoRealizavelLP.emprestimosFinanciamentosLP,
     );
-    const passivoCirculante = contasPagar;
+    const totalPRLP = prlpEmprestimosLP;
 
-    // Passivo Não Circulante: dívidas de longo prazo (pode ser expandido futuramente)
-    const passivoNaoCirculante = new Decimal(
-      bpAnterior.dividasLongoPrazo,
-    ).times(new Decimal(1).plus(taxaCrescPassivos));
-    const dividasLongoPrazo = passivoNaoCirculante; // Para manter compatibilidade
-    // Patrimônio Líquido: PL Anterior + Lucro Líquido do Ano
-    const patrimonioLiquido = new Decimal(bpAnterior.patrimonioLiquido).plus(
-      new Decimal(dreAno.lucroLiquido),
+    // Patrimônio Líquido
+    const plCapitalSocial = new Decimal(
+      bpBase.patrimonioLiquido.capitalSocial,
     );
-    // Passivo Total: circulante + não circulante + PL (usar valor atualizado)
-    const passivoTotal = passivoCirculante
-      .plus(passivoNaoCirculante)
-      .plus(patrimonioLiquido);
+    const plLucrosAcum = new Decimal(
+      bpBase.patrimonioLiquido.lucrosAcumulados,
+    );
+    const totalPL = plCapitalSocial.plus(plLucrosAcum);
 
-    // capitalDeGiro: ativoCirculante - passivoCirculante
-    const capitalDeGiro = ativoCirculante.minus(passivoCirculante);
-    const bpCalculado: BalanceSheetCalculated = {
-      ano: dreAno.ano,
-      caixa: caixa.toNumber(),
-      contasReceber: contasReceber.toNumber(),
-      estoques: estoques.toNumber(),
-      ativoCirculante: ativoCirculante.toNumber(),
-      imobilizado: imobilizado.toNumber(),
-      ativoTotal: ativoTotal.toNumber(),
-      contasPagar: contasPagar.toNumber(),
-      passivoCirculante: passivoCirculante.toNumber(),
-      passivoNaoCirculante: passivoNaoCirculante.toNumber(),
-      dividasLongoPrazo: dividasLongoPrazo.toNumber(),
-      passivoTotal: passivoTotal.toNumber(),
-      patrimonioLiquido: patrimonioLiquido.toNumber(),
-      depreciacao: depreciacao.toNumber(),
-      capex: capexFinal.toNumber(),
-      capitalDeGiro: capitalDeGiro.toNumber(),
-    };
+    // Totais gerais
+    const ativoTotal = totalAC.plus(totalARLP);
+    const passivoTotal = totalPC.plus(totalPRLP).plus(totalPL);
+
+    // Capital de Giro
+    const capitalGiro = totalAC.minus(totalPC);
 
     return {
       success: true,
-      data: bpCalculado,
+      data: {
+        year: 0,
+        ativoCirculante: {
+          caixaEquivalentes: acCaixa.toNumber(),
+          aplicacoesFinanceiras: acAplicacoes.toNumber(),
+          contasReceber: acContasReceber.toNumber(),
+          estoques: acEstoques.toNumber(),
+          ativosBiologicos: acAtivosBio.toNumber(),
+          outrosCreditos: acOutros.toNumber(),
+          total: totalAC.toNumber(),
+        },
+        ativoRealizavelLP: {
+          investimentos: arlpInvestimentos.toNumber(),
+          imobilizadoBruto: arlpImobBruto.toNumber(),
+          depreciacaoAcumulada: arlpDeprecAcum.toNumber(),
+          imobilizado: arlpImobilizado.toNumber(),
+          intangivel: arlpIntangivel.toNumber(),
+          total: totalARLP.toNumber(),
+        },
+        passivoCirculante: {
+          fornecedores: pcFornecedores.toNumber(),
+          impostosAPagar: pcImpostos.toNumber(),
+          obrigacoesSociaisETrabalhistas: pcObrigacoes.toNumber(),
+          emprestimosFinanciamentosCP: pcEmprestimosCP.toNumber(),
+          outrasObrigacoes: pcOutras.toNumber(),
+          total: totalPC.toNumber(),
+        },
+        passivoRealizavelLP: {
+          emprestimosFinanciamentosLP: prlpEmprestimosLP.toNumber(),
+          total: totalPRLP.toNumber(),
+        },
+        patrimonioLiquido: {
+          capitalSocial: plCapitalSocial.toNumber(),
+          lucrosAcumulados: plLucrosAcum.toNumber(),
+          total: totalPL.toNumber(),
+        },
+        depreciacaoAnual: 0,
+        capex: 0,
+        novosEmprestimosFinanciamentosCP: 0,
+        novosEmprestimosFinanciamentosLP: 0,
+        capitalGiro: capitalGiro.toNumber(),
+        ncg: 0,
+        ativoTotal: ativoTotal.toNumber(),
+        passivoTotal: passivoTotal.toNumber(),
+      },
     };
   } catch (error) {
     return {
       success: false,
       errors: [
-        `Erro ao calcular BP: ${error instanceof Error ? error.message : String(error)}`,
+        `Erro ao calcular BP base: ${error instanceof Error ? error.message : String(error)}`,
       ],
     };
   }
 }
 
 /**
- * Calcula projeção completa de Balanço Patrimonial integrado com DRE
+ * Calcula BP projetado de um ano baseado no ano anterior, DRE e premissas
  *
- * @param bpBase - BP do ano base
- * @param dreProjetado - Array de DREs projetados
- * @param premissas - Premissas de projeção
- * @returns Resultado do cálculo com array de BPs projetados
+ * @param bpAnterior - BP do ano anterior
+ * @param dreAno - DRE do ano atual
+ * @param premissas - Premissas de projeção do ano atual
+ * @returns BP calculado do ano projetado
  */
-export function calculateAllBalanceSheet(
-  bpBase: BalanceSheetBaseInputs,
-  dreProjetado: DRECalculated[],
+export function calculateBPProjetado(
+  bpAnterior: BalanceSheetCalculated,
+  dreAno: DRECalculated,
   premissas: BalanceSheetProjectionInputs,
-): CalculationResult<BalanceSheetCalculated[]> {
+): CalculationResult<BalanceSheetCalculated> {
   try {
-    // Validar entradas
-    if (dreProjetado.length === 0) {
+    // Validar year
+    if (premissas.year <= bpAnterior.year) {
       return {
         success: false,
-        errors: ["Array de DRE projetado está vazio"],
+        errors: [
+          `Ano de projeção ${premissas.year} deve ser maior que ano anterior ${bpAnterior.year}`,
+        ],
       };
     }
 
-    // Criar BP do ano base (ano 0)
-    const bpAnoBase: BalanceSheetCalculated = {
-      ano: 0,
-      caixa: bpBase.caixa,
-      contasReceber: bpBase.contasReceber,
-      estoques: bpBase.estoques,
-      ativoCirculante: bpBase.ativoCirculante,
-      imobilizado: bpBase.imobilizado,
-      ativoTotal: bpBase.ativoTotal,
-      contasPagar: bpBase.contasPagar,
-      passivoCirculante: bpBase.passivoCirculante,
-      passivoNaoCirculante: bpBase.dividasLongoPrazo, // Inicialmente igual a dívidas de longo prazo
-      dividasLongoPrazo: bpBase.dividasLongoPrazo,
-      passivoTotal:
-        bpBase.passivoCirculante +
-        bpBase.dividasLongoPrazo +
-        bpBase.patrimonioLiquido,
-      patrimonioLiquido: bpBase.patrimonioLiquido,
-      depreciacao: 0, // Primeiro ano não tem depreciação
-      capex: 0,
-      capitalDeGiro:
-        (bpBase.ativoCirculante ?? 0) - (bpBase.passivoCirculante ?? 0),
+    const receitaBruta = new Decimal(dreAno.receitaBruta);
+
+    // ========== ATIVO CIRCULANTE ==========
+    // Prazos médios em dias (prazo / 360 * receita bruta)
+    const acCaixa = receitaBruta
+      .times(premissas.prazoCaixaEquivalentes)
+      .div(360);
+    const acAplicacoes = receitaBruta
+      .times(premissas.prazoAplicacoesFinanceiras)
+      .div(360);
+    const acContasReceber = receitaBruta
+      .times(premissas.prazoContasReceber)
+      .div(360);
+    const acEstoques = receitaBruta.times(premissas.prazoEstoques).div(360);
+    const acAtivosBio = receitaBruta
+      .times(premissas.prazoAtivosBiologicos)
+      .div(360);
+
+    // Outros Créditos: manter do ano anterior (pode ser melhorado)
+    const acOutros = new Decimal(bpAnterior.ativoCirculante.outrosCreditos);
+
+    const totalAC = acCaixa
+      .plus(acAplicacoes)
+      .plus(acContasReceber)
+      .plus(acEstoques)
+      .plus(acAtivosBio)
+      .plus(acOutros);
+
+    // ========== ATIVO REALIZÁVEL LP ==========
+    // Investimentos: manter do ano anterior (simplificação)
+    const arlpInvestimentos = new Decimal(
+      bpAnterior.ativoRealizavelLP.investimentos,
+    );
+
+    // Imobilizado
+    const taxaDepreciacao = new Decimal(premissas.taxaDepreciacao).div(100);
+    const depreciacaoAnual = new Decimal(
+      bpAnterior.ativoRealizavelLP.imobilizadoBruto,
+    ).times(taxaDepreciacao);
+
+    // CAPEX: Receita Bruta * Índice Imobilizado/Vendas
+    const capex = receitaBruta.times(premissas.indiceImobilizadoVendas);
+
+    const arlpImobBruto = new Decimal(
+      bpAnterior.ativoRealizavelLP.imobilizadoBruto,
+    ).plus(capex);
+    const arlpDeprecAcum = new Decimal(
+      bpAnterior.ativoRealizavelLP.depreciacaoAcumulada,
+    ).plus(depreciacaoAnual);
+    const arlpImobilizado = arlpImobBruto.minus(arlpDeprecAcum);
+
+    // Intangível: manter do ano anterior
+    const arlpIntangivel = new Decimal(
+      bpAnterior.ativoRealizavelLP.intangivel,
+    );
+
+    const totalARLP = arlpInvestimentos
+      .plus(arlpImobilizado)
+      .plus(arlpIntangivel);
+
+    // ========== PASSIVO CIRCULANTE ==========
+    // Prazos médios em dias
+    const pcFornecedores = receitaBruta
+      .times(premissas.prazoFornecedores)
+      .div(360);
+    const pcImpostos = receitaBruta.times(premissas.prazoImpostosAPagar).div(360);
+    const pcObrigacoes = receitaBruta
+      .times(premissas.prazoObrigacoesSociais)
+      .div(360);
+
+    // Empréstimos CP: aplicar taxa de novos empréstimos
+    const taxaNovosEmp = new Decimal(
+      premissas.taxaNovosEmprestimosFinanciamentos,
+    ).div(100);
+    const novosEmprestimosCP = new Decimal(
+      bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
+    ).times(taxaNovosEmp);
+    const pcEmprestimosCP = new Decimal(
+      bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
+    ).plus(novosEmprestimosCP);
+
+    // Outras Obrigações: manter do ano anterior
+    const pcOutras = new Decimal(
+      bpAnterior.passivoCirculante.outrasObrigacoes,
+    );
+
+    const totalPC = pcFornecedores
+      .plus(pcImpostos)
+      .plus(pcObrigacoes)
+      .plus(pcEmprestimosCP)
+      .plus(pcOutras);
+
+    // ========== PASSIVO REALIZÁVEL LP ==========
+    const novosEmprestimosLP = new Decimal(
+      bpAnterior.passivoRealizavelLP.emprestimosFinanciamentosLP,
+    ).times(taxaNovosEmp);
+    const prlpEmprestimosLP = new Decimal(
+      bpAnterior.passivoRealizavelLP.emprestimosFinanciamentosLP,
+    ).plus(novosEmprestimosLP);
+    const totalPRLP = prlpEmprestimosLP;
+
+    // ========== PATRIMÔNIO LÍQUIDO ==========
+    // Capital Social: manter
+    const plCapitalSocial = new Decimal(
+      bpAnterior.patrimonioLiquido.capitalSocial,
+    );
+
+    // Lucros Acumulados: ano anterior + lucro líquido - dividendos
+    const plLucrosAcum = new Decimal(
+      bpAnterior.patrimonioLiquido.lucrosAcumulados,
+    )
+      .plus(dreAno.lucroLiquido)
+      .minus(dreAno.dividendos);
+
+    const totalPL = plCapitalSocial.plus(plLucrosAcum);
+
+    // ========== TOTAIS E CONTAS AUXILIARES ==========
+    const ativoTotal = totalAC.plus(totalARLP);
+    const passivoTotal = totalPC.plus(totalPRLP).plus(totalPL);
+    const capitalGiro = totalAC.minus(totalPC);
+    const ncg = capitalGiro.minus(bpAnterior.capitalGiro);
+
+    return {
+      success: true,
+      data: {
+        year: premissas.year,
+        ativoCirculante: {
+          caixaEquivalentes: acCaixa.toNumber(),
+          aplicacoesFinanceiras: acAplicacoes.toNumber(),
+          contasReceber: acContasReceber.toNumber(),
+          estoques: acEstoques.toNumber(),
+          ativosBiologicos: acAtivosBio.toNumber(),
+          outrosCreditos: acOutros.toNumber(),
+          total: totalAC.toNumber(),
+        },
+        ativoRealizavelLP: {
+          investimentos: arlpInvestimentos.toNumber(),
+          imobilizadoBruto: arlpImobBruto.toNumber(),
+          depreciacaoAcumulada: arlpDeprecAcum.toNumber(),
+          imobilizado: arlpImobilizado.toNumber(),
+          intangivel: arlpIntangivel.toNumber(),
+          total: totalARLP.toNumber(),
+        },
+        passivoCirculante: {
+          fornecedores: pcFornecedores.toNumber(),
+          impostosAPagar: pcImpostos.toNumber(),
+          obrigacoesSociaisETrabalhistas: pcObrigacoes.toNumber(),
+          emprestimosFinanciamentosCP: pcEmprestimosCP.toNumber(),
+          outrasObrigacoes: pcOutras.toNumber(),
+          total: totalPC.toNumber(),
+        },
+        passivoRealizavelLP: {
+          emprestimosFinanciamentosLP: prlpEmprestimosLP.toNumber(),
+          total: totalPRLP.toNumber(),
+        },
+        patrimonioLiquido: {
+          capitalSocial: plCapitalSocial.toNumber(),
+          lucrosAcumulados: plLucrosAcum.toNumber(),
+          total: totalPL.toNumber(),
+        },
+        depreciacaoAnual: depreciacaoAnual.toNumber(),
+        capex: capex.toNumber(),
+        novosEmprestimosFinanciamentosCP: novosEmprestimosCP.toNumber(),
+        novosEmprestimosFinanciamentosLP: novosEmprestimosLP.toNumber(),
+        capitalGiro: capitalGiro.toNumber(),
+        ncg: ncg.toNumber(),
+        ativoTotal: ativoTotal.toNumber(),
+        passivoTotal: passivoTotal.toNumber(),
+      },
     };
+  } catch (error) {
+    return {
+      success: false,
+      errors: [
+        `Erro ao calcular BP projetado: ${error instanceof Error ? error.message : String(error)}`,
+      ],
+    };
+  }
+}
 
-    const bpProjetado: BalanceSheetCalculated[] = [bpAnoBase];
+/**
+ * Calcula projeção completa de BP integrada com DRE
+ * NOTA: Requer DRE já calculado (ano base + projetado)
+ *
+ * @param bpBase - Dados de entrada do ano base
+ * @param dreCalculado - Array de DRE calculado (incluindo ano base)
+ * @param premissasProjecao - Array de premissas BP por ano (1, 2, 3...)
+ * @returns Array com BP do ano base + BPs projetados
+ */
+export function calculateAllBalanceSheet(
+  bpBase: BalanceSheetBaseInputs,
+  dreCalculado: DRECalculated[],
+  premissasProjecao: BalanceSheetProjectionInputs[],
+): CalculationResult<BalanceSheetCalculated[]> {
+  try {
+    // Validar entradas
+    if (dreCalculado.length === 0) {
+      return {
+        success: false,
+        errors: ["Array de DRE calculado não pode ser vazio"],
+      };
+    }
 
-    // Calcular BP para cada ano (começando do ano 1, pois ano 0 é base)
-    for (let i = 1; i < dreProjetado.length; i++) {
+    if (premissasProjecao.length === 0) {
+      return {
+        success: false,
+        errors: ["Array de premissas de projeção não pode ser vazio"],
+      };
+    }
+
+    // Calcular ano base (year 0)
+    const resultadoBase = calculateBPBase(bpBase);
+    if (!resultadoBase.success || !resultadoBase.data) {
+      return {
+        success: false,
+        errors: resultadoBase.errors || ["Erro ao calcular BP base"],
+      };
+    }
+
+    const bpProjetado: BalanceSheetCalculated[] = [resultadoBase.data];
+
+    // Calcular cada ano projetado (alinhado com DRE projetado)
+    for (let i = 0; i < premissasProjecao.length; i++) {
       const bpAnterior = bpProjetado[bpProjetado.length - 1];
-      const dreAno = dreProjetado[i];
-      const resultado = calculateBalanceSheet(
-        bpAnterior,
-        dreAno,
-        premissas,
-        i - 1,
-      );
+      const premissas = premissasProjecao[i];
+
+      // DRE do ano atual (year 1, 2, 3...)
+      const dreAno = dreCalculado.find((d) => d.year === premissas.year);
+      if (!dreAno) {
+        return {
+          success: false,
+          errors: [
+            `DRE não encontrado para o ano ${premissas.year}. Certifique-se de que DRE foi calculado primeiro.`,
+          ],
+        };
+      }
+
+      const resultado = calculateBPProjetado(bpAnterior, dreAno, premissas);
 
       if (!resultado.success || !resultado.data) {
         return {
           success: false,
-          errors: resultado.errors || ["Erro ao calcular BP do ano " + i],
+          errors: resultado.errors || [
+            `Erro ao calcular BP do ano ${premissas.year}`,
+          ],
         };
       }
 
@@ -206,7 +435,7 @@ export function calculateAllBalanceSheet(
     return {
       success: false,
       errors: [
-        `Erro ao calcular projeção de BP: ${error instanceof Error ? error.message : String(error)}`,
+        `Erro ao calcular projeção completa de BP: ${error instanceof Error ? error.message : String(error)}`,
       ],
     };
   }

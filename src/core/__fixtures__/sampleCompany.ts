@@ -2,7 +2,7 @@
  * Sample Company Fixtures
  *
  * Dados realistas de exemplo para testes do motor de cálculo.
- * Baseado em uma empresa SaaS de médio porte.
+ * Baseado em uma empresa SaaS de médio porte conforme PRD.
  */
 
 import type {
@@ -16,52 +16,176 @@ import type {
 
 /**
  * Empresa SaaS de médio porte
- * Receita anual: R$ 10M
+ * Receita Bruta: R$ 10M
  * Crescimento esperado: 15-20% ao ano
  * Margem EBITDA: ~30%
  */
 
 export const sampleDREBase: DREBaseInputs = {
-  receita: 10_000_000, // R$ 10M
-  custoMercadoriaVendida: 3_000_000, // 30% da receita (servidores, infraestrutura)
-  despesasOperacionais: 5_000_000, // 50% da receita (pessoal, marketing, G&A)
-  despesasFinanceiras: 200_000, // 2% da receita
-  taxaImposto: 0.34, // 34% (IRPJ + CSLL)
+  receitaBruta: 10_000_000, // R$ 10M
+  impostosEDevolucoes: 800_000, // 8% da receita bruta
+  cmv: 2_760_000, // 30% da receita líquida (R$ 9.2M)
+  despesasOperacionais: 4_600_000, // 50% da receita líquida
+  irCSLL: 591_600, // 34% do LAIR
+  dividendos: 200_000, // ~20% do lucro líquido
 };
 
-export const sampleDREProjection: DREProjectionInputs = {
-  taxaCrescimentoReceita: [0.2, 0.18, 0.15, 0.12, 0.1], // Desaceleração gradual
-  taxaCMV: [0.28, 0.26, 0.25, 0.24, 0.23], // Melhoria de eficiência
-  taxaDespesasOperacionais: [0.48, 0.46, 0.45, 0.44, 0.43], // Escala operacional
-  taxaDespesasFinanceiras: [0.018, 0.016, 0.015, 0.015, 0.015], // Redução de dívida
-};
+export const sampleDREProjection: DREProjectionInputs[] = [
+  {
+    year: 1,
+    receitaBrutaGrowth: 20, // 20% crescimento
+    impostosEDevolucoesRate: 8, // 8% sobre receita bruta
+    cmvRate: 28, // 28% sobre receita líquida
+    despesasOperacionaisRate: 48, // 48% sobre receita líquida
+    irCSLLRate: 34, // 34% sobre LAIR
+    dividendosRate: 20, // 20% sobre lucro líquido
+  },
+  {
+    year: 2,
+    receitaBrutaGrowth: 18,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 26,
+    despesasOperacionaisRate: 46,
+    irCSLLRate: 34,
+    dividendosRate: 20,
+  },
+  {
+    year: 3,
+    receitaBrutaGrowth: 15,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 25,
+    despesasOperacionaisRate: 45,
+    irCSLLRate: 34,
+    dividendosRate: 20,
+  },
+  {
+    year: 4,
+    receitaBrutaGrowth: 12,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 24,
+    despesasOperacionaisRate: 44,
+    irCSLLRate: 34,
+    dividendosRate: 20,
+  },
+  {
+    year: 5,
+    receitaBrutaGrowth: 10,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 23,
+    despesasOperacionaisRate: 43,
+    irCSLLRate: 34,
+    dividendosRate: 20,
+  },
+];
 
 export const sampleBalanceSheetBase: BalanceSheetBaseInputs = {
-  caixa: 2_000_000, // 20% da receita
-  contasReceber: 1_500_000, // 45 dias de receita
-  estoques: 300_000, // Baixo para SaaS
-  ativoCirculante: 3_800_000,
-  imobilizado: 1_500_000, // Equipamentos, móveis
-  ativoTotal: 5_300_000,
-  contasPagar: 800_000, // 30 dias
-  passivoCirculante: 1_200_000,
-  passivoNaoCirculante: 1_500_000, // Novo campo
-  dividasLongoPrazo: 1_500_000, // Financiamento de crescimento
-  passivoTotal: 5_300_000, // Corrigido: circulante + não circulante + PL
-  patrimonioLiquido: 2_600_000,
+  ativoCirculante: {
+    caixaEquivalentes: 1_500_000, // 15% da receita bruta
+    aplicacoesFinanceiras: 500_000, // 5%
+    contasReceber: 1_250_000, // 45 dias de receita bruta
+    estoques: 300_000, // Baixo para SaaS
+    ativosBiologicos: 0,
+    outrosCreditos: 250_000,
+  },
+  ativoRealizavelLP: {
+    investimentos: 200_000,
+    ativoImobilizadoBruto: 2_000_000,
+    depreciacaoAcumulada: 500_000,
+    intangivel: 300_000,
+  },
+  passivoCirculante: {
+    fornecedores: 600_000, // 22 dias
+    impostosAPagar: 200_000, // 7 dias
+    obrigacoesSociaisETrabalhistas: 300_000, // 11 dias
+    emprestimosFinanciamentosCP: 400_000,
+    outrasObrigacoes: 100_000,
+  },
+  passivoRealizavelLP: {
+    emprestimosFinanciamentosLP: 1_200_000,
+  },
+  patrimonioLiquido: {
+    capitalSocial: 2_000_000,
+    lucrosAcumulados: 800_000,
+  },
 };
 
-export const sampleBalanceSheetProjection: BalanceSheetProjectionInputs = {
-  taxaCrescimentoAtivos: [0.15, 0.15, 0.12, 0.1, 0.08], // Acompanha crescimento
-  taxaCrescimentoPassivos: [0.1, 0.08, 0.06, 0.05, 0.05], // Controle de dívida
-  taxaDepreciacao: 0.2, // 20% ao ano (equipamentos TI)
-  taxaCapex: 0.05, // 5% da receita (manutenção e crescimento)
-};
+export const sampleBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
+  {
+    year: 1,
+    taxaDepreciacao: 20, // 20% sobre imobilizado bruto
+    indiceImobilizadoVendas: 0.05, // 5% da receita bruta
+    prazoCaixaEquivalentes: 54, // dias (15% / 360)
+    prazoAplicacoesFinanceiras: 18, // dias (5% / 360)
+    prazoContasReceber: 45, // dias
+    prazoEstoques: 11, // dias
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 22, // dias
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 10, // 10% crescimento
+  },
+  {
+    year: 2,
+    taxaDepreciacao: 20,
+    indiceImobilizadoVendas: 0.05,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 43, // Melhoria de cobrança
+    prazoEstoques: 10,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 24,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 8,
+  },
+  {
+    year: 3,
+    taxaDepreciacao: 20,
+    indiceImobilizadoVendas: 0.05,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 40,
+    prazoEstoques: 9,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 26,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 6,
+  },
+  {
+    year: 4,
+    taxaDepreciacao: 20,
+    indiceImobilizadoVendas: 0.05,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 38,
+    prazoEstoques: 8,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 28,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 5,
+  },
+  {
+    year: 5,
+    taxaDepreciacao: 20,
+    indiceImobilizadoVendas: 0.05,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 36,
+    prazoEstoques: 7,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 30,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 5,
+  },
+];
 
 export const sampleWACC: WACCCalculation = {
-  custoCapitalProprio: 0.15, // 15% - Beta de tecnologia, prêmio de risco Brasil
-  custoCapitalTerceiros: 0.12, // 12% - Taxa CDI + spread
-  wacc: 0.12522, // Corrigido: 0.65*0.15 + 0.35*0.12*(1-0.34) = 0.12522
+  custoCapitalProprio: 15, // 15% - Beta de tecnologia, prêmio de risco Brasil
+  custoCapitalTerceiros: 12, // 12% - Taxa CDI + spread
+  wacc: 12.522, // 0.65*15 + 0.35*12*(1-0.34) = 12.522
   pesoCapitalProprio: 0.65, // 65% equity
   pesoCapitalTerceiros: 0.35, // 35% dívida
 };
@@ -72,60 +196,184 @@ export const sampleFullValuationInput: FullValuationInput = {
   balanceSheetBase: sampleBalanceSheetBase,
   balanceSheetProjection: sampleBalanceSheetProjection,
   wacc: sampleWACC,
-  taxaCrescimentoPerpetuo: 0.03, // 3% - crescimento perpétuo conservador
+  taxaCrescimentoPerpetuo: 3, // 3% - crescimento perpétuo conservador
   anosProjecao: 5,
 };
 
 /**
  * Empresa em estágio inicial (Startup)
- * Receita anual: R$ 1M
+ * Receita Bruta: R$ 1M
  * Crescimento agressivo: 50-100% ao ano
  * Ainda não lucrativa
  */
 
 export const startupDREBase: DREBaseInputs = {
-  receita: 1_000_000, // R$ 1M
-  custoMercadoriaVendida: 400_000, // 40%
-  despesasOperacionais: 800_000, // 80% - investimento pesado em crescimento
-  despesasFinanceiras: 50_000, // 5%
-  taxaImposto: 0.34,
+  receitaBruta: 1_000_000, // R$ 1M
+  impostosEDevolucoes: 80_000, // 8%
+  cmv: 368_000, // 40% da receita líquida
+  despesasOperacionais: 690_000, // 75% da receita líquida
+  irCSLL: -47_600, // Prejuízo fiscal (pode ser negativo)
+  dividendos: 0, // Sem dividendos (prejuízo)
 };
 
-export const startupDREProjection: DREProjectionInputs = {
-  taxaCrescimentoReceita: [1.0, 0.8, 0.6, 0.4, 0.3], // Crescimento explosivo
-  taxaCMV: [0.38, 0.35, 0.32, 0.3, 0.28],
-  taxaDespesasOperacionais: [0.75, 0.7, 0.65, 0.6, 0.55],
-  taxaDespesasFinanceiras: [0.04, 0.035, 0.03, 0.025, 0.02],
-};
+export const startupDREProjection: DREProjectionInputs[] = [
+  {
+    year: 1,
+    receitaBrutaGrowth: 100, // 100% crescimento
+    impostosEDevolucoesRate: 8,
+    cmvRate: 38,
+    despesasOperacionaisRate: 75,
+    irCSLLRate: 34,
+    dividendosRate: 0,
+  },
+  {
+    year: 2,
+    receitaBrutaGrowth: 80,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 35,
+    despesasOperacionaisRate: 70,
+    irCSLLRate: 34,
+    dividendosRate: 0,
+  },
+  {
+    year: 3,
+    receitaBrutaGrowth: 60,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 32,
+    despesasOperacionaisRate: 65,
+    irCSLLRate: 34,
+    dividendosRate: 10,
+  },
+  {
+    year: 4,
+    receitaBrutaGrowth: 40,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 30,
+    despesasOperacionaisRate: 60,
+    irCSLLRate: 34,
+    dividendosRate: 15,
+  },
+  {
+    year: 5,
+    receitaBrutaGrowth: 30,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 28,
+    despesasOperacionaisRate: 55,
+    irCSLLRate: 34,
+    dividendosRate: 20,
+  },
+];
 
 export const startupBalanceSheetBase: BalanceSheetBaseInputs = {
-  caixa: 500_000, // Buffer de runway
-  contasReceber: 120_000,
-  estoques: 0,
-  ativoCirculante: 620_000,
-  imobilizado: 200_000,
-  ativoTotal: 820_000,
-  contasPagar: 150_000,
-  passivoCirculante: 200_000,
-  passivoNaoCirculante: 300_000,
-  dividasLongoPrazo: 300_000, // Dívida de investidores
-  passivoTotal: 500_000,
-  patrimonioLiquido: 320_000,
+  ativoCirculante: {
+    caixaEquivalentes: 300_000,
+    aplicacoesFinanceiras: 100_000,
+    contasReceber: 125_000, // 45 dias
+    estoques: 50_000,
+    ativosBiologicos: 0,
+    outrosCreditos: 25_000,
+  },
+  ativoRealizavelLP: {
+    investimentos: 50_000,
+    ativoImobilizadoBruto: 400_000,
+    depreciacaoAcumulada: 80_000,
+    intangivel: 100_000,
+  },
+  passivoCirculante: {
+    fornecedores: 80_000,
+    impostosAPagar: 25_000,
+    obrigacoesSociaisETrabalhistas: 40_000,
+    emprestimosFinanciamentosCP: 150_000,
+    outrasObrigacoes: 30_000,
+  },
+  passivoRealizavelLP: {
+    emprestimosFinanciamentosLP: 500_000,
+  },
+  patrimonioLiquido: {
+    capitalSocial: 500_000,
+    lucrosAcumulados: -139_000, // Prejuízos acumulados
+  },
 };
 
-export const startupBalanceSheetProjection: BalanceSheetProjectionInputs = {
-  taxaCrescimentoAtivos: [0.8, 0.7, 0.5, 0.35, 0.25],
-  taxaCrescimentoPassivos: [0.6, 0.5, 0.4, 0.3, 0.2],
-  taxaDepreciacao: 0.25,
-  taxaCapex: 0.08, // Investimento em infra
-};
+export const startupBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
+  {
+    year: 1,
+    taxaDepreciacao: 25, // Depreciação mais rápida
+    indiceImobilizadoVendas: 0.08, // Investimento agressivo
+    prazoCaixaEquivalentes: 108,
+    prazoAplicacoesFinanceiras: 36,
+    prazoContasReceber: 45,
+    prazoEstoques: 18,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 29,
+    prazoImpostosAPagar: 9,
+    prazoObrigacoesSociais: 14,
+    taxaNovosEmprestimosFinanciamentos: 50, // Crescimento agressivo de dívida
+  },
+  {
+    year: 2,
+    taxaDepreciacao: 25,
+    indiceImobilizadoVendas: 0.07,
+    prazoCaixaEquivalentes: 108,
+    prazoAplicacoesFinanceiras: 36,
+    prazoContasReceber: 42,
+    prazoEstoques: 16,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 32,
+    prazoImpostosAPagar: 9,
+    prazoObrigacoesSociais: 14,
+    taxaNovosEmprestimosFinanciamentos: 30,
+  },
+  {
+    year: 3,
+    taxaDepreciacao: 25,
+    indiceImobilizadoVendas: 0.06,
+    prazoCaixaEquivalentes: 108,
+    prazoAplicacoesFinanceiras: 36,
+    prazoContasReceber: 40,
+    prazoEstoques: 14,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 34,
+    prazoImpostosAPagar: 9,
+    prazoObrigacoesSociais: 14,
+    taxaNovosEmprestimosFinanciamentos: 20,
+  },
+  {
+    year: 4,
+    taxaDepreciacao: 25,
+    indiceImobilizadoVendas: 0.05,
+    prazoCaixaEquivalentes: 108,
+    prazoAplicacoesFinanceiras: 36,
+    prazoContasReceber: 38,
+    prazoEstoques: 12,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 36,
+    prazoImpostosAPagar: 9,
+    prazoObrigacoesSociais: 14,
+    taxaNovosEmprestimosFinanciamentos: 15,
+  },
+  {
+    year: 5,
+    taxaDepreciacao: 25,
+    indiceImobilizadoVendas: 0.05,
+    prazoCaixaEquivalentes: 108,
+    prazoAplicacoesFinanceiras: 36,
+    prazoContasReceber: 36,
+    prazoEstoques: 10,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 38,
+    prazoImpostosAPagar: 9,
+    prazoObrigacoesSociais: 14,
+    taxaNovosEmprestimosFinanciamentos: 10,
+  },
+];
 
 export const startupWACC: WACCCalculation = {
-  custoCapitalProprio: 0.25, // 25% - alto risco
-  custoCapitalTerceiros: 0.15, // 15%
-  wacc: 0.22, // 22%
-  pesoCapitalProprio: 0.8,
-  pesoCapitalTerceiros: 0.2,
+  custoCapitalProprio: 25, // 25% - Alto risco de startup
+  custoCapitalTerceiros: 18, // 18% - Taxa alta para empresas em estágio inicial
+  wacc: 19.041, // 0.5*25 + 0.5*18*(1-0.34) = 19.041
+  pesoCapitalProprio: 0.5,
+  pesoCapitalTerceiros: 0.5,
 };
 
 export const startupFullValuationInput: FullValuationInput = {
@@ -134,60 +382,184 @@ export const startupFullValuationInput: FullValuationInput = {
   balanceSheetBase: startupBalanceSheetBase,
   balanceSheetProjection: startupBalanceSheetProjection,
   wacc: startupWACC,
-  taxaCrescimentoPerpetuo: 0.04,
+  taxaCrescimentoPerpetuo: 5, // 5% - ainda em crescimento
   anosProjecao: 5,
 };
 
 /**
- * Empresa madura
- * Receita anual: R$ 100M
+ * Empresa madura e consolidada
+ * Receita Bruta: R$ 50M
  * Crescimento estável: 5-8% ao ano
- * Alta lucratividade
+ * Alta rentabilidade e geração de caixa
  */
 
 export const matureDREBase: DREBaseInputs = {
-  receita: 100_000_000, // R$ 100M
-  custoMercadoriaVendida: 20_000_000, // 20% - alta eficiência
-  despesasOperacionais: 35_000_000, // 35% - escala
-  despesasFinanceiras: 1_000_000, // 1%
-  taxaImposto: 0.34,
+  receitaBruta: 50_000_000, // R$ 50M
+  impostosEDevolucoes: 4_000_000, // 8%
+  cmv: 11_040_000, // 24% da receita líquida (R$ 46M)
+  despesasOperacionais: 16_560_000, // 36% da receita líquida
+  irCSLL: 6_256_800, // 34% do LAIR
+  dividendos: 5_500_000, // ~50% do lucro líquido
 };
 
-export const matureDREProjection: DREProjectionInputs = {
-  taxaCrescimentoReceita: [0.08, 0.07, 0.06, 0.06, 0.05],
-  taxaCMV: [0.19, 0.18, 0.18, 0.17, 0.17],
-  taxaDespesasOperacionais: [0.34, 0.33, 0.33, 0.32, 0.32],
-  taxaDespesasFinanceiras: [0.009, 0.008, 0.008, 0.007, 0.007],
-};
+export const matureDREProjection: DREProjectionInputs[] = [
+  {
+    year: 1,
+    receitaBrutaGrowth: 8, // 8% crescimento
+    impostosEDevolucoesRate: 8,
+    cmvRate: 23,
+    despesasOperacionaisRate: 35,
+    irCSLLRate: 34,
+    dividendosRate: 50,
+  },
+  {
+    year: 2,
+    receitaBrutaGrowth: 7,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 23,
+    despesasOperacionaisRate: 34,
+    irCSLLRate: 34,
+    dividendosRate: 50,
+  },
+  {
+    year: 3,
+    receitaBrutaGrowth: 6,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 22,
+    despesasOperacionaisRate: 33,
+    irCSLLRate: 34,
+    dividendosRate: 50,
+  },
+  {
+    year: 4,
+    receitaBrutaGrowth: 5,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 22,
+    despesasOperacionaisRate: 33,
+    irCSLLRate: 34,
+    dividendosRate: 50,
+  },
+  {
+    year: 5,
+    receitaBrutaGrowth: 5,
+    impostosEDevolucoesRate: 8,
+    cmvRate: 22,
+    despesasOperacionaisRate: 32,
+    irCSLLRate: 34,
+    dividendosRate: 50,
+  },
+];
 
 export const matureBalanceSheetBase: BalanceSheetBaseInputs = {
-  caixa: 15_000_000,
-  contasReceber: 12_000_000,
-  estoques: 2_000_000,
-  ativoCirculante: 29_000_000,
-  imobilizado: 20_000_000,
-  ativoTotal: 49_000_000,
-  contasPagar: 5_000_000,
-  passivoCirculante: 8_000_000,
-  passivoNaoCirculante: 10_000_000,
-  dividasLongoPrazo: 10_000_000,
-  passivoTotal: 18_000_000,
-  patrimonioLiquido: 31_000_000,
+  ativoCirculante: {
+    caixaEquivalentes: 7_500_000, // 15%
+    aplicacoesFinanceiras: 2_500_000, // 5%
+    contasReceber: 6_250_000, // 45 dias
+    estoques: 1_500_000,
+    ativosBiologicos: 0,
+    outrosCreditos: 1_250_000,
+  },
+  ativoRealizavelLP: {
+    investimentos: 2_000_000,
+    ativoImobilizadoBruto: 10_000_000,
+    depreciacaoAcumulada: 4_000_000,
+    intangivel: 1_500_000,
+  },
+  passivoCirculante: {
+    fornecedores: 3_000_000,
+    impostosAPagar: 1_000_000,
+    obrigacoesSociaisETrabalhistas: 1_500_000,
+    emprestimosFinanciamentosCP: 2_000_000,
+    outrasObrigacoes: 500_000,
+  },
+  passivoRealizavelLP: {
+    emprestimosFinanciamentosLP: 5_000_000,
+  },
+  patrimonioLiquido: {
+    capitalSocial: 10_000_000,
+    lucrosAcumulados: 8_000_000,
+  },
 };
 
-export const matureBalanceSheetProjection: BalanceSheetProjectionInputs = {
-  taxaCrescimentoAtivos: [0.06, 0.05, 0.05, 0.04, 0.04],
-  taxaCrescimentoPassivos: [0.04, 0.03, 0.03, 0.02, 0.02],
-  taxaDepreciacao: 0.15,
-  taxaCapex: 0.03,
-};
+export const matureBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
+  {
+    year: 1,
+    taxaDepreciacao: 15, // Depreciação mais lenta (ativos mais antigos)
+    indiceImobilizadoVendas: 0.03, // Investimento moderado
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 45,
+    prazoEstoques: 11,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 22,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 3, // Baixo endividamento
+  },
+  {
+    year: 2,
+    taxaDepreciacao: 15,
+    indiceImobilizadoVendas: 0.03,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 43,
+    prazoEstoques: 10,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 24,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 2,
+  },
+  {
+    year: 3,
+    taxaDepreciacao: 15,
+    indiceImobilizadoVendas: 0.03,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 40,
+    prazoEstoques: 9,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 26,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 2,
+  },
+  {
+    year: 4,
+    taxaDepreciacao: 15,
+    indiceImobilizadoVendas: 0.03,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 38,
+    prazoEstoques: 8,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 28,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 2,
+  },
+  {
+    year: 5,
+    taxaDepreciacao: 15,
+    indiceImobilizadoVendas: 0.03,
+    prazoCaixaEquivalentes: 54,
+    prazoAplicacoesFinanceiras: 18,
+    prazoContasReceber: 36,
+    prazoEstoques: 7,
+    prazoAtivosBiologicos: 0,
+    prazoFornecedores: 30,
+    prazoImpostosAPagar: 7,
+    prazoObrigacoesSociais: 11,
+    taxaNovosEmprestimosFinanciamentos: 2,
+  },
+];
 
 export const matureWACC: WACCCalculation = {
-  custoCapitalProprio: 0.12, // 12% - risco moderado
-  custoCapitalTerceiros: 0.09, // 9%
-  wacc: 0.10182, // Corrigido: 0.7*0.12 + 0.3*0.09*(1-0.34) = 0.10182
-  pesoCapitalProprio: 0.7,
-  pesoCapitalTerceiros: 0.3,
+  custoCapitalProprio: 12, // 12% - Menor risco (empresa consolidada)
+  custoCapitalTerceiros: 10, // 10% - Taxas baixas por bom rating
+  wacc: 9.51, // 0.7*12 + 0.3*10*(1-0.34) = 9.51
+  pesoCapitalProprio: 0.7, // 70% equity
+  pesoCapitalTerceiros: 0.3, // 30% dívida
 };
 
 export const matureFullValuationInput: FullValuationInput = {
@@ -196,6 +568,6 @@ export const matureFullValuationInput: FullValuationInput = {
   balanceSheetBase: matureBalanceSheetBase,
   balanceSheetProjection: matureBalanceSheetProjection,
   wacc: matureWACC,
-  taxaCrescimentoPerpetuo: 0.025,
+  taxaCrescimentoPerpetuo: 2.5, // 2.5% - crescimento perpétuo conservador
   anosProjecao: 5,
 };

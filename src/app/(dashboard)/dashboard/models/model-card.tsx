@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -11,13 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -34,10 +26,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, Eye, Edit, Copy, Trash2, Loader2 } from "lucide-react";
+import { Edit, Copy, Trash2, Loader2 } from "lucide-react";
 import { deleteModel, duplicateModel, updateModel } from "@/lib/actions/models";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -126,59 +124,33 @@ export function ModelCard({ model }: ModelCardProps) {
     }
   };
 
+  const handleCardClick = () => {
+    router.push(`/model/${model.id}/view/dre`);
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
     <>
-      <Card className="flex flex-col">
+      <Card
+        className="flex flex-col cursor-pointer hover:shadow-md transition-shadow"
+        onClick={handleCardClick}
+        onKeyDown={handleCardKeyDown}
+        role="button"
+        tabIndex={0}
+      >
         <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <CardTitle className="line-clamp-1">{model.company_name}</CardTitle>
-              {model.ticker_symbol && (
-                <CardDescription className="mt-1">
-                  {model.ticker_symbol}
-                </CardDescription>
-              )}
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">Ações</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href={`/model/${model.id}/view/dre`}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    Abrir
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Editar
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleDuplicate}
-                  disabled={isDuplicating}
-                >
-                  {isDuplicating ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Copy className="mr-2 h-4 w-4" />
-                  )}
-                  Duplicar
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => setShowDeleteDialog(true)}
-                  className="text-destructive"
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Excluir
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <CardTitle className="line-clamp-1">{model.company_name}</CardTitle>
+          {model.ticker_symbol && (
+            <CardDescription className="mt-1">
+              {model.ticker_symbol}
+            </CardDescription>
+          )}
         </CardHeader>
         <CardContent className="flex-1">
           {model.description ? (
@@ -189,8 +161,73 @@ export function ModelCard({ model }: ModelCardProps) {
             <p className="text-sm text-muted-foreground italic">Sem descrição</p>
           )}
         </CardContent>
-        <CardFooter className="text-xs text-muted-foreground">
-          Atualizado em {updatedDate}
+        <CardFooter className="flex justify-between items-center text-xs text-muted-foreground">
+          <span>Atualizado em {updatedDate}</span>
+          <TooltipProvider>
+            <div className="flex gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setShowEditDialog(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4" />
+                    <span className="sr-only">Editar modelo</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Editar modelo</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleDuplicate();
+                    }}
+                    disabled={isDuplicating}
+                  >
+                    {isDuplicating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                    <span className="sr-only">Duplicar modelo</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Duplicar modelo</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setShowDeleteDialog(true);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Excluir modelo</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Excluir modelo</TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </CardFooter>
       </Card>
 

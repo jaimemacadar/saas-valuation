@@ -30,7 +30,7 @@ export function FCFFChart({ data }: FCFFChartProps) {
 
   // Formata dados para Recharts
   const chartData = data.map((year) => ({
-    ano: year.ano === 0 ? 'Base' : `Ano ${year.ano}`,
+    ano: year.year === 0 ? 'Base' : `Ano ${year.year}`,
     fcff: year.fcff,
   }));
 

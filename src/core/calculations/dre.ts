@@ -1,222 +1,227 @@
 /**
  * Cálculos de DRE (Demonstração do Resultado do Exercício)
  *
- * Implementa projeções de DRE baseadas em premissas de crescimento e margens.
+ * Implementa projeções de DRE baseadas em premissas conforme PRD.
  * Usa decimal.js para precisão financeira.
  */
 
 import type {
   DREBaseInputs,
   DRECalculated,
-  CalculationResult,
   DREProjectionInputs,
+  CalculationResult,
 } from "../types/index.js";
 import Decimal from "decimal.js";
-type DREProjectionInputsWithReceitaBase = {
-  receitaBase?: number;
-} & import("../types/index.js").DREProjectionInputs;
 
 /**
- * Calcula DRE de um ano baseado no ano anterior e premissas de projeção
+ * Calcula DRE do ano base a partir dos inputs
  *
- * @param anoAnterior - DRE do ano anterior (ou ano base)
- * @param premissas - Premissas de projeção para o ano atual
- * @param anoIndex - Índice do ano na projeção (0-based)
- * @returns Resultado do cálculo com DRE do ano atual
+ * @param dreBase - Dados de entrada do ano base
+ * @param depreciacaoAmortizacao - Depreciação & Amortização do BP (padrão 0)
+ * @param despesasFinanceiras - Despesas Financeiras do BP (padrão 0)
+ * @returns DRE calculado do ano base (year 0)
  */
-export function calculateDRE(
-  anoAnterior: DRECalculated,
-  premissas: DREProjectionInputsWithReceitaBase,
-  anoIndex: number,
+export function calculateDREBase(
+  dreBase: DREBaseInputs,
+  depreciacaoAmortizacao = 0,
+  despesasFinanceiras = 0,
 ): CalculationResult<DRECalculated> {
   try {
-    // Validar índice
-    if (anoIndex < 0 || anoIndex >= premissas.taxaCrescimentoReceita.length) {
-      return {
-        success: false,
-        errors: [`Índice de ano inválido: ${anoIndex}`],
-      };
-    }
+    const receitaBruta = new Decimal(dreBase.receitaBruta);
+    const impostosEDevolucoes = new Decimal(dreBase.impostosEDevolucoes);
+    const cmv = new Decimal(dreBase.cmv);
+    const despesasOperacionais = new Decimal(dreBase.despesasOperacionais);
+    const irCSLL = new Decimal(dreBase.irCSLL);
+    const dividendos = new Decimal(dreBase.dividendos);
+    const da = new Decimal(depreciacaoAmortizacao);
+    const despFin = new Decimal(despesasFinanceiras);
 
-    // Usar Decimal para precisão
-    // Calcular crescimento acumulado da receita desde o ano base
-    let crescimentoAcumulado = new Decimal(1);
-    for (let i = 0; i <= anoIndex; i++) {
-      crescimentoAcumulado = crescimentoAcumulado.times(
-        new Decimal(1).plus(new Decimal(premissas.taxaCrescimentoReceita[i])),
-      );
-    }
-    // Receita = receita do ano base * crescimento acumulado
-    // Sempre usar a receita do ano base (do DREBaseInputs)
-    // Se premissas.receitaBase existir, usar ela, senão usar anoAnterior.ano === 0 ? anoAnterior.receita : receita do ano base
-    // Para garantir receita crescente e crescimento explosivo, sempre usar a receita do ano base (input original)
-    // Premissas pode receber receitaBase explicitamente, senão assume anoAnterior._receitaBase
-    const receitaBase =
-      typeof premissas.receitaBase === "number"
-        ? new Decimal(premissas.receitaBase)
-        : typeof (anoAnterior as DRECalculated & { _receitaBase?: number })
-              ._receitaBase === "number"
-          ? new Decimal(
-              (anoAnterior as DRECalculated & { _receitaBase?: number })
-                ._receitaBase!,
-            )
-          : anoAnterior.ano === 0 && typeof anoAnterior.receita === "number"
-            ? new Decimal(anoAnterior.receita)
-            : new Decimal(0);
-    const receita = receitaBase.times(crescimentoAcumulado);
-
-    const taxaCMV = new Decimal(premissas.taxaCMV[anoIndex]);
-    const margemDespOp = new Decimal(
-      premissas.taxaDespesasOperacionais[anoIndex],
-    );
-    const taxaDespFin = new Decimal(
-      premissas.taxaDespesasFinanceiras[anoIndex],
-    );
-
-    // Calcular CMV: Receita * Margem CMV
-    const cmv = receita.times(taxaCMV);
-
-    // Calcular Lucro Bruto: Receita - CMV
-    const lucroBruto = receita.minus(cmv);
-
-    // Calcular Despesas Operacionais: Receita * Margem Despesas Operacionais
-    const despesasOperacionais = receita.times(margemDespOp);
-
-    // Calcular EBIT: Lucro Bruto - Despesas Operacionais
+    // Cálculos conforme PRD (seção 3.2.1)
+    const receitaLiquida = receitaBruta.minus(impostosEDevolucoes);
+    const lucroBruto = receitaLiquida.minus(cmv);
     const ebit = lucroBruto.minus(despesasOperacionais);
-
-    // Calcular Despesas Financeiras: EBIT * Taxa Despesas Financeiras
-    const despesasFinanceiras = ebit.times(taxaDespFin);
-
-    // Calcular Lucro Antes dos Impostos: EBIT - Despesas Financeiras
-    const lucroAntesImpostos = ebit.minus(despesasFinanceiras);
-
-    // Calcular Impostos: Lucro Antes Impostos * Taxa Imposto (fixa do ano base)
-    // Para garantir consistência com os testes, usar taxa de imposto do ano base
-    let taxaImpostoBase = 0.34;
-    if (
-      "taxaImposto" in anoAnterior &&
-      typeof anoAnterior.taxaImposto === "number"
-    ) {
-      taxaImpostoBase = anoAnterior.taxaImposto;
-    }
-    const impostos = lucroAntesImpostos.times(taxaImpostoBase);
-
-    // Calcular Lucro Líquido: Lucro Antes Impostos - Impostos
-    const lucroLiquido = lucroAntesImpostos.minus(impostos);
-
-    // Propagar _receitaBase para os próximos anos
-    const dreCalculado: DRECalculated & { _receitaBase?: number } = {
-      ano: anoAnterior.ano + 1,
-      receita: receita.toNumber(),
-      cmv: cmv.toNumber(),
-      lucrobruto: lucroBruto.toNumber(),
-      despesasOperacionais: despesasOperacionais.toNumber(),
-      ebit: ebit.toNumber(),
-      despesasFinanceiras: despesasFinanceiras.toNumber(),
-      lucroAntesImpostos: lucroAntesImpostos.toNumber(),
-      impostos: impostos.toNumber(),
-      lucroLiquido: lucroLiquido.toNumber(),
-      _receitaBase: receitaBase.toNumber(),
-    };
+    const ebitda = ebit.plus(da);
+    const lucroAntesIR = ebit.minus(despFin);
+    const lucroLiquido = lucroAntesIR.minus(irCSLL);
 
     return {
       success: true,
-      data: dreCalculado,
+      data: {
+        year: 0,
+        receitaBruta: receitaBruta.toNumber(),
+        impostosEDevolucoes: impostosEDevolucoes.toNumber(),
+        receitaLiquida: receitaLiquida.toNumber(),
+        cmv: cmv.toNumber(),
+        lucroBruto: lucroBruto.toNumber(),
+        despesasOperacionais: despesasOperacionais.toNumber(),
+        ebit: ebit.toNumber(),
+        depreciacaoAmortizacao: da.toNumber(),
+        ebitda: ebitda.toNumber(),
+        despesasFinanceiras: despFin.toNumber(),
+        lucroAntesIR: lucroAntesIR.toNumber(),
+        irCSLL: irCSLL.toNumber(),
+        lucroLiquido: lucroLiquido.toNumber(),
+        dividendos: dividendos.toNumber(),
+      },
     };
   } catch (error) {
     return {
       success: false,
       errors: [
-        `Erro ao calcular DRE: ${error instanceof Error ? error.message : String(error)}`,
+        `Erro ao calcular DRE base: ${error instanceof Error ? error.message : String(error)}`,
       ],
     };
   }
 }
 
 /**
- * Calcula projeção completa de DRE para N anos
+ * Calcula DRE projetado de um ano baseado no ano anterior
  *
- * @param dreBase - DRE do ano base
- * @param premissas - Premissas de projeção
- * @param anosProjecao - Número de anos a projetar
- * @returns Resultado do cálculo com array de DREs projetados
+ * @param dreAnterior - DRE do ano anterior
+ * @param premissas - Premissas de projeção do ano atual
+ * @param depreciacaoAmortizacao - D&A do BP do ano (padrão 0)
+ * @param despesasFinanceiras - Despesas Financeiras do BP (padrão 0)
+ * @returns DRE calculado do ano projetado
+ */
+export function calculateDREProjetado(
+  dreAnterior: DRECalculated,
+  premissas: DREProjectionInputs,
+  depreciacaoAmortizacao = 0,
+  despesasFinanceiras = 0,
+): CalculationResult<DRECalculated> {
+  try {
+    // Validar year
+    if (premissas.year <= dreAnterior.year) {
+      return {
+        success: false,
+        errors: [
+          `Ano de projeção ${premissas.year} deve ser maior que ano anterior ${dreAnterior.year}`,
+        ],
+      };
+    }
+
+    // Crescimento da receita bruta (em % sobre ano anterior)
+    const crescimento = new Decimal(premissas.receitaBrutaGrowth).div(100);
+    const receitaBruta = new Decimal(dreAnterior.receitaBruta).times(
+      new Decimal(1).plus(crescimento),
+    );
+
+    // Taxas sobre Receita Bruta e Receita Líquida (em %)
+    const taxaImpostosEDevolucoes = new Decimal(
+      premissas.impostosEDevolucoesRate,
+    ).div(100);
+    const taxaCMV = new Decimal(premissas.cmvRate).div(100);
+    const taxaDespOp = new Decimal(premissas.despesasOperacionaisRate).div(100);
+    const taxaIrCSLL = new Decimal(premissas.irCSLLRate).div(100);
+    const taxaDividendos = new Decimal(premissas.dividendosRate).div(100);
+
+    const impostosEDevolucoes = receitaBruta.times(taxaImpostosEDevolucoes);
+    const receitaLiquida = receitaBruta.minus(impostosEDevolucoes);
+    const cmv = receitaLiquida.times(taxaCMV);
+    const lucroBruto = receitaLiquida.minus(cmv);
+    const despesasOperacionais = receitaLiquida.times(taxaDespOp);
+    const ebit = lucroBruto.minus(despesasOperacionais);
+
+    const da = new Decimal(depreciacaoAmortizacao);
+    const ebitda = ebit.plus(da);
+
+    const despFin = new Decimal(despesasFinanceiras);
+    const lucroAntesIR = ebit.minus(despFin);
+    const irCSLL = lucroAntesIR.times(taxaIrCSLL);
+    const lucroLiquido = lucroAntesIR.minus(irCSLL);
+    const dividendos = lucroLiquido.times(taxaDividendos);
+
+    return {
+      success: true,
+      data: {
+        year: premissas.year,
+        receitaBruta: receitaBruta.toNumber(),
+        impostosEDevolucoes: impostosEDevolucoes.toNumber(),
+        receitaLiquida: receitaLiquida.toNumber(),
+        cmv: cmv.toNumber(),
+        lucroBruto: lucroBruto.toNumber(),
+        despesasOperacionais: despesasOperacionais.toNumber(),
+        ebit: ebit.toNumber(),
+        depreciacaoAmortizacao: da.toNumber(),
+        ebitda: ebitda.toNumber(),
+        despesasFinanceiras: despFin.toNumber(),
+        lucroAntesIR: lucroAntesIR.toNumber(),
+        irCSLL: irCSLL.toNumber(),
+        lucroLiquido: lucroLiquido.toNumber(),
+        dividendos: dividendos.toNumber(),
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      errors: [
+        `Erro ao calcular DRE projetado: ${error instanceof Error ? error.message : String(error)}`,
+      ],
+    };
+  }
+}
+
+/**
+ * Calcula projeção completa de DRE (ano base + anos projetados)
+ * NOTA: Versão simplificada sem BP - D&A e Desp. Fin. = 0
+ *
+ * @param dreBase - Dados de entrada do ano base
+ * @param premissasProjecao - Array de premissas por ano (1, 2, 3...)
+ * @returns Array com DRE do ano base + DREs projetados
  */
 export function calculateAllDRE(
   dreBase: DREBaseInputs,
-  premissas: DREProjectionInputs,
-  anosProjecao: number,
+  premissasProjecao: DREProjectionInputs[],
 ): CalculationResult<DRECalculated[]> {
   try {
     // Validar entradas
-    if (anosProjecao <= 0) {
+    if (premissasProjecao.length === 0) {
       return {
         success: false,
-        errors: ["Número de anos de projeção deve ser positivo"],
+        errors: ["Array de premissas de projeção não pode ser vazio"],
       };
     }
 
-    if (premissas.taxaCrescimentoReceita.length < anosProjecao) {
+    // Calcular ano base (year 0)
+    const resultadoBase = calculateDREBase(dreBase, 0, 0);
+    if (!resultadoBase.success || !resultadoBase.data) {
       return {
         success: false,
-        errors: [`Premissas insuficientes para ${anosProjecao} anos`],
+        errors: resultadoBase.errors || ["Erro ao calcular DRE base"],
       };
     }
 
-    // Criar DRE do ano base (ano 0)
-    const receitaBase = new Decimal(dreBase.receita);
-    const cmvBase = new Decimal(dreBase.custoMercadoriaVendida);
-    const despOpBase = new Decimal(dreBase.despesasOperacionais);
-    const despFinBase = new Decimal(dreBase.despesasFinanceiras);
-    const taxaImpostoBase = new Decimal(dreBase.taxaImposto);
+    const dreProjetado: DRECalculated[] = [resultadoBase.data];
 
-    const lucroBrutoBase = receitaBase.minus(cmvBase);
-    const ebitBase = lucroBrutoBase.minus(despOpBase);
-    const lucroAntesImpostosBase = ebitBase.minus(despFinBase);
-    const impostosBase = lucroAntesImpostosBase.times(taxaImpostoBase);
-    const lucroLiquidoBase = lucroAntesImpostosBase.minus(impostosBase);
+    // Calcular cada ano projetado
+    for (const premissas of premissasProjecao) {
+      const dreAnterior = dreProjetado[dreProjetado.length - 1];
 
-    const dreAnoBase: DRECalculated = {
-      ano: 0,
-      receita: receitaBase.toNumber(),
-      cmv: cmvBase.toNumber(),
-      lucrobruto: lucroBrutoBase.toNumber(),
-      despesasOperacionais: despOpBase.toNumber(),
-      ebit: ebitBase.toNumber(),
-      despesasFinanceiras: despFinBase.toNumber(),
-      lucroAntesImpostos: lucroAntesImpostosBase.toNumber(),
-      impostos: impostosBase.toNumber(),
-      lucroLiquido: lucroLiquidoBase.toNumber(),
-    };
-
-    const dreProjetado: DRECalculated[] = [dreAnoBase];
-
-    // Calcular DRE para cada ano
-    for (let i = 0; i < anosProjecao; i++) {
-      const anoAnterior = dreProjetado[dreProjetado.length - 1];
-      const resultado = calculateDRE(anoAnterior, premissas, i);
+      // NOTA: Versão simplificada - D&A e Desp. Fin. serão calculados
+      // quando integrado com BP (Phase 1, Task #3)
+      const resultado = calculateDREProjetado(dreAnterior, premissas, 0, 0);
 
       if (!resultado.success || !resultado.data) {
         return {
           success: false,
-          errors: resultado.errors || ["Erro ao calcular ano " + (i + 1)],
+          errors: resultado.errors || [
+            `Erro ao calcular ano ${premissas.year}`,
+          ],
         };
       }
 
       dreProjetado.push(resultado.data);
     }
 
-    // Remover o ano base do resultado (apenas anos projetados)
-    const anosProjetados = dreProjetado.slice(1);
     return {
       success: true,
-      data: anosProjetados,
+      data: dreProjetado,
     };
   } catch (error) {
     return {
       success: false,
       errors: [
-        `Erro ao calcular projeção de DRE: ${error instanceof Error ? error.message : String(error)}`,
+        `Erro ao calcular projeção completa de DRE: ${error instanceof Error ? error.message : String(error)}`,
       ],
     };
   }

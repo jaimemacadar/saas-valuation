@@ -1,4 +1,10 @@
 // src/core/types/index.ts
+
+// ============================================================
+// Interfaces genéricas (legado - mantidas para compatibilidade)
+// ============================================================
+
+/** @deprecated Use FullValuationInput + FullValuationResult */
 export interface FinancialModel {
   id: string;
   userId: string;
@@ -12,6 +18,7 @@ export interface FinancialModel {
   results?: ValuationResults;
 }
 
+/** @deprecated Use DRECalculated */
 export interface IncomeStatement {
   years: number[];
   revenue: number[];
@@ -24,6 +31,7 @@ export interface IncomeStatement {
   netIncome: number[];
 }
 
+/** @deprecated Use BalanceSheetCalculated */
 export interface BalanceSheet {
   years: number[];
   cash: number[];
@@ -39,6 +47,7 @@ export interface BalanceSheet {
   equity: number[];
 }
 
+/** @deprecated Use FCFFCalculated */
 export interface CashFlowStatement {
   years: number[];
   operatingCashFlow: number[];
@@ -46,6 +55,7 @@ export interface CashFlowStatement {
   freeCashFlow: number[];
 }
 
+/** @deprecated Use WACCCalculation */
 export interface Assumptions {
   wacc: number;
   terminalGrowthRate: number;
@@ -58,6 +68,7 @@ export interface Assumptions {
   debtToEquity?: number;
 }
 
+/** @deprecated Use ValuationCalculated */
 export interface ValuationResults {
   presentValueCashFlows: number[];
   terminalValue: number;
@@ -80,92 +91,210 @@ export interface APIResponse<T = unknown> {
   message?: string;
 }
 
-// Additional types for calculation engine
+// ============================================================
+// Resultado genérico de cálculos
+// ============================================================
+
 export interface CalculationResult<T> {
   success: boolean;
   data?: T;
   errors?: string[];
 }
 
+// ============================================================
+// DRE - Demonstração do Resultado do Exercício
+// ============================================================
+
+/**
+ * Dados de entrada do Ano Base da DRE.
+ * Valores absolutos inseridos pelo usuário.
+ */
 export interface DREBaseInputs {
-  receita: number;
-  custoMercadoriaVendida: number;
-  despesasOperacionais: number;
-  despesasFinanceiras: number;
-  taxaImposto: number;
-}
-
-export interface DREProjectionInputs {
-  taxaCrescimentoReceita: number[];
-  taxaCMV: number[];
-  taxaDespesasOperacionais: number[];
-  taxaDespesasFinanceiras: number[];
-}
-
-export interface DRECalculated {
-  ano: number;
-  receita: number;
+  receitaBruta: number;
+  impostosEDevolucoes: number;
   cmv: number;
-  lucrobruto: number;
+  despesasOperacionais: number;
+  irCSLL: number;
+  dividendos: number;
+}
+
+/**
+ * Premissas de projeção da DRE para um ano específico.
+ * Taxas percentuais (em %, ex: 5 = 5%).
+ */
+export interface DREProjectionInputs {
+  year: number;
+  receitaBrutaGrowth: number;       // % crescimento sobre receita bruta anterior
+  impostosEDevolucoesRate: number;  // % sobre Receita Bruta
+  cmvRate: number;                   // % sobre Receita Líquida
+  despesasOperacionaisRate: number;  // % sobre Receita Líquida
+  irCSLLRate: number;               // % sobre LAIR
+  dividendosRate: number;           // % sobre Lucro Líquido
+}
+
+/**
+ * DRE calculada para um ano (projetado ou ano base).
+ * Todos os valores em R$.
+ */
+export interface DRECalculated {
+  year: number;
+  receitaBruta: number;
+  impostosEDevolucoes: number;
+  receitaLiquida: number;
+  cmv: number;
+  lucroBruto: number;
   despesasOperacionais: number;
   ebit: number;
-  despesasFinanceiras: number;
-  lucroAntesImpostos: number;
-  impostos: number;
+  depreciacaoAmortizacao: number;  // vem do Balanço Patrimonial
+  ebitda: number;
+  despesasFinanceiras: number;     // calculado via BP (juros sobre dívida)
+  lucroAntesIR: number;
+  irCSLL: number;
   lucroLiquido: number;
+  dividendos: number;
 }
 
+// ============================================================
+// Balanço Patrimonial
+// ============================================================
+
+/**
+ * Dados de entrada do Ano Base do Balanço Patrimonial.
+ * Estrutura nested por seção contábil.
+ */
 export interface BalanceSheetBaseInputs {
-  caixa: number;
-  contasReceber: number;
-  estoques: number;
-  ativoCirculante: number;
-  imobilizado: number;
-  ativoTotal: number;
-  contasPagar: number;
-  passivoCirculante: number;
-  passivoNaoCirculante: number;
-  dividasLongoPrazo: number; // Mantido para compatibilidade, mas será somado em passivoNaoCirculante
-  passivoTotal: number;
-  patrimonioLiquido: number;
+  ativoCirculante: {
+    caixaEquivalentes: number;
+    aplicacoesFinanceiras: number;
+    contasReceber: number;
+    estoques: number;
+    ativosBiologicos: number;
+    outrosCreditos: number;
+  };
+  ativoRealizavelLP: {
+    investimentos: number;
+    ativoImobilizadoBruto: number;
+    depreciacaoAcumulada: number;
+    intangivel: number;
+  };
+  passivoCirculante: {
+    fornecedores: number;
+    impostosAPagar: number;
+    obrigacoesSociaisETrabalhistas: number;
+    emprestimosFinanciamentosCP: number;
+    outrasObrigacoes: number;
+  };
+  passivoRealizavelLP: {
+    emprestimosFinanciamentosLP: number;
+  };
+  patrimonioLiquido: {
+    capitalSocial: number;
+    lucrosAcumulados: number;
+  };
 }
 
+/**
+ * Premissas de projeção do Balanço Patrimonial para um ano específico.
+ * Prazos em dias, taxas em % (ex: 10 = 10%).
+ */
 export interface BalanceSheetProjectionInputs {
-  taxaCrescimentoAtivos: number[];
-  taxaCrescimentoPassivos: number[];
-  taxaDepreciacao: number;
-  taxaCapex: number;
+  year: number;
+  taxaDepreciacao: number;           // % sobre Imobilizado Bruto
+  indiceImobilizadoVendas: number;   // decimal (ex: 0.15 = 15% da receita bruta)
+
+  // Prazos médios - Ativo Circulante (dias)
+  prazoCaixaEquivalentes: number;
+  prazoAplicacoesFinanceiras: number;
+  prazoContasReceber: number;
+  prazoEstoques: number;
+  prazoAtivosBiologicos: number;
+
+  // Prazos médios - Passivo Circulante (dias)
+  prazoFornecedores: number;
+  prazoImpostosAPagar: number;
+  prazoObrigacoesSociais: number;
+
+  // Empréstimos
+  taxaNovosEmprestimosFinanciamentos: number; // % sobre saldo anterior
 }
 
+/**
+ * Balanço Patrimonial calculado para um ano.
+ * Estrutura nested com totais por seção.
+ */
 export interface BalanceSheetCalculated {
-  ano: number;
-  caixa: number;
-  contasReceber: number;
-  estoques: number;
-  ativoCirculante: number;
-  imobilizado: number;
-  ativoTotal: number;
-  contasPagar: number;
-  passivoCirculante: number;
-  passivoNaoCirculante: number;
-  dividasLongoPrazo: number;
-  passivoTotal: number;
-  patrimonioLiquido: number;
-  depreciacao: number;
+  year: number;
+
+  ativoCirculante: {
+    caixaEquivalentes: number;
+    aplicacoesFinanceiras: number;
+    contasReceber: number;
+    estoques: number;
+    ativosBiologicos: number;
+    outrosCreditos: number;
+    total: number;
+  };
+
+  ativoRealizavelLP: {
+    investimentos: number;
+    imobilizadoBruto: number;
+    depreciacaoAcumulada: number;
+    imobilizado: number; // Imobilizado Bruto - Depreciação Acumulada
+    intangivel: number;
+    total: number;
+  };
+
+  passivoCirculante: {
+    fornecedores: number;
+    impostosAPagar: number;
+    obrigacoesSociaisETrabalhistas: number;
+    emprestimosFinanciamentosCP: number;
+    outrasObrigacoes: number;
+    total: number;
+  };
+
+  passivoRealizavelLP: {
+    emprestimosFinanciamentosLP: number;
+    total: number;
+  };
+
+  patrimonioLiquido: {
+    capitalSocial: number;
+    lucrosAcumulados: number;
+    total: number;
+  };
+
+  // Contas auxiliares calculadas
+  depreciacaoAnual: number;
   capex: number;
-  capitalDeGiro: number;
+  novosEmprestimosFinanciamentosCP: number;
+  novosEmprestimosFinanciamentosLP: number;
+  capitalGiro: number;
+  ncg: number; // Necessidade de Capital de Giro (variação)
+
+  // Totais gerais
+  ativoTotal: number;
+  passivoTotal: number; // Passivo + PL
 }
+
+// ============================================================
+// FCFF - Fluxo de Caixa Livre para a Firma
+// ============================================================
 
 export interface FCFFCalculated {
-  ano: number;
+  year: number;
   ebit: number;
   impostos: number;
   nopat: number;
-  depreciacao: number;
+  depreciacaoAmortizacao: number;
   capex: number;
-  variacaoNecessidadeCapitalGiro: number;
-  fcff: number;
+  ncg: number; // Variação do Capital de Giro
+  fcff: number; // FCFF = EBIT - NCG - CAPEX (conforme PRD)
 }
+
+// ============================================================
+// WACC
+// ============================================================
 
 export interface WACCCalculation {
   custoCapitalProprio: number;
@@ -174,6 +303,10 @@ export interface WACCCalculation {
   pesoCapitalProprio: number;
   pesoCapitalTerceiros: number;
 }
+
+// ============================================================
+// Valuation
+// ============================================================
 
 export interface ValuationInputs {
   fcff: FCFFCalculated[];
@@ -190,11 +323,15 @@ export interface ValuationCalculated {
   valorPatrimonioLiquido: number;
 }
 
+// ============================================================
+// Full Valuation (Orquestração Completa)
+// ============================================================
+
 export interface FullValuationInput {
   dreBase: DREBaseInputs;
-  dreProjection: DREProjectionInputs;
+  dreProjection: DREProjectionInputs[];
   balanceSheetBase: BalanceSheetBaseInputs;
-  balanceSheetProjection: BalanceSheetProjectionInputs;
+  balanceSheetProjection: BalanceSheetProjectionInputs[];
   wacc: WACCCalculation;
   taxaCrescimentoPerpetuo: number;
   anosProjecao: number;

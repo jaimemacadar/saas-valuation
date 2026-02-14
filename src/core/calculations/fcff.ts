@@ -2,7 +2,7 @@
  * Cálculos de FCFF (Free Cash Flow to Firm)
  *
  * Calcula o Fluxo de Caixa Livre para a Firma baseado em DRE e BP.
- * Fórmula: FCFF = NOPAT + Depreciação - CAPEX - Variação NCG
+ * Fórmula conforme PRD: FCFF = EBIT - NCG - CAPEX
  *
  * Usa decimal.js para precisão financeira.
  */
@@ -20,66 +20,42 @@ import type {
  *
  * @param dreAno - DRE do ano
  * @param bpAno - BP do ano
- * @param bpAnterior - BP do ano anterior (para calcular variação NCG)
  * @returns Resultado do cálculo com FCFF do ano
  */
 export function calculateFCFF(
   dreAno: DRECalculated,
   bpAno: BalanceSheetCalculated,
-  bpAnterior: BalanceSheetCalculated,
 ): CalculationResult<FCFFCalculated> {
   try {
     // EBIT (Earnings Before Interest and Taxes)
     const ebit = new Decimal(dreAno.ebit);
 
-    // Impostos sobre EBIT
-    const taxaImposto =
-      dreAno.lucroAntesImpostos !== 0
-        ? new Decimal(dreAno.impostos).div(
-            new Decimal(dreAno.lucroAntesImpostos),
-          )
-        : new Decimal(0);
-    const impostos = ebit.times(taxaImposto);
+    // Impostos: IR/CSLL do DRE
+    const impostos = new Decimal(dreAno.irCSLL);
 
-    // NOPAT (Net Operating Profit After Tax) = EBIT * (1 - Taxa Imposto)
+    // NOPAT (Net Operating Profit After Tax) = EBIT - IR/CSLL
     const nopat = ebit.minus(impostos);
 
-    // Depreciação do ano
-    const depreciacao = new Decimal(bpAno.depreciacao);
+    // Depreciação & Amortização do ano
+    const depreciacaoAmortizacao = new Decimal(dreAno.depreciacaoAmortizacao);
 
-    // CAPEX: calculado como diferença no imobilizado + depreciação
-    // CAPEX = Imobilizado Atual - Imobilizado Anterior + Depreciação
-    const capex = new Decimal(bpAno.imobilizado)
-      .minus(new Decimal(bpAnterior.imobilizado))
-      .plus(depreciacao);
+    // CAPEX: já calculado no BP
+    const capex = new Decimal(bpAno.capex);
 
-    // Necessidade de Capital de Giro (NCG)
-    // NCG = (Contas Receber + Estoques) - Contas Pagar
-    const ncgAtual = new Decimal(bpAno.contasReceber)
-      .plus(new Decimal(bpAno.estoques))
-      .minus(new Decimal(bpAno.contasPagar));
+    // NCG (Variação de Capital de Giro): já calculado no BP
+    const ncg = new Decimal(bpAno.ncg);
 
-    const ncgAnterior = new Decimal(bpAnterior.contasReceber)
-      .plus(new Decimal(bpAnterior.estoques))
-      .minus(new Decimal(bpAnterior.contasPagar));
-
-    // Variação NCG
-    const variacaoNecessidadeCapitalGiro = ncgAtual.minus(ncgAnterior);
-
-    // FCFF = NOPAT + Depreciação - CAPEX - Variação NCG
-    const fcff = nopat
-      .plus(depreciacao)
-      .minus(capex)
-      .minus(variacaoNecessidadeCapitalGiro);
+    // FCFF = EBIT - NCG - CAPEX (conforme PRD seção 3.2.3)
+    const fcff = ebit.minus(ncg).minus(capex);
 
     const fcffCalculado: FCFFCalculated = {
-      ano: dreAno.ano,
+      year: dreAno.year,
       ebit: ebit.toNumber(),
       impostos: impostos.toNumber(),
       nopat: nopat.toNumber(),
-      depreciacao: depreciacao.toNumber(),
+      depreciacaoAmortizacao: depreciacaoAmortizacao.toNumber(),
       capex: capex.toNumber(),
-      variacaoNecessidadeCapitalGiro: variacaoNecessidadeCapitalGiro.toNumber(),
+      ncg: ncg.toNumber(),
       fcff: fcff.toNumber(),
     };
 
@@ -100,44 +76,47 @@ export function calculateFCFF(
 /**
  * Calcula FCFF para todos os anos da projeção
  *
- * @param dreProjetado - Array de DREs projetados
- * @param bpProjetado - Array de BPs projetados
- * @returns Resultado do cálculo com array de FCFFs
+ * @param dreCalculado - Array de DREs calculados (incluindo ano base)
+ * @param bpCalculado - Array de BPs calculados (incluindo ano base)
+ * @returns Resultado do cálculo com array de FCFFs (apenas anos projetados)
  */
 export function calculateAllFCFF(
-  dreProjetado: DRECalculated[],
-  bpProjetado: BalanceSheetCalculated[],
+  dreCalculado: DRECalculated[],
+  bpCalculado: BalanceSheetCalculated[],
 ): CalculationResult<FCFFCalculated[]> {
   try {
     // Validar entradas
-    if (dreProjetado.length !== bpProjetado.length) {
+    if (dreCalculado.length !== bpCalculado.length) {
       return {
         success: false,
         errors: ["Arrays de DRE e BP devem ter o mesmo tamanho"],
       };
     }
 
-    if (dreProjetado.length < 2) {
+    if (dreCalculado.length < 2) {
       return {
         success: false,
-        errors: ["Necessário pelo menos 2 anos de projeção para calcular FCFF"],
+        errors: [
+          "Necessário pelo menos 2 anos (base + 1 projetado) para calcular FCFF",
+        ],
       };
     }
 
     const fcffProjetado: FCFFCalculated[] = [];
 
-    // Calcular FCFF para cada ano (começando do ano 1, pois precisamos do ano anterior)
-    for (let i = 1; i < dreProjetado.length; i++) {
-      const dreAno = dreProjetado[i];
-      const bpAno = bpProjetado[i];
-      const bpAnterior = bpProjetado[i - 1];
+    // Calcular FCFF para cada ano projetado (começando do ano 1, pois ano 0 é base)
+    for (let i = 1; i < dreCalculado.length; i++) {
+      const dreAno = dreCalculado[i];
+      const bpAno = bpCalculado[i];
 
-      const resultado = calculateFCFF(dreAno, bpAno, bpAnterior);
+      const resultado = calculateFCFF(dreAno, bpAno);
 
       if (!resultado.success || !resultado.data) {
         return {
           success: false,
-          errors: resultado.errors || ["Erro ao calcular FCFF do ano " + i],
+          errors: resultado.errors || [
+            `Erro ao calcular FCFF do ano ${dreAno.year}`,
+          ],
         };
       }
 

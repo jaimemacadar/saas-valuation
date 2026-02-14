@@ -28,8 +28,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
 
   // Formata dados para Recharts
   const chartData = data.map((year) => ({
-    ano: year.ano === 0 ? 'Base' : `Ano ${year.ano}`,
-    receitaLiquida: year.receita - year.impostos,
+    ano: year.year === 0 ? 'Base' : `Ano ${year.year}`,
+    receitaLiquida: year.receitaLiquida,
     lucroLiquido: year.lucroLiquido,
   }));
 

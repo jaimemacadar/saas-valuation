@@ -1,96 +1,169 @@
 // src/core/validators/index.ts
 import { z } from "zod";
 
-// DRE Base Inputs Schema
+// DRE Base Inputs Schema (conforme PRD)
 export const DREBaseInputsSchema = z.object({
-  receita: z.number().positive("Receita deve ser positiva"),
-  custoMercadoriaVendida: z.number().nonnegative("CMV deve ser não-negativo"),
+  receitaBruta: z.number().positive("Receita bruta deve ser positiva"),
+  impostosEDevolucoes: z
+    .number()
+    .nonnegative("Impostos e devoluções devem ser não-negativos"),
+  cmv: z.number().nonnegative("CMV deve ser não-negativo"),
   despesasOperacionais: z
     .number()
     .nonnegative("Despesas operacionais devem ser não-negativas"),
-  despesasFinanceiras: z
-    .number()
-    .nonnegative("Despesas financeiras devem ser não-negativas"),
-  taxaImposto: z
-    .number()
-    .min(0)
-    .max(1, "Taxa de imposto deve estar entre 0 e 1"),
+  irCSLL: z.number().nonnegative("IR/CSLL deve ser não-negativo"),
+  dividendos: z.number().nonnegative("Dividendos devem ser não-negativos"),
 });
 
 export type DREBaseInputsValidated = z.infer<typeof DREBaseInputsSchema>;
 
-// DRE Projection Inputs Schema
+// DRE Projection Inputs Schema (por ano, conforme PRD)
 export const DREProjectionInputsSchema = z.object({
-  taxaCrescimentoReceita: z.array(
-    z.number().min(-1, "Taxa de crescimento não pode ser menor que -100%"),
-  ),
-  taxaCMV: z.array(
-    z.number().min(0).max(1, "Margem CMV deve estar entre 0 e 1"),
-  ),
-  taxaDespesasOperacionais: z.array(
-    z
-      .number()
-      .min(0)
-      .max(1, "Margem de despesas operacionais deve estar entre 0 e 1"),
-  ),
-  taxaDespesasFinanceiras: z.array(
-    z
-      .number()
-      .min(0)
-      .max(1, "Taxa de despesas financeiras deve estar entre 0 e 1"),
-  ),
+  year: z.number().int().positive("Ano deve ser positivo"),
+  receitaBrutaGrowth: z
+    .number()
+    .min(-100, "Taxa de crescimento não pode ser menor que -100%"),
+  impostosEDevolucoesRate: z
+    .number()
+    .min(0)
+    .max(100, "Taxa de impostos deve estar entre 0 e 100%"),
+  cmvRate: z
+    .number()
+    .min(0)
+    .max(100, "Margem CMV deve estar entre 0 e 100%"),
+  despesasOperacionaisRate: z
+    .number()
+    .min(0)
+    .max(100, "Margem de despesas operacionais deve estar entre 0 e 100%"),
+  irCSLLRate: z
+    .number()
+    .min(0)
+    .max(100, "Taxa de IR/CSLL deve estar entre 0 e 100%"),
+  dividendosRate: z
+    .number()
+    .min(0)
+    .max(100, "Taxa de dividendos deve estar entre 0 e 100%"),
 });
 
 export type DREProjectionInputsValidated = z.infer<
   typeof DREProjectionInputsSchema
 >;
 
-// Balance Sheet Base Inputs Schema
+// Balance Sheet Base Inputs Schema (nested, conforme PRD)
 export const BalanceSheetBaseInputsSchema = z.object({
-  caixa: z.number().nonnegative("Caixa deve ser não-negativo"),
-  contasReceber: z
-    .number()
-    .nonnegative("Contas a receber devem ser não-negativas"),
-  estoques: z.number().nonnegative("Estoques devem ser não-negativos"),
-  ativoCirculante: z
-    .number()
-    .nonnegative("Ativo circulante deve ser não-negativo"),
-  imobilizado: z.number().nonnegative("Imobilizado deve ser não-negativo"),
-  ativoTotal: z.number().positive("Ativo total deve ser positivo"),
-  contasPagar: z.number().nonnegative("Contas a pagar devem ser não-negativas"),
-  passivoCirculante: z
-    .number()
-    .nonnegative("Passivo circulante deve ser não-negativo"),
-  dividasLongoPrazo: z
-    .number()
-    .nonnegative("Dívidas de longo prazo devem ser não-negativas"),
-  passivoTotal: z.number().nonnegative("Passivo total deve ser não-negativo"),
-  patrimonioLiquido: z
-    .number()
-    .nonnegative("Patrimônio líquido deve ser não-negativo"),
+  ativoCirculante: z.object({
+    caixaEquivalentes: z
+      .number()
+      .nonnegative("Caixa deve ser não-negativo"),
+    aplicacoesFinanceiras: z
+      .number()
+      .nonnegative("Aplicações financeiras devem ser não-negativas"),
+    contasReceber: z
+      .number()
+      .nonnegative("Contas a receber devem ser não-negativas"),
+    estoques: z.number().nonnegative("Estoques devem ser não-negativos"),
+    ativosBiologicos: z
+      .number()
+      .nonnegative("Ativos biológicos devem ser não-negativos"),
+    outrosCreditos: z
+      .number()
+      .nonnegative("Outros créditos devem ser não-negativos"),
+  }),
+  ativoRealizavelLP: z.object({
+    investimentos: z
+      .number()
+      .nonnegative("Investimentos devem ser não-negativos"),
+    ativoImobilizadoBruto: z
+      .number()
+      .nonnegative("Imobilizado bruto deve ser não-negativo"),
+    depreciacaoAcumulada: z
+      .number()
+      .nonnegative("Depreciação acumulada deve ser não-negativa"),
+    intangivel: z
+      .number()
+      .nonnegative("Intangível deve ser não-negativo"),
+  }),
+  passivoCirculante: z.object({
+    fornecedores: z
+      .number()
+      .nonnegative("Fornecedores devem ser não-negativos"),
+    impostosAPagar: z
+      .number()
+      .nonnegative("Impostos a pagar devem ser não-negativos"),
+    obrigacoesSociaisETrabalhistas: z
+      .number()
+      .nonnegative("Obrigações sociais devem ser não-negativas"),
+    emprestimosFinanciamentosCP: z
+      .number()
+      .nonnegative("Empréstimos CP devem ser não-negativos"),
+    outrasObrigacoes: z
+      .number()
+      .nonnegative("Outras obrigações devem ser não-negativas"),
+  }),
+  passivoRealizavelLP: z.object({
+    emprestimosFinanciamentosLP: z
+      .number()
+      .nonnegative("Empréstimos LP devem ser não-negativos"),
+  }),
+  patrimonioLiquido: z.object({
+    capitalSocial: z
+      .number()
+      .nonnegative("Capital social deve ser não-negativo"),
+    lucrosAcumulados: z.number(), // Pode ser negativo (prejuízos acumulados)
+  }),
 });
 
 export type BalanceSheetBaseInputsValidated = z.infer<
   typeof BalanceSheetBaseInputsSchema
 >;
 
-// Balance Sheet Projection Inputs Schema
+// Balance Sheet Projection Inputs Schema (por ano, conforme PRD)
 export const BalanceSheetProjectionInputsSchema = z.object({
-  taxaCrescimentoAtivos: z.array(
-    z
-      .number()
-      .min(-1, "Taxa de crescimento de ativos não pode ser menor que -100%"),
-  ),
-  taxaCrescimentoPassivos: z.array(
-    z
-      .number()
-      .min(-1, "Taxa de crescimento de passivos não pode ser menor que -100%"),
-  ),
+  year: z.number().int().positive("Ano deve ser positivo"),
   taxaDepreciacao: z
     .number()
     .min(0)
-    .max(1, "Taxa de depreciação deve estar entre 0 e 1"),
-  taxaCapex: z.number().min(0).max(1, "Taxa de CAPEX deve estar entre 0 e 1"),
+    .max(100, "Taxa de depreciação deve estar entre 0 e 100%"),
+  indiceImobilizadoVendas: z
+    .number()
+    .min(0)
+    .max(1, "Índice imobilizado/vendas deve estar entre 0 e 1"),
+  prazoCaixaEquivalentes: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoAplicacoesFinanceiras: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoContasReceber: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoEstoques: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoAtivosBiologicos: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoFornecedores: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoImpostosAPagar: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoObrigacoesSociais: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  taxaNovosEmprestimosFinanciamentos: z
+    .number()
+    .min(-100)
+    .max(100, "Taxa de novos empréstimos deve estar entre -100% e 100%"),
 });
 
 export type BalanceSheetProjectionInputsValidated = z.infer<
@@ -121,9 +194,9 @@ export type WACCCalculationValidated = z.infer<typeof WACCCalculationSchema>;
 // Full Valuation Input Schema
 export const FullValuationInputSchema = z.object({
   dreBase: DREBaseInputsSchema,
-  dreProjection: DREProjectionInputsSchema,
+  dreProjection: z.array(DREProjectionInputsSchema),
   balanceSheetBase: BalanceSheetBaseInputsSchema,
-  balanceSheetProjection: BalanceSheetProjectionInputsSchema,
+  balanceSheetProjection: z.array(BalanceSheetProjectionInputsSchema),
   wacc: WACCCalculationSchema,
   taxaCrescimentoPerpetuo: z
     .number()
