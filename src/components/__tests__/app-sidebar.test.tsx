@@ -12,10 +12,6 @@ jest.mock('@/components/nav-main', () => ({
   NavMain: ({ items }: any) => <div data-testid="nav-main">{items.length} items</div>,
 }));
 
-jest.mock('@/components/nav-projects', () => ({
-  NavProjects: ({ projects }: any) => <div data-testid="nav-projects">{projects.length} projects</div>,
-}));
-
 jest.mock('@/components/nav-user', () => ({
   NavUser: ({ user }: any) => <div data-testid="nav-user">{user.name}</div>,
 }));
@@ -77,7 +73,6 @@ describe('AppSidebar', () => {
     render(<AppSidebar />);
 
     expect(screen.getByTestId('nav-main')).toBeInTheDocument();
-    expect(screen.getByTestId('nav-projects')).toBeInTheDocument();
     expect(screen.queryByTestId('model-sidebar-nav')).not.toBeInTheDocument();
   });
 
@@ -89,7 +84,6 @@ describe('AppSidebar', () => {
     expect(screen.getByTestId('model-sidebar-nav')).toBeInTheDocument();
     expect(screen.getByText('Model: abc123')).toBeInTheDocument();
     expect(screen.queryByTestId('nav-main')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('nav-projects')).not.toBeInTheDocument();
   });
 
   it('não deve renderizar ModelSidebarNav para rota /model/new', () => {

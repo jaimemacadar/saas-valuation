@@ -12,7 +12,6 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import { ModelSidebarNav } from "@/components/model-sidebar-nav"
@@ -86,7 +85,6 @@ const data = {
       ],
     },
   ],
-  projects: [],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -118,10 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ) : isModelView ? (
           <ModelSidebarNav modelId={modelId} />
         ) : (
-          <>
-            <NavMain items={data.navMain} />
-            <NavProjects projects={data.projects} />
-          </>
+          <NavMain items={data.navMain} />
         )}
       </SidebarContent>
       <SidebarFooter>
