@@ -4,7 +4,8 @@ name: data-flow
 description: How data moves through the system and external integrations
 category: data-flow
 generated: 2026-01-24
-status: unfilled
+updated: 2026-02-14
+status: filled
 scaffoldVersion: "2.0.0"
 ---
 
@@ -54,7 +55,39 @@ Modules communicate via function calls and shared types. There are no message qu
 
 ## External Integrations
 
+### Production Mode (Supabase)
 - **Supabase**: Used for authentication (JWT), database (Postgres), and file storage. Handles retries and errors via SDK. Payloads are JSON-encoded.
+
+### Development Mode (Mock System)
+- **Mock Store**: In-memory data store (`src/lib/mock/store.ts`) que simula operações do Supabase
+- **Mock Auth**: Sistema de autenticação simulada com sessões em memória
+- **Auto-calculation**: Cálculos automáticos de campos dependentes ao carregar/salvar dados
+- **Latency Simulation**: Delays artificiais (100-300ms) para simular chamadas de rede
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as UI Layer
+    participant A as Actions (Server)
+    participant M as Mock System
+    participant S as Supabase
+
+    alt Development Mode (MOCK=true)
+        U->>UI: Interact
+        UI->>A: Server Action
+        A->>M: Mock Store CRUD
+        M-->>A: In-Memory Data
+        A-->>UI: Response
+        UI-->>U: Display
+    else Production Mode
+        U->>UI: Interact
+        UI->>A: Server Action
+        A->>S: Supabase API
+        S-->>A: Database Response
+        A-->>UI: Response
+        UI-->>U: Display
+    end
+```
 
 ## Observability & Failure Modes
 

@@ -8,31 +8,31 @@ status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
-## Development Workflow
+## Fluxo de Desenvolvimento
 
-The SaaS Valuation repository follows a modern, collaborative workflow to ensure code quality and rapid iteration. Developers work on feature branches, submit pull requests for review, and rely on automated tests to maintain stability. All contributions are expected to follow the documented conventions and best practices.
+O repositório SaaS Valuation segue um fluxo de trabalho moderno e colaborativo para garantir qualidade de código e iteração rápida. Desenvolvedores trabalham em feature branches, submetem pull requests para revisão e dependem de testes automatizados para manter a estabilidade. Todas as contribuições devem seguir as convenções e boas práticas documentadas.
 
 ## Branching & Releases
 
-- **Branching Model**: Trunk-based development on `main` with short-lived feature branches.
-- **Release Cadence**: Releases are cut from `main` as needed; no strict schedule.
-- **Tagging**: Semantic versioning tags (e.g., `v1.2.0`) are used for releases.
+- **Modelo de Branching**: Desenvolvimento baseado em trunk na branch `main` com feature branches de curta duração.
+- **Cadência de Releases**: Releases são cortados da `main` conforme necessário; sem cronograma fixo.
+- **Tagging**: Tags de versionamento semântico (ex: `v1.2.0`) são usadas para releases.
 
-## Local Development
+## Desenvolvimento Local
 
-- Install dependencies: `npm install`
-- Run development server: `npm run dev`
-- Build for production: `npm run build`
-- Run tests: `npm run test`
+- Instalar dependências: `npm install`
+- Executar servidor de desenvolvimento: `npm run dev`
+- Build para produção: `npm run build`
+- Executar testes: `npm run test`
 
-## Code Review Expectations
+## Expectativas de Code Review
 
-All code changes must be submitted via pull request and reviewed by at least one other contributor. Reviewers check for code quality, adherence to conventions, test coverage, and security considerations. See [AGENTS.md](../../AGENTS.md) for agent collaboration and review tips.
+Todas as mudanças de código devem ser submetidas via pull request e revisadas por pelo menos um outro contribuidor. Revisores verificam qualidade de código, aderência a convenções, cobertura de testes e considerações de segurança. Veja [AGENTS.md](../../AGENTS.md) para dicas de colaboração e revisão com agentes.
 
-## Onboarding Tasks
+## Tarefas de Onboarding
 
-New contributors should start by reading the [Project Overview](./project-overview.md) and [Architecture Notes](./architecture.md). Look for issues labeled "good first issue" or consult the team for onboarding guidance.
+Novos contribuidores devem começar lendo a [Visão Geral do Projeto](./project-overview.md) e [Notas de Arquitetura](./architecture.md). Procure por issues rotuladas como "good first issue" ou consulte a equipe para orientação de onboarding.
 
 ---
 
-See also: [Testing Strategy](./testing-strategy.md), [Tooling](./tooling.md)
+Veja também: [Estratégia de Testes](./testing-strategy.md), [Ferramentas](./tooling.md)

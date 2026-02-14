@@ -22,24 +22,13 @@ phases:
 
 execution:
   history:
-    - timestamp: "2026-02-13T02:27:17.460Z"
+    - timestamp: "2026-02-14T15:26:36.715Z"
       phase: E
-      action: started
-    - timestamp: "2026-02-13T02:44:14.727Z"
-      phase: P
-      action: phase_skipped
-    - timestamp: "2026-02-13T02:44:14.727Z"
-      phase: R
-      action: phase_skipped
-    - timestamp: "2026-02-13T02:44:14.727Z"
-      phase: C
-      action: phase_skipped
-    - timestamp: "2026-02-13T02:44:14.727Z"
-      phase: E
-      action: plan_linked
+      action: plan_phase_updated
       plan: "entrada-de-dados"
-  last_activity: "2026-02-13T02:44:14.727Z"
-  resume_context: "Plano vinculado - aguardando revisão"
+      description: "Plan phase phase-1 updated to in_progress"
+  last_activity: "2026-02-14T15:26:36.715Z"
+  resume_context: "Fase do plano atualizada"
 
 approval:
   plan_created: true

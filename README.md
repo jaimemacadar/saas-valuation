@@ -1,41 +1,94 @@
+# SaaS Valuation Platform
+
+Plataforma web para modelagem, análise e avaliação de empresas SaaS. Permite a founders, investidores e analistas criar modelos financeiros, projeções e realizar valuation com diversos métodos.
+
+## ✨ Funcionalidades Principais
+
+- 🔐 **Autenticação completa** - Login, signup, reset de senha
+- 📊 **Gestão de Modelos** - CRUD completo com cards visuais
+- 💰 **Visualização Financeira** - DRE, Balanço Patrimonial, FCFF
+- 📝 **Entrada de Dados** - Formulários estruturados para ano base e premissas
+- 🚧 **Modo Mock** - Desenvolvimento offline sem backend
+- 🎨 **UI Moderna** - Tailwind CSS + Radix UI + shadcn/ui
+- 📱 **Responsivo** - Interface adaptável para desktop e mobile
+
+## 🛠️ Stack Tecnológico
+
+- **Next.js 15** (App Router) + **React 19**
+- **TypeScript** para type-safety
+- **Supabase** (PostgreSQL + Auth)
+- **Tailwind CSS** + **Radix UI**
+- **Jest** para testes
+- **ESLint** para qualidade de código
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
 ### Desenvolvimento com Mock Data 🚧
 
-Para desenvolver sem conexão com Supabase, ative o modo mock:
+Para desenvolver **sem conexão com Supabase**, ative o modo mock:
 
 1. Configure no `.env.local`:
    ```env
    NEXT_PUBLIC_USE_MOCK_DATA=true
    ```
 
-2. Reinicie o servidor
+2. Reinicie o servidor de desenvolvimento
 
-Você verá um badge "🚧 MOCK MODE" indicando que está usando dados simulados.
+3. Você verá um badge "🚧 MOCK MODE" no canto superior direito
+
+**Credenciais de teste:**
+- Email: `test@example.com`
+- Senha: `password123`
 
 📖 **Documentação completa:** [MOCK_MODE.md](./MOCK_MODE.md)
 
-### Desenvolvimento Normal
+### Desenvolvimento Normal (com Supabase)
 
-First, run the development server:
+1. Configure as variáveis de ambiente no `.env.local`:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your-project-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+2. Execute o servidor de desenvolvimento:
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   # or
+   bun dev
+   ```
+
+3. Abra [http://localhost:3000](http://localhost:3000) no navegador
+
+### Estrutura do Projeto
+
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+src/
+├── app/                      # Rotas e páginas (Next.js App Router)
+│   ├── (auth)/              # Páginas de autenticação
+│   └── (dashboard)/         # Páginas protegidas
+│       ├── dashboard/       # Dashboard principal
+│       └── model/[id]/      # Detalhes e edição de modelos
+├── components/              # Componentes React
+│   ├── ui/                  # Componentes base (Radix UI)
+│   └── dev/                 # Componentes de desenvolvimento
+├── core/                    # Lógica de negócio e cálculos
+│   ├── calculations/        # Cálculos de valuation, WACC, etc.
+│   └── types/              # Tipos de domínio
+├── lib/                     # Utilitários e integrações
+│   ├── supabase/           # Cliente Supabase
+│   ├── mock/               # Sistema de mock para desenvolvimento
+│   └── actions/            # Server Actions (Next.js)
+└── types/                   # Tipos compartilhados
+```
 
 ## Learn More
 

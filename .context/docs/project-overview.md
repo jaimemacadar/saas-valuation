@@ -4,7 +4,8 @@ name: project-overview
 description: High-level overview of the project, its purpose, and key components
 category: overview
 generated: 2026-01-27
-status: unfilled
+updated: 2026-02-14
+status: filled
 scaffoldVersion: "2.0.0"
 ---
 
@@ -43,9 +44,51 @@ See [`codebase-map.json`](./codebase-map.json) for the complete list of exports,
 - `src/types/` — Shared type definitions
 - `src/styles/` — Design system and global styles
 
+## Key Features
+
+### 🔐 Autenticação e Usuários
+- Login/Signup com Supabase Auth
+- Reset de senha por email
+- Proteção de rotas via middleware
+- Sessões persistentes
+
+### 📊 Gestão de Modelos
+- **CRUD completo de modelos** de valuation
+- Dashboard com lista de modelos (cards visuais)
+- Criação de novos modelos com wizard
+- Duplicação de modelos existentes
+- Exclusão com confirmação
+
+### 💰 Visualização Financeira
+- **DRE (Demonstração de Resultado)** - tabs por ano
+- **Balanço Patrimonial** - tabs por ano
+- **FCFF (Free Cash Flow to Firm)** - projeções
+- Cálculos automáticos de campos dependentes
+
+### 📝 Entrada de Dados (Em desenvolvimento)
+- Formulários de entrada para Ano Base
+- Tabs horizontais: DRE | Balanço Patrimonial
+- Validação de balanço (Ativo = Passivo + PL)
+- Premissas de Projeção
+
+### 🚧 Modo Mock para Desenvolvimento
+- **Sistema completo de mock data** sem necessidade de Supabase
+- Autenticação simulada com usuários pré-configurados
+- Dados de exemplo para testes
+- Cálculos automáticos de campos financeiros
+- Latência simulada para realismo
+- **Documentação**: [MOCK_MODE.md](../../MOCK_MODE.md)
+
 ## Technology Stack Summary
 
-The project is built with Next.js (React) and TypeScript, using Supabase for backend services (auth, database, storage). Tooling includes Jest for testing, ESLint for linting, and Tailwind CSS for styling.
+- **Framework**: Next.js 15 (App Router) + React 19
+- **Linguagem**: TypeScript
+- **Backend**: Supabase (Auth + PostgreSQL + Storage)
+- **UI**: Tailwind CSS + Radix UI + shadcn/ui
+- **Forms**: React Hook Form + Zod
+- **Testing**: Jest + React Testing Library
+- **Linting**: ESLint + TypeScript ESLint
+- **Development**: Mock system para desenvolvimento offline
 
 ## Getting Started Checklist
 

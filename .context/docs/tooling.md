@@ -8,38 +8,38 @@ status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
-## Tooling & Productivity Guide
+## Guia de Ferramentas & Produtividade
 
-This project uses a modern toolchain to maximize developer productivity and code quality. Scripts and automation are provided for common tasks, and recommended editor settings help catch issues early.
+Este projeto usa uma toolchain moderna para maximizar a produtividade do desenvolvedor e a qualidade do código. Scripts e automação são fornecidos para tarefas comuns, e configurações de editor recomendadas ajudam a detectar problemas cedo.
 
-## Required Tooling
+## Ferramentas Necessárias
 
-- **Node.js** (v18+): JavaScript runtime
-- **npm**: Package manager
-- **Supabase CLI** (optional): For local database and auth emulation
-- **Jest**: Testing framework
+- **Node.js** (v18+): Runtime JavaScript
+- **npm**: Gerenciador de pacotes
+- **Supabase CLI** (opcional): Para emulação local de banco de dados e auth
+- **Jest**: Framework de testes
 - **ESLint**: Linting
-- **Prettier**: Code formatting
-- **Tailwind CSS**: Styling
+- **Prettier**: Formatação de código
+- **Tailwind CSS**: Estilização
 
-## Recommended Automation
+## Automação Recomendada
 
-- Pre-commit hooks: Run lint and format checks before commits
-- `npm run lint`: Lint all files
-- `npm run format`: Format codebase
-- `npm run test -- --watch`: Run tests in watch mode
+- Pre-commit hooks: Executam verificações de lint e formatação antes de commits
+- `npm run lint`: Lint em todos os arquivos
+- `npm run format`: Formata a codebase
+- `npm run test -- --watch`: Executa testes em modo watch
 
-## IDE / Editor Setup
+## Configuração de IDE / Editor
 
-- VS Code: Recommended editor
-- Extensions: ESLint, Prettier, Tailwind CSS IntelliSense, Supabase
+- **VS Code**: Editor recomendado
+- **Extensões**: ESLint, Prettier, Tailwind CSS IntelliSense, Supabase
 
-## Productivity Tips
+## Dicas de Produtividade
 
-- Use terminal aliases for common scripts
-- Leverage Supabase CLI for local development
-- Review scripts in `package.json` for more automation
+- Use aliases de terminal para scripts comuns
+- Aproveite o Supabase CLI para desenvolvimento local
+- Revise scripts em `package.json` para mais automação
 
 ---
 
-See also: [Development Workflow](./development-workflow.md)
+Veja também: [Fluxo de Desenvolvimento](./development-workflow.md)

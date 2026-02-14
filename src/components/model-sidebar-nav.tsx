@@ -57,29 +57,11 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       items: [
         {
           title: 'Ano Base',
-          items: [
-            {
-              title: 'DRE',
-              url: `/model/${modelId}/input/base/dre`,
-            },
-            {
-              title: 'Balanço Patrimonial',
-              url: `/model/${modelId}/input/base/balance-sheet`,
-            },
-          ],
+          url: `/model/${modelId}/input/base`,
         },
         {
           title: 'Premissas de Projeção',
-          items: [
-            {
-              title: 'DRE',
-              url: `/model/${modelId}/input/projections/dre`,
-            },
-            {
-              title: 'Balanço Patrimonial',
-              url: `/model/${modelId}/input/projections/balance-sheet`,
-            },
-          ],
+          url: `/model/${modelId}/input/projections`,
         },
       ],
     },

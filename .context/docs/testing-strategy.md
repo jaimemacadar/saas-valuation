@@ -8,31 +8,31 @@ status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
-## Testing Strategy
+## Estratégia de Testes
 
-Quality is maintained through automated tests, code reviews, and continuous integration. All business logic and calculations are covered by unit and integration tests. Contributors are expected to write and maintain tests for new features and bug fixes.
+A qualidade é mantida através de testes automatizados, revisões de código e integração contínua. Toda lógica de negócio e cálculos são cobertos por testes unitários e de integração. Espera-se que contribuidores escrevam e mantenham testes para novas funcionalidades e correções de bugs.
 
-## Test Types
+## Tipos de Testes
 
-- **Unit**: Jest, files named `*.test.ts` in `src/core/calculations/` and `src/lib/actions/`
-- **Integration**: Jest, scenarios covering API endpoints and multi-module flows
-- **E2E**: (Not implemented) — future support planned
+- **Unitários**: Jest, arquivos nomeados `*.test.ts` em `src/core/calculations/` e `src/lib/actions/`
+- **Integração**: Jest, cenários cobrindo endpoints de API e fluxos multi-módulo
+- **E2E**: (Não implementado) — suporte futuro planejado
 
-## Running Tests
+## Executando Testes
 
-- All tests: `npm run test`
-- Watch mode: `npm run test -- --watch`
-- Coverage: `npm run test -- --coverage`
+- Todos os testes: `npm run test`
+- Modo watch: `npm run test -- --watch`
+- Cobertura: `npm run test -- --coverage`
 
 ## Quality Gates
 
-- Minimum 80% code coverage required for merges
-- All code must pass ESLint and Prettier checks before merging
+- Mínimo de 80% de cobertura de código necessário para merges
+- Todo código deve passar nas verificações de ESLint e Prettier antes do merge
 
 ## Troubleshooting
 
-If tests are flaky or fail due to environment issues, clear caches and reinstall dependencies. For persistent issues, consult the team or review recent changes.
+Se testes falharem devido a problemas de ambiente ou forem instáveis, limpe caches e reinstale dependências. Para problemas persistentes, consulte a equipe ou revise mudanças recentes.
 
 ---
 
-See also: [Development Workflow](./development-workflow.md)
+Veja também: [Fluxo de Desenvolvimento](./development-workflow.md)

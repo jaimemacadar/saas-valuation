@@ -8,27 +8,27 @@ status: unfilled
 scaffoldVersion: "2.0.0"
 ---
 
-## Security & Compliance Notes
+## Notas de Segurança & Conformidade
 
-The SaaS Valuation project enforces security best practices at all layers. All data exchanges use HTTPS, and sensitive operations are protected by authentication and authorization checks. The codebase is reviewed for vulnerabilities and follows secure coding standards.
+O projeto SaaS Valuation aplica as melhores práticas de segurança em todas as camadas. Todas as trocas de dados usam HTTPS, e operações sensíveis são protegidas por verificações de autenticação e autorização. A base de código é revisada quanto a vulnerabilidades e segue padrões de codificação segura.
 
-## Authentication & Authorization
+## Autenticação & Autorização
 
-Authentication is managed by Supabase, using JWT tokens for session management. User roles and permissions are enforced at the application level, with checks in API routes and core logic. Only authenticated users can access sensitive endpoints and data.
+A autenticação é gerenciada pelo Supabase, usando tokens JWT para gerenciamento de sessão. Roles e permissões de usuário são aplicadas no nível da aplicação, com verificações em rotas de API e lógica central. Apenas usuários autenticados podem acessar endpoints e dados sensíveis.
 
-## Secrets & Sensitive Data
+## Secrets & Dados Sensíveis
 
-Secrets (API keys, database credentials) are stored in environment variables and never committed to the repository. Supabase manages encryption at rest and in transit. Developers should rotate secrets regularly and avoid logging sensitive information.
+Secrets (chaves de API, credenciais de banco de dados) são armazenados em variáveis de ambiente e nunca commitados no repositório. O Supabase gerencia criptografia em repouso e em trânsito. Desenvolvedores devem rotacionar secrets regularmente e evitar registrar informações sensíveis em logs.
 
-## Compliance & Policies
+## Conformidade & Políticas
 
-- GDPR: User data is handled in compliance with privacy regulations.
-- SOC2: Follows best practices for data security and operational controls.
+- **GDPR**: Dados de usuário são tratados em conformidade com regulamentos de privacidade.
+- **SOC2**: Segue as melhores práticas para segurança de dados e controles operacionais.
 
-## Incident Response
+## Resposta a Incidentes
 
-In case of a security incident, the team should follow the incident response plan: contain, investigate, remediate, and document. Supabase provides audit logs and access controls to support investigations.
+Em caso de incidente de segurança, a equipe deve seguir o plano de resposta a incidentes: conter, investigar, remediar e documentar. O Supabase fornece logs de auditoria e controles de acesso para apoiar investigações.
 
 ---
 
-See also: [Architecture Notes](./architecture.md)
+Veja também: [Notas de Arquitetura](./architecture.md)
