@@ -39,9 +39,14 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       url: '/dashboard',
     },
     {
-      title: 'Premissas Valuation',
+      title: 'Dados Ano Base',
       icon: Database,
       url: `/model/${modelId}/input/base`,
+    },
+    {
+      title: 'Premissas Projeção',
+      icon: Activity,
+      url: `/model/${modelId}/input/projections`,
     },
     {
       title: 'DRE Projetado',
@@ -62,11 +67,6 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       title: 'Valuation',
       icon: BarChart3,
       url: `/model/${modelId}/view/valuation`,
-    },
-    {
-      title: 'Sensibilidade',
-      icon: Activity,
-      url: `/model/${modelId}/sensitivity`,
     },
   ];
 

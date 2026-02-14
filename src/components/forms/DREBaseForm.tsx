@@ -15,19 +15,37 @@ interface DREBaseFormProps {
   initialData?: DREBaseInputs;
 }
 
+// Função helper para garantir estrutura completa de dados
+const getInitialFormData = (data?: DREBaseInputs): DREBaseInputs => {
+  const defaults: DREBaseInputs = {
+    receitaBruta: 0,
+    impostosEDevolucoes: 0,
+    cmv: 0,
+    despesasOperacionais: 0,
+    irCSLL: 0,
+    dividendos: 0,
+  };
+
+  if (!data) return defaults;
+
+  return {
+    receitaBruta: data.receitaBruta ?? defaults.receitaBruta,
+    impostosEDevolucoes: data.impostosEDevolucoes ?? defaults.impostosEDevolucoes,
+    cmv: data.cmv ?? defaults.cmv,
+    despesasOperacionais: data.despesasOperacionais ?? defaults.despesasOperacionais,
+    irCSLL: data.irCSLL ?? defaults.irCSLL,
+    dividendos: data.dividendos ?? defaults.dividendos,
+  };
+};
+
 export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const [formData, setFormData] = useState<DREBaseInputs>({
-    receitaBruta: initialData?.receitaBruta || 0,
-    impostosEDevolucoes: initialData?.impostosEDevolucoes || 0,
-    cmv: initialData?.cmv || 0,
-    despesasOperacionais: initialData?.despesasOperacionais || 0,
-    irCSLL: initialData?.irCSLL || 0,
-    dividendos: initialData?.dividendos || 0,
-  });
+  const [formData, setFormData] = useState<DREBaseInputs>(() =>
+    getInitialFormData(initialData)
+  );
 
   const handleChange = (field: keyof DREBaseInputs, value: string) => {
     const numValue = parseFloat(value) || 0;

@@ -15,42 +15,73 @@ interface BalanceSheetBaseFormProps {
   initialData?: BalanceSheetBaseInputs;
 }
 
+// Função helper para garantir estrutura completa de dados
+const getInitialFormData = (data?: BalanceSheetBaseInputs): BalanceSheetBaseInputs => {
+  const defaults: BalanceSheetBaseInputs = {
+    ativoCirculante: {
+      caixaEquivalentes: 0,
+      aplicacoesFinanceiras: 0,
+      contasReceber: 0,
+      estoques: 0,
+      ativosBiologicos: 0,
+      outrosCreditos: 0,
+    },
+    ativoRealizavelLP: {
+      investimentos: 0,
+      ativoImobilizadoBruto: 0,
+      depreciacaoAcumulada: 0,
+      intangivel: 0,
+    },
+    passivoCirculante: {
+      fornecedores: 0,
+      impostosAPagar: 0,
+      obrigacoesSociaisETrabalhistas: 0,
+      emprestimosFinanciamentosCP: 0,
+      outrasObrigacoes: 0,
+    },
+    passivoRealizavelLP: {
+      emprestimosFinanciamentosLP: 0,
+    },
+    patrimonioLiquido: {
+      capitalSocial: 0,
+      lucrosAcumulados: 0,
+    },
+  };
+
+  if (!data) return defaults;
+
+  // Mesclar dados iniciais com valores padrão para garantir todas as propriedades
+  return {
+    ativoCirculante: {
+      ...defaults.ativoCirculante,
+      ...data.ativoCirculante,
+    },
+    ativoRealizavelLP: {
+      ...defaults.ativoRealizavelLP,
+      ...data.ativoRealizavelLP,
+    },
+    passivoCirculante: {
+      ...defaults.passivoCirculante,
+      ...data.passivoCirculante,
+    },
+    passivoRealizavelLP: {
+      ...defaults.passivoRealizavelLP,
+      ...data.passivoRealizavelLP,
+    },
+    patrimonioLiquido: {
+      ...defaults.patrimonioLiquido,
+      ...data.patrimonioLiquido,
+    },
+  };
+};
+
 export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const [formData, setFormData] = useState<BalanceSheetBaseInputs>(
-    initialData || {
-      ativoCirculante: {
-        caixaEquivalentes: 0,
-        aplicacoesFinanceiras: 0,
-        contasReceber: 0,
-        estoques: 0,
-        ativosBiologicos: 0,
-        outrosCreditos: 0,
-      },
-      ativoRealizavelLP: {
-        investimentos: 0,
-        ativoImobilizadoBruto: 0,
-        depreciacaoAcumulada: 0,
-        intangivel: 0,
-      },
-      passivoCirculante: {
-        fornecedores: 0,
-        impostosAPagar: 0,
-        obrigacoesSociaisETrabalhistas: 0,
-        emprestimosFinanciamentosCP: 0,
-        outrasObrigacoes: 0,
-      },
-      passivoRealizavelLP: {
-        emprestimosFinanciamentosLP: 0,
-      },
-      patrimonioLiquido: {
-        capitalSocial: 0,
-        lucrosAcumulados: 0,
-      },
-    }
+  const [formData, setFormData] = useState<BalanceSheetBaseInputs>(() =>
+    getInitialFormData(initialData)
   );
 
   const handleChange = (
