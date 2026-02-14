@@ -9,7 +9,6 @@ import {
   TrendingUp,
   Home,
   Database,
-  Sliders,
   Activity,
   LucideIcon,
 } from 'lucide-react';
@@ -40,14 +39,9 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       url: '/dashboard',
     },
     {
-      title: 'Ano Base',
+      title: 'Premissas do Valuation',
       icon: Database,
       url: `/model/${modelId}/input/base`,
-    },
-    {
-      title: 'Premissas de Projeção',
-      icon: Sliders,
-      url: `/model/${modelId}/input/projections`,
     },
     {
       title: 'DRE Projetado',
@@ -78,7 +72,7 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
 
   return (
     <SidebarGroup>
-      <SidebarMenu>
+      <SidebarMenu className="gap-2">
         {navigation.map((item) => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild isActive={pathname === item.url}>

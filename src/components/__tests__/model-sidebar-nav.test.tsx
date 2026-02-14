@@ -38,8 +38,7 @@ describe('ModelSidebarNav', () => {
     render(<ModelSidebarNav modelId={modelId} />);
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Ano Base')).toBeInTheDocument();
-    expect(screen.getByText('Premissas de Projeção')).toBeInTheDocument();
+    expect(screen.getByText('Premissas do Valuation')).toBeInTheDocument();
     expect(screen.getByText('DRE Projetado')).toBeInTheDocument();
     expect(screen.getByText('Balanço Projetado')).toBeInTheDocument();
     expect(screen.getByText('Fluxo de Caixa Livre')).toBeInTheDocument();
@@ -57,24 +56,14 @@ describe('ModelSidebarNav', () => {
     expect(dashboardLink?.textContent).toContain('Dashboard');
   });
 
-  it('deve gerar URL correta para Ano Base', () => {
+  it('deve gerar URL correta para Premissas do Valuation', () => {
     (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/input/base`);
 
     const { container } = render(<ModelSidebarNav modelId={modelId} />);
 
     const baseLink = container.querySelector(`a[href="/model/${modelId}/input/base"]`);
     expect(baseLink).toBeInTheDocument();
-    expect(baseLink?.textContent).toContain('Ano Base');
-  });
-
-  it('deve gerar URL correta para Premissas de Projeção', () => {
-    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/input/projections`);
-
-    const { container } = render(<ModelSidebarNav modelId={modelId} />);
-
-    const projectionsLink = container.querySelector(`a[href="/model/${modelId}/input/projections"]`);
-    expect(projectionsLink).toBeInTheDocument();
-    expect(projectionsLink?.textContent).toContain('Premissas de Projeção');
+    expect(baseLink?.textContent).toContain('Premissas do Valuation');
   });
 
   it('deve gerar URLs corretas para todas as visualizações', () => {
@@ -119,13 +108,13 @@ describe('ModelSidebarNav', () => {
     expect(screen.getByText('Valuation')).toBeInTheDocument();
   });
 
-  it('deve renderizar exatamente 8 itens de menu', () => {
+  it('deve renderizar exatamente 7 itens de menu', () => {
     (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/view/dre`);
 
     render(<ModelSidebarNav modelId={modelId} />);
 
     const menuItems = screen.getAllByTestId('sidebar-menu-item');
-    // Deve haver exatamente 8 itens de menu
-    expect(menuItems.length).toBe(8);
+    // Deve haver exatamente 7 itens de menu
+    expect(menuItems.length).toBe(7);
   });
 });

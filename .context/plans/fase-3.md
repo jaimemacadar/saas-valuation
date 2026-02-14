@@ -37,8 +37,8 @@ lastUpdated: "2026-01-29T18:42:56.867Z"
 
 ## Task Snapshot
 
-- **Primary goal:** Permitir que o usuário visualize as projeções financeiras calculadas pelo motor da Fase 2 em tabelas formatadas e gráficos interativos.
-- **Success signal:** Tabelas renderizam projeções de 5-10 anos sem lag, gráficos são interativos (hover mostra valores), navegação é intuitiva (< 2 cliques para qualquer seção), números formatados corretamente (R$, %).
+- **Primary goal:** Permitir que o usuário visualize as projeções financeiras calculadas pelo motor da Fase 2 em tabelas formatadas e gráficos interativos, com premissas de projeção editáveis inline nas tabelas de DRE e Balanço Projetado (conforme PRD Item B).
+- **Success signal:** Tabelas renderizam projeções de 5-10 anos sem lag, premissas editáveis inline abaixo de cada conta, gráficos são interativos (hover mostra valores), navegação flat e intuitiva (1 clique para qualquer seção), números formatados corretamente (R$, %).
 - **Key references:**
   - [PRD - Fase 3](./PRD.md) — Especificação detalhada
   - [Core Types](../../src/core/types/index.ts) — Tipos DRECalculated, BalanceSheetCalculated, FCFFCalculated
@@ -103,9 +103,12 @@ lastUpdated: "2026-01-29T18:42:56.867Z"
    - `formatPercentage(value)` — Formato `X,XX%`
    - `formatCompactNumber(value)` — 10M, 1,5B, 300K
 3. Criar estrutura de rotas:
-   - `src/app/(dashboard)/model/[id]/view/dre/page.tsx`
-   - `src/app/(dashboard)/model/[id]/view/balance-sheet/page.tsx`
-   - `src/app/(dashboard)/model/[id]/view/fcff/page.tsx`
+   - `src/app/(dashboard)/model/[id]/view/dre/page.tsx` — DRE Projetado (inclui premissas inline)
+   - `src/app/(dashboard)/model/[id]/view/balance-sheet/page.tsx` — Balanço Projetado (inclui premissas inline)
+   - `src/app/(dashboard)/model/[id]/view/fcff/page.tsx` — Fluxo de Caixa Livre
+   - `src/app/(dashboard)/model/[id]/view/valuation/page.tsx` — Valuation (FCD)
+   - `src/app/(dashboard)/model/[id]/sensitivity/page.tsx` — Análise de Sensibilidade
+   - ~~`src/app/(dashboard)/model/[id]/input/projections/`~~ — **Removida**: premissas integradas nas visualizações (PRD Item B)
 4. Definir quais componentes serão Server vs Client Components
 
 **Commit Checkpoint:** `git commit -m "feat(fase-3): setup dependencies, formatters and route structure"`
@@ -124,11 +127,20 @@ lastUpdated: "2026-01-29T18:42:56.867Z"
 - Formatação: R$ para valores absolutos, % para margens
 - Highlight: Linhas de totais (Receita Líquida, EBIT, Lucro Líquido) com negrito e borda superior
 - Distinção visual: inputs (fundo branco) vs calculadas (fundo cinza claro)
+- **Premissas inline (PRD Item B):** Linha de premissa editável posicionada imediatamente abaixo de cada conta projetada
+  - Inputs percentuais com formatação automática (%)
+  - Copiar valor para todos os anos (botão para replicar Ano 1)
+  - Aplicar tendência (valor inicial → final com interpolação)
+  - Highlight de célula ativa (navegação por Tab/Enter)
+  - Tooltips indicando sobre qual base a taxa é aplicada (ex: "% sobre Receita Líquida")
 
 **Balance Sheet Table** (`src/components/tables/BalanceSheetTable.tsx`) — Client Component:
 - Seções expansíveis: Ativo Circulante, Ativo LP, Passivo Circulante, Passivo LP, Patrimônio Líquido
 - Drill-down: Expandir/colapsar seções
 - Validação visual: Ativo = Passivo + PL (indicador verde/vermelho)
+- **Premissas inline (PRD Item B):** Linha de premissa editável abaixo de cada conta
+  - Inputs de prazo médio (dias) ou taxa percentual conforme a conta
+  - Mesmas funcionalidades UX da DRE: copiar para direita, tendência, highlight, tooltips
 
 **FCFF Table** (`src/components/tables/FCFFTable.tsx`) — Client Component:
 - Linhas: EBIT, Depreciação, CAPEX, NCG, FCFF
@@ -175,26 +187,22 @@ Cada page em `/model/[id]/view/*` será um Server Component que:
 
 #### 3.1 — Navegação e Layout
 
-**Sidebar de navegação** (atualizar `src/components/app-sidebar.tsx`):
+**Sidebar de navegação** — Menu flat sem submenus (`src/components/model-sidebar-nav.tsx`):
 ```
-Dashboard
-─────────────
-Entrada de Dados
-├─ Ano Base
-│  ├─ DRE
-│  └─ Balanço Patrimonial
-└─ Premissas de Projeção
-   ├─ DRE
-   └─ Balanço Patrimonial
-─────────────
-Visualizações
-├─ DRE Projetado
-├─ Balanço Projetado
-├─ Fluxo de Caixa Livre
-└─ Valuation
-─────────────
-Análise de Sensibilidade
+🏠 Dashboard              → /dashboard
+💾 Premissas do Valuation  → /model/[id]/input/base
+📄 DRE Projetado           → /model/[id]/view/dre
+⚖️ Balanço Projetado       → /model/[id]/view/balance-sheet
+📈 Fluxo de Caixa Livre    → /model/[id]/view/fcff
+📊 Valuation               → /model/[id]/view/valuation
+📉 Análise de Sensibilidade → /model/[id]/sensitivity
 ```
+
+> **Decisão arquitetural:** As premissas de projeção **não têm página separada**.
+> Conforme PRD Item B (Experiência de Usuário), as premissas de projeção são
+> apresentadas como **tabela horizontal inline editável** dentro das próprias
+> páginas de DRE Projetado e Balanço Projetado, com a variável de projeção
+> posicionada na linha imediatamente abaixo da respectiva conta.
 
 **Breadcrumbs** — Server Component:
 - Indicar caminho: Dashboard > Modelo X > DRE Projetado
@@ -223,8 +231,10 @@ Análise de Sensibilidade
 ## Entregáveis
 
 - [ ] Tabelas financeiras responsivas e formatadas (DRE, BP, FCFF)
+- [ ] **Premissas de projeção inline editáveis** nas tabelas DRE e Balanço Projetado (PRD Item B)
+- [ ] Funcionalidades UX para premissas: copiar para direita, tendência, highlight, tooltips
 - [ ] Gráficos interativos de projeção (Receita, Custos, EBITDA, FCFF)
-- [ ] Navegação fluida entre seções (Sidebar + Breadcrumbs)
+- [ ] Navegação flat entre seções (Sidebar sem submenus)
 - [ ] Feedback visual de estado (loading, erro, completo)
 - [ ] Design consistente com shadcn/ui
 - [ ] Testes unitários para formatadores e componentes
@@ -232,8 +242,10 @@ Análise de Sensibilidade
 ## Critérios de Aceite
 
 - Tabelas renderizam projeções de 5 ou 10 anos sem lag perceptível
+- Premissas editáveis inline abaixo de cada conta (% ou dias conforme tipo)
+- Premissas integradas nas visualizações (sem página separada de premissas)
 - Gráficos são interativos (hover mostra valores formatados em R$)
-- Navegação intuitiva (< 2 cliques para qualquer seção)
+- Navegação flat e intuitiva (1 clique para qualquer seção)
 - Números formatados corretamente no padrão brasileiro (R$, %)
 - Build sem erros TypeScript
 - Responsivo em telas >= 768px

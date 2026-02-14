@@ -448,3 +448,109 @@ export async function duplicateModel(id: string): Promise<ActionResult> {
     };
   }
 }
+
+/**
+ * Save DRE Base inputs to model
+ */
+export async function saveDREBase(
+  modelId: string,
+  dreData: {
+    receita: number;
+    custoMercadoriaVendida: number;
+    despesasOperacionais: number;
+    despesasFinanceiras: number;
+    taxaImposto: number;
+  }
+): Promise<ActionResult> {
+  try {
+    const user = await requireAuth();
+
+    // Get existing model data
+    const modelResult = await getModelById(modelId);
+    if (!modelResult.success || !modelResult.data) {
+      return {
+        error: "Modelo não encontrado",
+      };
+    }
+
+    // Merge DRE data into model_data
+    const currentModelData = (modelResult.data.model_data as any) || {};
+    const updatedModelData = {
+      ...currentModelData,
+      dreBase: dreData,
+    };
+
+    // Update model
+    return await updateModel(modelId, { model_data: updatedModelData });
+  } catch (error) {
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+      throw error;
+    }
+    return {
+      error: "Erro ao salvar dados da DRE",
+    };
+  }
+}
+
+/**
+ * Save Balance Sheet Base inputs to model
+ */
+export async function saveBalanceSheetBase(
+  modelId: string,
+  balanceData: {
+    caixa: number;
+    contasReceber: number;
+    estoques: number;
+    ativoCirculante: number;
+    imobilizado: number;
+    ativoTotal: number;
+    contasPagar: number;
+    passivoCirculante: number;
+    passivoNaoCirculante: number;
+    dividasLongoPrazo: number;
+    passivoTotal: number;
+    patrimonioLiquido: number;
+  }
+): Promise<ActionResult> {
+  try {
+    const user = await requireAuth();
+
+    // Validate balance equation: Assets = Liabilities + Equity
+    const ativoTotal = balanceData.ativoTotal;
+    const passivoTotal = balanceData.passivoTotal;
+    const patrimonioLiquido = balanceData.patrimonioLiquido;
+
+    const diff = Math.abs(ativoTotal - (passivoTotal + patrimonioLiquido));
+    if (diff > 0.01) {
+      // Tolerância de 1 centavo para erros de arredondamento
+      return {
+        error: "Erro de balanço: Ativo Total deve ser igual a Passivo Total + Patrimônio Líquido",
+      };
+    }
+
+    // Get existing model data
+    const modelResult = await getModelById(modelId);
+    if (!modelResult.success || !modelResult.data) {
+      return {
+        error: "Modelo não encontrado",
+      };
+    }
+
+    // Merge balance sheet data into model_data
+    const currentModelData = (modelResult.data.model_data as any) || {};
+    const updatedModelData = {
+      ...currentModelData,
+      balanceSheetBase: balanceData,
+    };
+
+    // Update model
+    return await updateModel(modelId, { model_data: updatedModelData });
+  } catch (error) {
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+      throw error;
+    }
+    return {
+      error: "Erro ao salvar dados do Balanço Patrimonial",
+    };
+  }
+}
