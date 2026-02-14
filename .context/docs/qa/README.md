@@ -13,6 +13,7 @@ Generated: 2026-01-27T02:46:38.598Z
 - [How is the codebase organized?](./project-structure.md)
 - [How does routing work?](./routing.md)
 - [How does middleware work?](./middleware.md)
+- [What are the main UI components?](./components-ui.md)
 
 ## Features
 
