@@ -26,7 +26,7 @@ interface DRETableProps {
 type DRERowData = {
   label: string;
   type: 'header' | 'value' | 'subtotal' | 'total';
-  field: keyof DRECalculated | 'margin';
+  field: string; // Campo de referência (não usado diretamente)
   values: Record<string, number | null>;
   isMargin?: boolean;
 };
@@ -46,73 +46,89 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
       label: 'Receita Bruta',
       type: 'value',
       field: 'receita',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.receita])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
     },
     {
       label: '(-) Impostos sobre Vendas',
       type: 'value',
       field: 'impostos',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.impostos * -1])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.impostosEDevolucoes * -1])),
     },
     {
       label: 'Receita Líquida',
       type: 'total',
-      field: 'receita',
-      values: Object.fromEntries(
-        data.map((d) => [d.ano, d.receita - d.impostos])
-      ),
+      field: 'receitaLiquida',
+      values: Object.fromEntries(data.map((d) => [d.year, d.receitaLiquida])),
     },
     {
       label: '(-) CMV',
       type: 'value',
       field: 'cmv',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.cmv * -1])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.cmv * -1])),
     },
     {
       label: 'Lucro Bruto',
       type: 'subtotal',
       field: 'lucrobruto',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.lucrobruto])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.lucroBruto])),
     },
     {
       label: '(-) Despesas Operacionais',
       type: 'value',
       field: 'despesasOperacionais',
       values: Object.fromEntries(
-        data.map((d) => [d.ano, d.despesasOperacionais * -1])
+        data.map((d) => [d.year, d.despesasOperacionais * -1])
       ),
     },
     {
       label: 'EBIT',
       type: 'total',
       field: 'ebit',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.ebit])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.ebit])),
+    },
+    {
+      label: '(+) Depreciação e Amortização',
+      type: 'value',
+      field: 'depreciacaoAmortizacao',
+      values: Object.fromEntries(data.map((d) => [d.year, d.depreciacaoAmortizacao])),
+    },
+    {
+      label: 'EBITDA',
+      type: 'subtotal',
+      field: 'ebitda',
+      values: Object.fromEntries(data.map((d) => [d.year, d.ebitda])),
     },
     {
       label: '(-) Despesas Financeiras',
       type: 'value',
       field: 'despesasFinanceiras',
       values: Object.fromEntries(
-        data.map((d) => [d.ano, d.despesasFinanceiras * -1])
+        data.map((d) => [d.year, d.despesasFinanceiras * -1])
       ),
     },
     {
       label: 'LAIR',
       type: 'subtotal',
-      field: 'lucroAntesImpostos',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.lucroAntesImpostos])),
+      field: 'lucroAntesIR',
+      values: Object.fromEntries(data.map((d) => [d.year, d.lucroAntesIR])),
     },
     {
       label: '(-) IR/CSLL',
       type: 'value',
-      field: 'impostos',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.impostos * -1])),
+      field: 'irCSLL',
+      values: Object.fromEntries(data.map((d) => [d.year, d.irCSLL * -1])),
     },
     {
       label: 'Lucro Líquido',
       type: 'total',
       field: 'lucroLiquido',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.lucroLiquido])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.lucroLiquido])),
+    },
+    {
+      label: '(-) Dividendos',
+      type: 'value',
+      field: 'dividendos',
+      values: Object.fromEntries(data.map((d) => [d.year, d.dividendos * -1])),
     },
   ];
 
@@ -137,10 +153,10 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
       },
     },
     ...data.map((yearData) => ({
-      id: `year-${yearData.ano}`,
-      header: yearData.ano === 0 ? 'Ano Base' : `Ano ${yearData.ano}`,
+      id: `year-${yearData.year}`,
+      header: yearData.year === 0 ? 'Ano Base' : `Ano ${yearData.year}`,
       cell: ({ row }: { row: { original: DRERowData } }) => {
-        const value = row.original.values[yearData.ano];
+        const value = row.original.values[yearData.year];
         const rowType = row.original.type;
         const isMargin = row.original.isMargin;
 

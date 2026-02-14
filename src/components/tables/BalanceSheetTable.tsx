@@ -30,7 +30,7 @@ interface BalanceSheetTableProps {
 type BalanceSheetRowData = {
   label: string;
   type: 'section' | 'item' | 'subtotal' | 'total';
-  field?: keyof BalanceSheetCalculated;
+  field?: string; // Campo de referência (não usado diretamente)
   values: Record<string, number | null>;
   subRows?: BalanceSheetRowData[];
 };
@@ -49,7 +49,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
   // Valida se Ativo = Passivo + PL
   const isBalanced = data.every((year) => {
     const diff = Math.abs(
-      year.ativoTotal - (year.passivoTotal + year.patrimonioLiquido)
+      year.ativoTotal - (year.passivoTotal + year.patrimonioLiquido.total)
     );
     return diff < 0.01; // Tolerância de R$ 0,01
   });
@@ -59,30 +59,30 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
     {
       label: 'ATIVO',
       type: 'section',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.ativoTotal])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.ativoTotal])),
       subRows: [
         {
           label: 'Ativo Circulante',
           type: 'subtotal',
-          values: Object.fromEntries(data.map((d) => [d.ano, d.ativoCirculante])),
+          values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.total])),
           subRows: [
             {
               label: 'Caixa e Equivalentes',
               type: 'item',
               field: 'caixa',
-              values: Object.fromEntries(data.map((d) => [d.ano, d.caixa])),
+              values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.caixaEquivalentes])),
             },
             {
               label: 'Contas a Receber',
               type: 'item',
               field: 'contasReceber',
-              values: Object.fromEntries(data.map((d) => [d.ano, d.contasReceber])),
+              values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.contasReceber])),
             },
             {
               label: 'Estoques',
               type: 'item',
               field: 'estoques',
-              values: Object.fromEntries(data.map((d) => [d.ano, d.estoques])),
+              values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.estoques])),
             },
           ],
         },
@@ -90,14 +90,14 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
           label: 'Ativo Não Circulante',
           type: 'subtotal',
           values: Object.fromEntries(
-            data.map((d) => [d.ano, d.ativoTotal - d.ativoCirculante])
+            data.map((d) => [d.year, d.ativoTotal - d.ativoCirculante.total])
           ),
           subRows: [
             {
               label: 'Imobilizado',
               type: 'item',
               field: 'imobilizado',
-              values: Object.fromEntries(data.map((d) => [d.ano, d.imobilizado])),
+              values: Object.fromEntries(data.map((d) => [d.year, d.ativoRealizavelLP.imobilizado])),
             },
           ],
         },
@@ -106,18 +106,18 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
     {
       label: 'PASSIVO',
       type: 'section',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.passivoTotal])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.passivoTotal])),
       subRows: [
         {
           label: 'Passivo Circulante',
           type: 'subtotal',
-          values: Object.fromEntries(data.map((d) => [d.ano, d.passivoCirculante])),
+          values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.total])),
           subRows: [
             {
-              label: 'Contas a Pagar',
+              label: 'Fornecedores',
               type: 'item',
-              field: 'contasPagar',
-              values: Object.fromEntries(data.map((d) => [d.ano, d.contasPagar])),
+              field: 'fornecedores',
+              values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.fornecedores])),
             },
           ],
         },
@@ -125,15 +125,15 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
           label: 'Passivo Não Circulante',
           type: 'subtotal',
           values: Object.fromEntries(
-            data.map((d) => [d.ano, d.passivoNaoCirculante])
+            data.map((d) => [d.year, d.passivoRealizavelLP.total])
           ),
           subRows: [
             {
-              label: 'Dívidas de Longo Prazo',
+              label: 'Empréstimos e Financiamentos LP',
               type: 'item',
-              field: 'dividasLongoPrazo',
+              field: 'emprestimosFinanciamentosLP',
               values: Object.fromEntries(
-                data.map((d) => [d.ano, d.dividasLongoPrazo])
+                data.map((d) => [d.year, d.passivoRealizavelLP.emprestimosFinanciamentosLP])
               ),
             },
           ],
@@ -144,7 +144,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
       label: 'PATRIMÔNIO LÍQUIDO',
       type: 'total',
       field: 'patrimonioLiquido',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.patrimonioLiquido])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.patrimonioLiquido.total])),
     },
   ];
 
@@ -185,10 +185,10 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
       },
     },
     ...data.map((yearData) => ({
-      id: `year-${yearData.ano}`,
-      header: yearData.ano === 0 ? 'Ano Base' : `Ano ${yearData.ano}`,
+      id: `year-${yearData.year}`,
+      header: yearData.year === 0 ? 'Ano Base' : `Ano ${yearData.year}`,
       cell: ({ row }: { row: { original: BalanceSheetRowData } }) => {
-        const value = row.original.values[yearData.ano];
+        const value = row.original.values[yearData.year];
         const rowType = row.original.type;
 
         return (

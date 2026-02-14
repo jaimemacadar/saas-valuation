@@ -9,6 +9,7 @@ import {
   mockStore,
   mockDelay,
 } from "@/lib/mock";
+import type { DREProjectionInputs, BalanceSheetProjectionInputs, DREBaseInputs, BalanceSheetBaseInputs } from "@/core/types";
 
 // Types
 export type FinancialModelBasic = {
@@ -454,13 +455,7 @@ export async function duplicateModel(id: string): Promise<ActionResult> {
  */
 export async function saveDREBase(
   modelId: string,
-  dreData: {
-    receita: number;
-    custoMercadoriaVendida: number;
-    despesasOperacionais: number;
-    despesasFinanceiras: number;
-    taxaImposto: number;
-  }
+  dreData: DREBaseInputs
 ): Promise<ActionResult> {
   try {
     const user = await requireAuth();
@@ -481,7 +476,17 @@ export async function saveDREBase(
     };
 
     // Update model
-    return await updateModel(modelId, { model_data: updatedModelData });
+    const updateResult = await updateModel(modelId, { model_data: updatedModelData });
+
+    if (!updateResult.success) {
+      return updateResult;
+    }
+
+    // Auto-calculate projections
+    const { recalculateModel } = await import("./calculate");
+    await recalculateModel(modelId);
+
+    return updateResult;
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;
@@ -497,30 +502,44 @@ export async function saveDREBase(
  */
 export async function saveBalanceSheetBase(
   modelId: string,
-  balanceData: {
-    caixa: number;
-    contasReceber: number;
-    estoques: number;
-    ativoCirculante: number;
-    imobilizado: number;
-    ativoTotal: number;
-    contasPagar: number;
-    passivoCirculante: number;
-    passivoNaoCirculante: number;
-    dividasLongoPrazo: number;
-    passivoTotal: number;
-    patrimonioLiquido: number;
-  }
+  balanceData: BalanceSheetBaseInputs
 ): Promise<ActionResult> {
   try {
     const user = await requireAuth();
 
-    // Validate balance equation: Assets = Liabilities + Equity
-    const ativoTotal = balanceData.ativoTotal;
-    const passivoTotal = balanceData.passivoTotal;
-    const patrimonioLiquido = balanceData.patrimonioLiquido;
+    // Calcular totais para validação da equação fundamental
+    const ativoCirculanteTotal =
+      balanceData.ativoCirculante.caixaEquivalentes +
+      balanceData.ativoCirculante.aplicacoesFinanceiras +
+      balanceData.ativoCirculante.contasReceber +
+      balanceData.ativoCirculante.estoques +
+      balanceData.ativoCirculante.ativosBiologicos +
+      balanceData.ativoCirculante.outrosCreditos;
 
-    const diff = Math.abs(ativoTotal - (passivoTotal + patrimonioLiquido));
+    const ativoRealizavelLPTotal =
+      balanceData.ativoRealizavelLP.investimentos +
+      balanceData.ativoRealizavelLP.ativoImobilizadoBruto +
+      balanceData.ativoRealizavelLP.depreciacaoAcumulada +
+      balanceData.ativoRealizavelLP.intangivel;
+
+    const passivoCirculanteTotal =
+      balanceData.passivoCirculante.fornecedores +
+      balanceData.passivoCirculante.impostosAPagar +
+      balanceData.passivoCirculante.obrigacoesSociaisETrabalhistas +
+      balanceData.passivoCirculante.emprestimosFinanciamentosCP +
+      balanceData.passivoCirculante.outrasObrigacoes;
+
+    const passivoRealizavelLPTotal = balanceData.passivoRealizavelLP.emprestimosFinanciamentosLP;
+
+    const patrimonioLiquidoTotal =
+      balanceData.patrimonioLiquido.capitalSocial +
+      balanceData.patrimonioLiquido.lucrosAcumulados;
+
+    const ativoTotal = ativoCirculanteTotal + ativoRealizavelLPTotal;
+    const passivoTotal = passivoCirculanteTotal + passivoRealizavelLPTotal;
+
+    // Validate balance equation: Assets = Liabilities + Equity
+    const diff = Math.abs(ativoTotal - (passivoTotal + patrimonioLiquidoTotal));
     if (diff > 0.01) {
       // Tolerância de 1 centavo para erros de arredondamento
       return {
@@ -544,13 +563,117 @@ export async function saveBalanceSheetBase(
     };
 
     // Update model
-    return await updateModel(modelId, { model_data: updatedModelData });
+    const updateResult = await updateModel(modelId, { model_data: updatedModelData });
+
+    if (!updateResult.success) {
+      return updateResult;
+    }
+
+    // Auto-calculate projections
+    const { recalculateModel } = await import("./calculate");
+    await recalculateModel(modelId);
+
+    return updateResult;
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;
     }
     return {
       error: "Erro ao salvar dados do Balanço Patrimonial",
+    };
+  }
+}
+
+/**
+ * Save DRE Projection assumptions to model
+ */
+export async function saveDREProjection(
+  modelId: string,
+  projectionData: DREProjectionInputs[]
+): Promise<ActionResult> {
+  try {
+    const user = await requireAuth();
+
+    // Get existing model data
+    const modelResult = await getModelById(modelId);
+    if (!modelResult.success || !modelResult.data) {
+      return {
+        error: "Modelo não encontrado",
+      };
+    }
+
+    // Merge DRE projection data into model_data
+    const currentModelData = (modelResult.data.model_data as any) || {};
+    const updatedModelData = {
+      ...currentModelData,
+      dreProjection: projectionData,
+    };
+
+    // Update model
+    const updateResult = await updateModel(modelId, { model_data: updatedModelData });
+
+    if (!updateResult.success) {
+      return updateResult;
+    }
+
+    // Auto-calculate projections
+    const { recalculateModel } = await import("./calculate");
+    await recalculateModel(modelId);
+
+    return updateResult;
+  } catch (error) {
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+      throw error;
+    }
+    return {
+      error: "Erro ao salvar premissas de projeção da DRE",
+    };
+  }
+}
+
+/**
+ * Save Balance Sheet Projection assumptions to model
+ */
+export async function saveBalanceSheetProjection(
+  modelId: string,
+  projectionData: BalanceSheetProjectionInputs[]
+): Promise<ActionResult> {
+  try {
+    const user = await requireAuth();
+
+    // Get existing model data
+    const modelResult = await getModelById(modelId);
+    if (!modelResult.success || !modelResult.data) {
+      return {
+        error: "Modelo não encontrado",
+      };
+    }
+
+    // Merge balance sheet projection data into model_data
+    const currentModelData = (modelResult.data.model_data as any) || {};
+    const updatedModelData = {
+      ...currentModelData,
+      balanceSheetProjection: projectionData,
+    };
+
+    // Update model
+    const updateResult = await updateModel(modelId, { model_data: updatedModelData });
+
+    if (!updateResult.success) {
+      return updateResult;
+    }
+
+    // Auto-calculate projections
+    const { recalculateModel } = await import("./calculate");
+    await recalculateModel(modelId);
+
+    return updateResult;
+  } catch (error) {
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+      throw error;
+    }
+    return {
+      error: "Erro ao salvar premissas de projeção do Balanço Patrimonial",
     };
   }
 }
