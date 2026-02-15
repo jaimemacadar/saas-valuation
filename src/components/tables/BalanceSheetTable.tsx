@@ -151,7 +151,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
   const columns: ColumnDef<BalanceSheetRowData>[] = [
     {
       accessorKey: 'label',
-      header: 'Conta',
+      header: '',
       cell: ({ row }) => {
         const canExpand = row.getCanExpand();
         const rowType = row.original.type;
@@ -159,7 +159,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
         return (
           <div
             className={cn(
-              'flex items-center gap-2',
+              'flex items-center gap-2 min-w-[200px] whitespace-nowrap',
               rowType === 'section' && 'font-bold text-base',
               rowType === 'subtotal' && 'font-semibold',
               rowType === 'total' && 'font-bold',

@@ -136,13 +136,13 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
   const columns: ColumnDef<DRERowData>[] = [
     {
       accessorKey: 'label',
-      header: 'Linha',
+      header: '',
       cell: ({ row }) => {
         const rowType = row.original.type;
         return (
           <div
             className={cn(
-              'font-medium',
+              'font-medium min-w-[200px] whitespace-nowrap',
               rowType === 'total' && 'font-bold',
               rowType === 'subtotal' && 'font-semibold'
             )}

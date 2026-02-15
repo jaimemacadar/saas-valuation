@@ -45,41 +45,41 @@ export function FCFFTable({ data }: FCFFTableProps) {
       label: 'EBIT',
       type: 'value',
       field: 'ebit',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.ebit])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.ebit])),
       description: 'Earnings Before Interest and Taxes',
     },
     {
       label: '(-) Impostos sobre EBIT',
       type: 'value',
       field: 'impostos',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.impostos * -1])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.impostos * -1])),
     },
     {
       label: 'NOPAT',
       type: 'subtotal',
       field: 'nopat',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.nopat])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.nopat])),
       description: 'Net Operating Profit After Taxes',
     },
     {
       label: '(+) Depreciação',
       type: 'value',
-      field: 'depreciacao',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.depreciacao])),
+      field: 'depreciacaoAmortizacao',
+      values: Object.fromEntries(data.map((d) => [d.year, d.depreciacaoAmortizacao])),
     },
     {
       label: '(-) CAPEX',
       type: 'value',
       field: 'capex',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.capex * -1])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.capex * -1])),
       description: 'Capital Expenditure',
     },
     {
       label: '(-) Variação NCG',
       type: 'value',
-      field: 'variacaoNecessidadeCapitalGiro',
+      field: 'ncg',
       values: Object.fromEntries(
-        data.map((d) => [d.ano, d.variacaoNecessidadeCapitalGiro * -1])
+        data.map((d) => [d.year, d.ncg * -1])
       ),
       description: 'Necessidade de Capital de Giro',
     },
@@ -87,7 +87,7 @@ export function FCFFTable({ data }: FCFFTableProps) {
       label: 'FCFF',
       type: 'total',
       field: 'fcff',
-      values: Object.fromEntries(data.map((d) => [d.ano, d.fcff])),
+      values: Object.fromEntries(data.map((d) => [d.year, d.fcff])),
       description: 'Free Cash Flow to the Firm',
     },
   ];
@@ -119,10 +119,10 @@ export function FCFFTable({ data }: FCFFTableProps) {
       },
     },
     ...data.map((yearData) => ({
-      id: `year-${yearData.ano}`,
-      header: yearData.ano === 0 ? 'Ano Base' : `Ano ${yearData.ano}`,
+      id: `year-${yearData.year}`,
+      header: yearData.year === 0 ? 'Ano Base' : `Ano ${yearData.year}`,
       cell: ({ row }: { row: { original: FCFFRowData } }) => {
-        const value = row.original.values[yearData.ano];
+        const value = row.original.values[yearData.year];
         const rowType = row.original.type;
         const isFCFF = row.original.field === 'fcff';
 
