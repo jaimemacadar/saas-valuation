@@ -34,9 +34,10 @@ export type {
 } from "./validators/index.js";
 
 // Export calculation functions
-export { calculateDRE, calculateAllDRE } from "./calculations/dre.js";
+export { calculateDREBase, calculateDREProjetado, calculateAllDRE } from "./calculations/dre.js";
 export {
-  calculateBalanceSheet,
+  calculateBPBase,
+  calculateBPProjetado,
   calculateAllBalanceSheet,
 } from "./calculations/balanceSheet.js";
 export { calculateFCFF, calculateAllFCFF } from "./calculations/fcff.js";

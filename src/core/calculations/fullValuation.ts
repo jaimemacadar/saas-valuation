@@ -52,7 +52,6 @@ export function executeFullValuation(
     const dreResult = calculateAllDRE(
       validatedInput.dreBase,
       validatedInput.dreProjection,
-      validatedInput.anosProjecao,
     );
 
     if (!dreResult.success || !dreResult.data) {
@@ -66,11 +65,7 @@ export function executeFullValuation(
 
     // 3. Calcular projeção de Balanço Patrimonial
     const bpResult = calculateAllBalanceSheet(
-      {
-        ...validatedInput.balanceSheetBase,
-        passivoNaoCirculante:
-          validatedInput.balanceSheetBase.dividasLongoPrazo ?? 0,
-      },
+      validatedInput.balanceSheetBase,
       dreProjetado,
       validatedInput.balanceSheetProjection,
     );
@@ -141,7 +136,7 @@ export function executeFullValuation(
  *
  * Útil para testes e demos.
  *
- * @param receita - Receita do ano base
+ * @param receita - Receita bruta do ano base
  * @param anosProjecao - Número de anos a projetar
  * @returns Resultado do valuation
  */
@@ -150,49 +145,87 @@ export function executeQuickValuation(
   anosProjecao: number = 5,
 ): CalculationResult<FullValuationResult> {
   // Premissas padrão simplificadas
+  const dreProjection: import("../types/index.js").DREProjectionInputs[] = Array.from(
+    { length: anosProjecao },
+    (_, i) => ({
+      year: i + 1,
+      receitaBrutaGrowth: 10,
+      impostosEDevolucoesRate: 8,
+      cmvRate: 30,
+      despesasOperacionaisRate: 40,
+      irCSLLRate: 34,
+      dividendosRate: 20,
+    }),
+  );
+
+  const balanceSheetProjection: import("../types/index.js").BalanceSheetProjectionInputs[] = Array.from(
+    { length: anosProjecao },
+    (_, i) => ({
+      year: i + 1,
+      taxaDepreciacao: 10,
+      indiceImobilizadoVendas: 0.05,
+      prazoCaixaEquivalentes: 54,
+      prazoAplicacoesFinanceiras: 18,
+      prazoContasReceber: 45,
+      prazoEstoques: 10,
+      prazoAtivosBiologicos: 0,
+      prazoFornecedores: 25,
+      prazoImpostosAPagar: 7,
+      prazoObrigacoesSociais: 11,
+      taxaNovosEmprestimosFinanciamentos: 5,
+    }),
+  );
+
   const input: FullValuationInput = {
     dreBase: {
-      receita: receita,
-      custoMercadoriaVendida: receita * 0.4,
-      despesasOperacionais: receita * 0.3,
-      despesasFinanceiras: receita * 0.05,
-      taxaImposto: 0.34,
+      receitaBruta: receita,
+      impostosEDevolucoes: receita * 0.08,
+      cmv: receita * 0.3,
+      despesasOperacionais: receita * 0.4,
+      irCSLL: receita * 0.05,
+      dividendos: receita * 0.02,
     },
-    dreProjection: {
-      taxaCrescimentoReceita: Array(anosProjecao).fill(0.1),
-      taxaCMV: Array(anosProjecao).fill(0.4),
-      taxaDespesasOperacionais: Array(anosProjecao).fill(0.3),
-      taxaDespesasFinanceiras: Array(anosProjecao).fill(0.05),
-    },
+    dreProjection,
     balanceSheetBase: {
-      caixa: receita * 0.1,
-      contasReceber: receita * 0.15,
-      estoques: receita * 0.1,
-      ativoCirculante: receita * 0.35,
-      imobilizado: receita * 0.5,
-      ativoTotal: receita * 0.85,
-      contasPagar: receita * 0.1,
-      passivoCirculante: receita * 0.15,
-      passivoNaoCirculante: receita * 0.2,
-      dividasLongoPrazo: receita * 0.2,
-      passivoTotal: receita * 0.35,
-      patrimonioLiquido: receita * 0.5,
+      ativoCirculante: {
+        caixaEquivalentes: receita * 0.15,
+        aplicacoesFinanceiras: receita * 0.05,
+        contasReceber: receita * 0.125,
+        estoques: receita * 0.03,
+        ativosBiologicos: 0,
+        outrosCreditos: receita * 0.025,
+      },
+      ativoRealizavelLP: {
+        investimentos: receita * 0.02,
+        ativoImobilizadoBruto: receita * 0.2,
+        depreciacaoAcumulada: receita * 0.05,
+        intangivel: receita * 0.03,
+      },
+      passivoCirculante: {
+        fornecedores: receita * 0.06,
+        impostosAPagar: receita * 0.02,
+        obrigacoesSociaisETrabalhistas: receita * 0.03,
+        emprestimosFinanciamentosCP: receita * 0.04,
+        outrasObrigacoes: receita * 0.01,
+      },
+      passivoRealizavelLP: {
+        emprestimosFinanciamentosLP: receita * 0.12,
+      },
+      patrimonioLiquido: {
+        capitalSocial: receita * 0.2,
+        lucrosAcumulados: receita * 0.08,
+      },
     },
-    balanceSheetProjection: {
-      taxaCrescimentoAtivos: Array(anosProjecao).fill(0.1),
-      taxaCrescimentoPassivos: Array(anosProjecao).fill(0.08),
-      taxaDepreciacao: 0.1,
-      taxaCapex: 0.05,
-    },
+    balanceSheetProjection,
     wacc: {
-      custoCapitalProprio: 0.12,
-      custoCapitalTerceiros: 0.08,
-      wacc: 0.105,
-      pesoCapitalProprio: 0.7,
-      pesoCapitalTerceiros: 0.3,
+      custoCapitalProprio: 15,
+      custoCapitalTerceiros: 12,
+      wacc: 12.5,
+      pesoCapitalProprio: 0.65,
+      pesoCapitalTerceiros: 0.35,
     },
-    taxaCrescimentoPerpetuo: 0.03,
-    anosProjecao: anosProjecao,
+    taxaCrescimentoPerpetuo: 3,
+    anosProjecao,
   };
 
   return executeFullValuation(input);

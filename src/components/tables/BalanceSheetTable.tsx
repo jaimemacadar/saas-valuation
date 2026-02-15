@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -36,7 +36,7 @@ type BalanceSheetRowData = {
 };
 
 export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
-  const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [expanded, setExpanded] = useState<ExpandedState>(true);
 
   if (!data || data.length === 0) {
     return (
@@ -54,158 +54,164 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
     return diff < 0.01; // Tolerância de R$ 0,01
   });
 
-  // Constrói as linhas da tabela com hierarquia
-  const rows: BalanceSheetRowData[] = [
-    {
-      label: 'ATIVO',
-      type: 'section',
-      values: Object.fromEntries(data.map((d) => [d.year, d.ativoTotal])),
-      subRows: [
-        {
-          label: 'Ativo Circulante',
-          type: 'subtotal',
-          values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.total])),
-          subRows: [
-            {
-              label: 'Caixa e Equivalentes',
-              type: 'item',
-              field: 'caixa',
-              values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.caixaEquivalentes])),
-            },
-            {
-              label: 'Contas a Receber',
-              type: 'item',
-              field: 'contasReceber',
-              values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.contasReceber])),
-            },
-            {
-              label: 'Estoques',
-              type: 'item',
-              field: 'estoques',
-              values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.estoques])),
-            },
-          ],
-        },
-        {
-          label: 'Ativo Não Circulante',
-          type: 'subtotal',
-          values: Object.fromEntries(
-            data.map((d) => [d.year, d.ativoTotal - d.ativoCirculante.total])
-          ),
-          subRows: [
-            {
-              label: 'Imobilizado',
-              type: 'item',
-              field: 'imobilizado',
-              values: Object.fromEntries(data.map((d) => [d.year, d.ativoRealizavelLP.imobilizado])),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      label: 'PASSIVO',
-      type: 'section',
-      values: Object.fromEntries(data.map((d) => [d.year, d.passivoTotal])),
-      subRows: [
-        {
-          label: 'Passivo Circulante',
-          type: 'subtotal',
-          values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.total])),
-          subRows: [
-            {
-              label: 'Fornecedores',
-              type: 'item',
-              field: 'fornecedores',
-              values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.fornecedores])),
-            },
-          ],
-        },
-        {
-          label: 'Passivo Não Circulante',
-          type: 'subtotal',
-          values: Object.fromEntries(
-            data.map((d) => [d.year, d.passivoRealizavelLP.total])
-          ),
-          subRows: [
-            {
-              label: 'Empréstimos e Financiamentos LP',
-              type: 'item',
-              field: 'emprestimosFinanciamentosLP',
-              values: Object.fromEntries(
-                data.map((d) => [d.year, d.passivoRealizavelLP.emprestimosFinanciamentosLP])
-              ),
-            },
-          ],
-        },
-      ],
-    },
-    {
-      label: 'PATRIMÔNIO LÍQUIDO',
-      type: 'total',
-      field: 'patrimonioLiquido',
-      values: Object.fromEntries(data.map((d) => [d.year, d.patrimonioLiquido.total])),
-    },
-  ];
-
-  const columns: ColumnDef<BalanceSheetRowData>[] = [
-    {
-      accessorKey: 'label',
-      header: '',
-      cell: ({ row }) => {
-        const canExpand = row.getCanExpand();
-        const rowType = row.original.type;
-
-        return (
-          <div
-            className={cn(
-              'flex items-center gap-2 min-w-[200px] whitespace-nowrap',
-              rowType === 'section' && 'font-bold text-base',
-              rowType === 'subtotal' && 'font-semibold',
-              rowType === 'total' && 'font-bold',
-              rowType === 'item' && 'text-muted-foreground'
-            )}
-            style={{ paddingLeft: `${row.depth * 1.5}rem` }}
-          >
-            {canExpand && (
-              <button
-                onClick={row.getToggleExpandedHandler()}
-                className="cursor-pointer"
-              >
-                {row.getIsExpanded() ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </button>
-            )}
-            {row.original.label}
-          </div>
-        );
+  // Constrói as linhas da tabela com hierarquia - memoizado
+  const rows: BalanceSheetRowData[] = useMemo(
+    () => [
+      {
+        label: 'ATIVO',
+        type: 'section' as const,
+        values: Object.fromEntries(data.map((d) => [d.year, d.ativoTotal])),
+        subRows: [
+          {
+            label: 'Ativo Circulante',
+            type: 'subtotal' as const,
+            values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.total])),
+            subRows: [
+              {
+                label: 'Caixa e Equivalentes',
+                type: 'item' as const,
+                field: 'caixa',
+                values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.caixaEquivalentes])),
+              },
+              {
+                label: 'Contas a Receber',
+                type: 'item' as const,
+                field: 'contasReceber',
+                values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.contasReceber])),
+              },
+              {
+                label: 'Estoques',
+                type: 'item' as const,
+                field: 'estoques',
+                values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.estoques])),
+              },
+            ],
+          },
+          {
+            label: 'Ativo Não Circulante',
+            type: 'subtotal' as const,
+            values: Object.fromEntries(
+              data.map((d) => [d.year, d.ativoTotal - d.ativoCirculante.total])
+            ),
+            subRows: [
+              {
+                label: 'Imobilizado',
+                type: 'item' as const,
+                field: 'imobilizado',
+                values: Object.fromEntries(data.map((d) => [d.year, d.ativoRealizavelLP.imobilizado])),
+              },
+            ],
+          },
+        ],
       },
-    },
-    ...data.map((yearData) => ({
-      id: `year-${yearData.year}`,
-      header: yearData.year === 0 ? 'Ano Base' : `Ano ${yearData.year}`,
-      cell: ({ row }: { row: { original: BalanceSheetRowData } }) => {
-        const value = row.original.values[yearData.year];
-        const rowType = row.original.type;
-
-        return (
-          <div
-            className={cn(
-              'text-right tabular-nums',
-              rowType === 'section' && 'font-bold border-t-2 border-t-foreground',
-              rowType === 'subtotal' && 'font-semibold border-t',
-              rowType === 'total' && 'font-bold border-t-2 border-t-foreground'
-            )}
-          >
-            {value !== null ? formatCurrency(value) : '-'}
-          </div>
-        );
+      {
+        label: 'PASSIVO',
+        type: 'section' as const,
+        values: Object.fromEntries(data.map((d) => [d.year, d.passivoTotal])),
+        subRows: [
+          {
+            label: 'Passivo Circulante',
+            type: 'subtotal' as const,
+            values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.total])),
+            subRows: [
+              {
+                label: 'Fornecedores',
+                type: 'item' as const,
+                field: 'fornecedores',
+                values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.fornecedores])),
+              },
+            ],
+          },
+          {
+            label: 'Passivo Não Circulante',
+            type: 'subtotal' as const,
+            values: Object.fromEntries(
+              data.map((d) => [d.year, d.passivoRealizavelLP.total])
+            ),
+            subRows: [
+              {
+                label: 'Empréstimos e Financiamentos LP',
+                type: 'item' as const,
+                field: 'emprestimosFinanciamentosLP',
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.passivoRealizavelLP.emprestimosFinanciamentosLP])
+                ),
+              },
+            ],
+          },
+        ],
       },
-    })),
-  ];
+      {
+        label: 'PATRIMÔNIO LÍQUIDO',
+        type: 'total' as const,
+        field: 'patrimonioLiquido',
+        values: Object.fromEntries(data.map((d) => [d.year, d.patrimonioLiquido.total])),
+      },
+    ],
+    [data]
+  );
+
+  const columns: ColumnDef<BalanceSheetRowData>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'label',
+        header: '',
+        cell: ({ row }) => {
+          const canExpand = row.getCanExpand();
+          const rowType = row.original.type;
+
+          return (
+            <div
+              className={cn(
+                'flex items-center gap-2 min-w-[200px] whitespace-nowrap',
+                rowType === 'section' && 'font-bold text-base',
+                rowType === 'subtotal' && 'font-semibold',
+                rowType === 'total' && 'font-bold',
+                rowType === 'item' && 'text-muted-foreground'
+              )}
+              style={{ paddingLeft: `${row.depth * 1.5}rem` }}
+            >
+              {canExpand && (
+                <button
+                  onClick={row.getToggleExpandedHandler()}
+                  className="cursor-pointer"
+                >
+                  {row.getIsExpanded() ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </button>
+              )}
+              {row.original.label}
+            </div>
+          );
+        },
+      },
+      ...data.map((yearData) => ({
+        id: `year-${yearData.year}`,
+        header: yearData.year === 0 ? 'Ano Base' : `Ano ${yearData.year}`,
+        cell: ({ row }: { row: { original: BalanceSheetRowData } }) => {
+          const value = row.original.values[yearData.year];
+          const rowType = row.original.type;
+
+          return (
+            <div
+              className={cn(
+                'text-right tabular-nums',
+                rowType === 'section' && 'font-bold border-t-2 border-t-foreground',
+                rowType === 'subtotal' && 'font-semibold',
+                rowType === 'total' && 'font-bold border-t-2 border-t-foreground'
+              )}
+            >
+              {value !== null ? formatCurrency(value, { showSymbol: false }) : '-'}
+            </div>
+          );
+        },
+      })),
+    ],
+    [data]
+  );
 
   const table = useReactTable({
     data: rows,
@@ -234,6 +240,8 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
           </Badge>
         )}
       </div>
+
+      <p className="text-xs text-muted-foreground">Valores em R$ (Reais)</p>
 
       <div className="rounded-md border">
         <Table>

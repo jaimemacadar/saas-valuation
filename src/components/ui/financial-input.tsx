@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { formatInputNumber, parseInputNumber } from "@/lib/utils/formatters";
@@ -26,6 +27,36 @@ export function FinancialInput({
   placeholder = "0,00",
   className = "",
 }: FinancialInputProps) {
+  const [displayValue, setDisplayValue] = useState(() => formatInputNumber(value));
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Sincroniza com valor externo apenas quando não está em foco
+  useEffect(() => {
+    if (!isFocused) {
+      setDisplayValue(formatInputNumber(value));
+    }
+  }, [value, isFocused]);
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = e.target.value;
+      setDisplayValue(raw);
+      onChange(raw);
+    },
+    [onChange]
+  );
+
+  const handleFocus = useCallback(() => {
+    setIsFocused(true);
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    // Formata o valor ao sair do campo
+    const parsed = parseInputNumber(displayValue);
+    setDisplayValue(formatInputNumber(parsed));
+  }, [displayValue]);
+
   return (
     <div className={`flex items-center justify-between gap-4 ${className}`}>
       <Label htmlFor={id} className="text-sm whitespace-nowrap">
@@ -39,8 +70,10 @@ export function FinancialInput({
         <Input
           id={id}
           type="text"
-          value={formatInputNumber(value)}
-          onChange={(e) => onChange(e.target.value)}
+          value={displayValue}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           className="pl-8 h-9 text-right"
           required={required}
           disabled={disabled}

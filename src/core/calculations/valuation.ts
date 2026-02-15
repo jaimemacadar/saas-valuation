@@ -58,7 +58,7 @@ export function calculateValuation(
 
     for (let i = 0; i < inputs.fcff.length; i++) {
       const fcff = new Decimal(inputs.fcff[i].fcff);
-      const ano = inputs.fcff[i].ano;
+      const ano = inputs.fcff[i].year;
 
       // Fator de desconto: 1 / (1 + WACC)^ano
       const fatorDesconto = new Decimal(1).div(
@@ -74,7 +74,7 @@ export function calculateValuation(
     // Calcular valor terminal
     // VT = FCFF último ano * (1 + g) / (WACC - g)
     const fcffUltimoAno = new Decimal(inputs.fcff[inputs.fcff.length - 1].fcff);
-    const anoUltimo = inputs.fcff[inputs.fcff.length - 1].ano;
+    const anoUltimo = inputs.fcff[inputs.fcff.length - 1].year;
 
     const valorTerminal = fcffUltimoAno
       .times(new Decimal(1).plus(g))
