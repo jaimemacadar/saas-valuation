@@ -524,7 +524,7 @@ export async function saveBalanceSheetBase(
 
     const ativoRealizavelLPTotal =
       balanceData.ativoRealizavelLP.investimentos +
-      balanceData.ativoRealizavelLP.ativoImobilizadoBruto +
+      balanceData.ativoRealizavelLP.ativoImobilizadoBruto -
       balanceData.ativoRealizavelLP.depreciacaoAcumulada +
       balanceData.ativoRealizavelLP.intangivel;
 
@@ -546,10 +546,23 @@ export async function saveBalanceSheetBase(
 
     // Validate balance equation: Assets = Liabilities + Equity
     const diff = Math.abs(ativoTotal - (passivoTotal + patrimonioLiquidoTotal));
+    console.log('[saveBalanceSheetBase] Validação de balanço:', {
+      ativoTotal,
+      passivoTotal,
+      patrimonioLiquidoTotal,
+      diff,
+      equilibrado: diff <= 0.01,
+    });
+
     if (diff > 0.01) {
       // Tolerância de 1 centavo para erros de arredondamento
+      console.error('[saveBalanceSheetBase] Balanço não equilibrado!', {
+        ativoTotal,
+        passivoMaisPL: passivoTotal + patrimonioLiquidoTotal,
+        diferenca: diff,
+      });
       return {
-        error: "Erro de balanço: Ativo Total deve ser igual a Passivo Total + Patrimônio Líquido",
+        error: `Erro de balanço: Ativo Total (${ativoTotal.toFixed(2)}) deve ser igual a Passivo Total + Patrimônio Líquido (${(passivoTotal + patrimonioLiquidoTotal).toFixed(2)}). Diferença: ${diff.toFixed(2)}`,
       };
     }
 
