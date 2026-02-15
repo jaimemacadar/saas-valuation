@@ -22,6 +22,9 @@ export default async function DREPage({ params }: { params: Promise<{ id: string
   const modelData = result.data.model_data as { dre?: DRECalculated[] };
   const dreData = modelData?.dre || [];
 
+  console.log('[DRE Page] modelData:', modelData);
+  console.log('[DRE Page] dreData:', dreData?.length, 'items');
+
   return (
     <>
       <PageHeader

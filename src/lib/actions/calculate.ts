@@ -3,6 +3,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { isMockMode, getMockUser } from "@/lib/mock";
 import { getModelById } from "./models";
 import { calculateAllDRE } from "@/core/calculations/dre";
@@ -84,8 +85,12 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     const dreBase = currentModelData.dreBase as DREBaseInputs | undefined;
     const balanceSheetBase = currentModelData.balanceSheetBase as BalanceSheetBaseInputs | undefined;
 
+    console.log('[recalculateModel] dreBase:', dreBase);
+    console.log('[recalculateModel] balanceSheetBase:', balanceSheetBase);
+
     if (!dreBase || !balanceSheetBase) {
       // Não há dados suficientes para calcular
+      console.log('[recalculateModel] Dados base insuficientes');
       return {
         success: true,
         data: {},
@@ -99,6 +104,7 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
 
     // Se não existem premissas, gerar padrão (crescimento 5%)
     if (!dreProjection || !balanceSheetProjection) {
+      console.log('[recalculateModel] Gerando premissas padrão para', anosProjecao, 'anos');
       const defaultProjections = generateDefaultProjections(
         dreBase,
         balanceSheetBase,
@@ -106,11 +112,24 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       );
       dreProjection = defaultProjections.dreProjection;
       balanceSheetProjection = defaultProjections.balanceSheetProjection;
+    } else {
+      console.log('[recalculateModel] Usando premissas existentes:', {
+        dreProjection: dreProjection.length,
+        balanceSheetProjection: balanceSheetProjection.length,
+      });
     }
 
     // Calcular projeções
+    console.log('[recalculateModel] Calculando DRE com', dreProjection.length, 'anos de projeção');
     const dreResult = calculateAllDRE(dreBase, dreProjection);
+    console.log('[recalculateModel] Resultado DRE:', {
+      success: dreResult.success,
+      dataLength: dreResult.data?.length,
+      errors: dreResult.errors,
+    });
+
     if (!dreResult.success || !dreResult.data) {
+      console.error('[recalculateModel] Erro ao calcular DRE:', dreResult.errors);
       return {
         error: "Erro ao calcular DRE projetado",
       };
@@ -149,6 +168,12 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       fcff: fcffResult.data,
     };
 
+    console.log('[recalculateModel] Salvando dados:', {
+      dreCount: dreResult.data.length,
+      balanceSheetCount: balanceSheetResult.data.length,
+      fcffCount: fcffResult.data.length,
+    });
+
     // Atualizar no banco de dados
     const supabase = await createClient();
     const { error: updateError } = await supabase
@@ -165,6 +190,12 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
         error: "Erro ao salvar cálculos no banco de dados",
       };
     }
+
+    // Invalidar cache das páginas de visualização
+    revalidatePath(`/model/${modelId}/view/dre`);
+    revalidatePath(`/model/${modelId}/view/balance-sheet`);
+    revalidatePath(`/model/${modelId}/view/fcff`);
+    revalidatePath(`/model/${modelId}/input/projections`);
 
     return {
       success: true,
