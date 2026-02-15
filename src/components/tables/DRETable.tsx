@@ -165,7 +165,7 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
             className={cn(
               'text-right tabular-nums',
               rowType === 'total' && 'font-bold border-t-2 border-t-foreground',
-              rowType === 'subtotal' && 'font-semibold border-t',
+              rowType === 'subtotal' && 'font-semibold',
               value !== null && value < 0 && 'text-red-600'
             )}
           >

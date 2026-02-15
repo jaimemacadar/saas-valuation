@@ -125,7 +125,7 @@ export function ModelCard({ model }: ModelCardProps) {
   };
 
   const handleCardClick = () => {
-    router.push(`/model/${model.id}/view/dre`);
+    router.push(`/model/${model.id}/input/base`);
   };
 
   const handleCardKeyDown = (e: React.KeyboardEvent) => {
