@@ -484,7 +484,13 @@ export async function saveDREBase(
 
     // Auto-calculate projections
     const { recalculateModel } = await import("./calculate");
-    await recalculateModel(modelId);
+    const calcResult = await recalculateModel(modelId);
+
+    if (!calcResult.success) {
+      console.error('[Auto-calculation failed]:', calcResult.error);
+      // Não retornamos erro pois os dados foram salvos com sucesso
+      // O cálculo pode ser refeito ao salvar premissas manualmente
+    }
 
     return updateResult;
   } catch (error) {
@@ -571,7 +577,13 @@ export async function saveBalanceSheetBase(
 
     // Auto-calculate projections
     const { recalculateModel } = await import("./calculate");
-    await recalculateModel(modelId);
+    const calcResult = await recalculateModel(modelId);
+
+    if (!calcResult.success) {
+      console.error('[Auto-calculation failed]:', calcResult.error);
+      // Não retornamos erro pois os dados foram salvos com sucesso
+      // O cálculo pode ser refeito ao salvar premissas manualmente
+    }
 
     return updateResult;
   } catch (error) {
@@ -618,7 +630,13 @@ export async function saveDREProjection(
 
     // Auto-calculate projections
     const { recalculateModel } = await import("./calculate");
-    await recalculateModel(modelId);
+    const calcResult = await recalculateModel(modelId);
+
+    if (!calcResult.success) {
+      console.error('[Auto-calculation failed]:', calcResult.error);
+      // Não retornamos erro pois os dados foram salvos com sucesso
+      // O cálculo pode ser refeito ao salvar premissas manualmente
+    }
 
     return updateResult;
   } catch (error) {
@@ -665,7 +683,13 @@ export async function saveBalanceSheetProjection(
 
     // Auto-calculate projections
     const { recalculateModel } = await import("./calculate");
-    await recalculateModel(modelId);
+    const calcResult = await recalculateModel(modelId);
+
+    if (!calcResult.success) {
+      console.error('[Auto-calculation failed]:', calcResult.error);
+      // Não retornamos erro pois os dados foram salvos com sucesso
+      // O cálculo pode ser refeito ao salvar premissas manualmente
+    }
 
     return updateResult;
   } catch (error) {
