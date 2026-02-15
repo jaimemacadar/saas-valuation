@@ -102,8 +102,15 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     let balanceSheetProjection = currentModelData.balanceSheetProjection as BalanceSheetProjectionInputs[] | undefined;
     const anosProjecao = currentModelData.anosProjecao || 5;
 
+    console.log('[recalculateModel] Configuração de anos:', {
+      anosProjecaoSalvo: currentModelData.anosProjecao,
+      anosProjecaoUsado: anosProjecao,
+      dreProjectionLength: dreProjection?.length,
+      balanceSheetProjectionLength: balanceSheetProjection?.length,
+    });
+
     // Se não existem premissas, gerar padrão (crescimento 5%)
-    if (!dreProjection || !balanceSheetProjection) {
+    if (!dreProjection || dreProjection.length === 0 || !balanceSheetProjection || balanceSheetProjection.length === 0) {
       console.log('[recalculateModel] Gerando premissas padrão para', anosProjecao, 'anos');
       const defaultProjections = generateDefaultProjections(
         dreBase,
@@ -117,6 +124,15 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
         dreProjection: dreProjection.length,
         balanceSheetProjection: balanceSheetProjection.length,
       });
+
+      // IMPORTANTE: Se os arrays têm tamanhos diferentes, ajustar para o menor
+      // para evitar erro nos cálculos
+      const minLength = Math.min(dreProjection.length, balanceSheetProjection.length);
+      if (dreProjection.length !== balanceSheetProjection.length) {
+        console.warn('[recalculateModel] Arrays com tamanhos diferentes! Usando mínimo:', minLength);
+        dreProjection = dreProjection.slice(0, minLength);
+        balanceSheetProjection = balanceSheetProjection.slice(0, minLength);
+      }
     }
 
     // Calcular projeções
