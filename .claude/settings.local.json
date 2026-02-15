@@ -16,7 +16,15 @@
       "Bash(npm test:*)",
       "mcp__ai-context__sync",
       "Bash(grep:*)",
-      "mcp__ai-context__workflow-init"
+      "mcp__ai-context__workflow-init",
+      "Bash(ping:*)",
+      "Bash(curl:*)",
+      "Bash(npx next dev:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(npm ls:*)",
+      "Bash(node -e:*)",
+      "Bash(npx next build)"
     ]
   }
 }
