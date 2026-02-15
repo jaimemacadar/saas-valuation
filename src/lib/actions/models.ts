@@ -629,9 +629,15 @@ export async function saveDREProjection(
 
     // Merge DRE projection data into model_data
     const currentModelData = (modelResult.data.model_data as any) || {};
+
+    // Determinar número de anos como o máximo entre DRE e BP
+    const bpLength = (currentModelData.balanceSheetProjection as any[])?.length || 0;
+    const anosProjecao = Math.max(projectionData.length, bpLength);
+
     const updatedModelData = {
       ...currentModelData,
       dreProjection: projectionData,
+      anosProjecao, // Usar o máximo de anos entre DRE e BP
     };
 
     // Update model
@@ -682,9 +688,15 @@ export async function saveBalanceSheetProjection(
 
     // Merge balance sheet projection data into model_data
     const currentModelData = (modelResult.data.model_data as any) || {};
+
+    // Determinar número de anos como o máximo entre DRE e BP
+    const dreLength = (currentModelData.dreProjection as any[])?.length || 0;
+    const anosProjecao = Math.max(projectionData.length, dreLength);
+
     const updatedModelData = {
       ...currentModelData,
       balanceSheetProjection: projectionData,
+      anosProjecao, // Usar o máximo de anos entre DRE e BP
     };
 
     // Update model
