@@ -38,10 +38,10 @@ describe('ModelSidebarNav', () => {
     render(<ModelSidebarNav modelId={modelId} />);
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Dados Ano Base')).toBeInTheDocument();
-    expect(screen.getByText('Premissas Projeção')).toBeInTheDocument();
-    expect(screen.getByText('DRE Projetado')).toBeInTheDocument();
-    expect(screen.getByText('Balanço Projetado')).toBeInTheDocument();
+    expect(screen.getByText('Ano Base')).toBeInTheDocument();
+    expect(screen.getByText('Premissas')).toBeInTheDocument();
+    expect(screen.getByText('DRE')).toBeInTheDocument();
+    expect(screen.getByText('Balanço Patrimonial')).toBeInTheDocument();
     expect(screen.getByText('Fluxo de Caixa Livre')).toBeInTheDocument();
     expect(screen.getByText('Valuation')).toBeInTheDocument();
   });
@@ -63,11 +63,11 @@ describe('ModelSidebarNav', () => {
 
     const baseLink = container.querySelector(`a[href="/model/${modelId}/input/base"]`);
     expect(baseLink).toBeInTheDocument();
-    expect(baseLink?.textContent).toContain('Dados Ano Base');
+    expect(baseLink?.textContent).toContain('Ano Base');
 
     const projectionsLink = container.querySelector(`a[href="/model/${modelId}/input/projections"]`);
     expect(projectionsLink).toBeInTheDocument();
-    expect(projectionsLink?.textContent).toContain('Premissas Projeção');
+    expect(projectionsLink?.textContent).toContain('Premissas');
   });
 
   it('deve gerar URLs corretas para todas as visualizações', () => {
@@ -88,7 +88,7 @@ describe('ModelSidebarNav', () => {
 
     const projectionsLink = container.querySelector(`a[href="/model/${modelId}/input/projections"]`);
     expect(projectionsLink).toBeInTheDocument();
-    expect(projectionsLink?.textContent).toContain('Premissas Projeção');
+    expect(projectionsLink?.textContent).toContain('Premissas');
   });
 
   it('deve usar modelId diferente corretamente', () => {
@@ -108,7 +108,7 @@ describe('ModelSidebarNav', () => {
 
     // Deve ainda renderizar a navegação, apenas sem marcar nada como ativo
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('DRE Projetado')).toBeInTheDocument();
+    expect(screen.getByText('DRE')).toBeInTheDocument();
     expect(screen.getByText('Valuation')).toBeInTheDocument();
   });
 

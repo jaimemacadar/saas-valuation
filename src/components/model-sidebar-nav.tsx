@@ -39,22 +39,22 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       url: '/dashboard',
     },
     {
-      title: 'Dados Ano Base',
+      title: 'Ano Base',
       icon: Database,
       url: `/model/${modelId}/input/base`,
     },
     {
-      title: 'Premissas Projeção',
+      title: 'Premissas',
       icon: Activity,
       url: `/model/${modelId}/input/projections`,
     },
     {
-      title: 'DRE Projetado',
+      title: 'DRE',
       icon: FileText,
       url: `/model/${modelId}/view/dre`,
     },
     {
-      title: 'Balanço Projetado',
+      title: 'Balanço Patrimonial',
       icon: Scale,
       url: `/model/${modelId}/view/balance-sheet`,
     },

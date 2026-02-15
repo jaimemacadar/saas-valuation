@@ -23,7 +23,7 @@ export default async function AnoBasePage({ params }: { params: Promise<{ id: st
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Meus Modelos", href: "/dashboard/models" },
+          { label: "Valuations", href: "/dashboard/models" },
           { label: result.data.company_name, href: `/model/${id}/view/dre` },
           { label: "Entrada de Dados" },
           { label: "Ano Base" },
@@ -32,7 +32,7 @@ export default async function AnoBasePage({ params }: { params: Promise<{ id: st
 
       <div className="flex flex-1 flex-col gap-4 p-4">
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Entrada de Dados - Ano Base</h1>
+          <h1 className="text-2xl font-bold">Formulário Ano Base</h1>
           <p className="text-muted-foreground">
             Insira os dados financeiros do último ano fiscal encerrado (ano base) para projeção.
           </p>

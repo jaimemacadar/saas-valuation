@@ -14,14 +14,14 @@ export default async function ModelsPage() {
       <PageHeader
         breadcrumbs={[
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Meus Modelos" },
+          { label: "Valuations" },
         ]}
       />
 
       <div className="flex flex-1 flex-col gap-4 p-4 md:p-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Meus Modelos</h1>
+            <h1 className="text-2xl font-bold">Valuations</h1>
             <p className="text-sm text-muted-foreground">
               Gerencie seus modelos de valuation
             </p>
@@ -29,7 +29,7 @@ export default async function ModelsPage() {
           <Button asChild>
             <Link href="/model/new">
               <Plus className="h-4 w-4 mr-2" />
-              Novo Modelo
+              Novo Valuation
             </Link>
           </Button>
         </div>

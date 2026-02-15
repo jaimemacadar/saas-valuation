@@ -56,8 +56,8 @@ export default function NewModelPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Meus Modelos", href: "/dashboard/models" },
-          { label: "Novo Modelo" },
+          { label: "Valuations", href: "/dashboard/models" },
+          { label: "Novo Valuation" },
         ]}
       />
 
@@ -70,7 +70,7 @@ export default function NewModelPage() {
               </Link>
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Criar Novo Modelo</h1>
+              <h1 className="text-2xl font-bold">Criar Novo Valuation</h1>
               <p className="text-sm text-muted-foreground">
                 Preencha as informações básicas da empresa
               </p>
