@@ -93,7 +93,7 @@ export function BalanceSheetProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           min="0"
           max="100"
           value={getValue() as number}
@@ -125,7 +125,7 @@ export function BalanceSheetProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           value={getValue() as number}
           onChange={(e) => handleCellChange(row.index, "taxaNovosEmprestimosFinanciamentos", e.target.value)}
           className="text-center h-8"

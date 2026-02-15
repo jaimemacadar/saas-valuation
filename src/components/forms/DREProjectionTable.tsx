@@ -86,7 +86,7 @@ export function DREProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           value={getValue() as number}
           onChange={(e) => handleCellChange(row.index, "receitaBrutaGrowth", e.target.value)}
           className="text-center h-8"
@@ -100,7 +100,7 @@ export function DREProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           min="0"
           max="100"
           value={getValue() as number}
@@ -116,7 +116,7 @@ export function DREProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           min="0"
           max="100"
           value={getValue() as number}
@@ -132,7 +132,7 @@ export function DREProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           min="0"
           max="100"
           value={getValue() as number}
@@ -148,7 +148,7 @@ export function DREProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           min="0"
           max="100"
           value={getValue() as number}
@@ -164,7 +164,7 @@ export function DREProjectionTable({
       cell: ({ row, getValue }) => (
         <Input
           type="number"
-          step="0.1"
+          step="0.01"
           min="0"
           max="100"
           value={getValue() as number}
