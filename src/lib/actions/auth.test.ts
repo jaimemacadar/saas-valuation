@@ -1,6 +1,5 @@
-import { vi } from "vitest";
-vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+jest.mock("next/navigation", () => ({ redirect: jest.fn() }));
+jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
 
 import { signIn } from "@/lib/actions/auth";
 
@@ -30,8 +29,8 @@ import * as supabaseServer from "@/lib/supabase/server";
 describe("signOut", () => {
   it("deve chamar o método de signOut do supabase sem lançar erro", async () => {
     // Mock do supabase
-    const mockSignOut = vi.fn().mockResolvedValue({ error: undefined });
-    vi.spyOn(supabaseServer, "createClient").mockReturnValue({
+    const mockSignOut = jest.fn().mockResolvedValue({ error: undefined });
+    jest.spyOn(supabaseServer, "createClient").mockReturnValue({
       auth: {
         signOut: mockSignOut,
       },
@@ -48,7 +47,7 @@ it("deve executar signOut sem lançar erro", async () => {
 describe("signInWithOAuth", () => {
   it("deve retornar erro claro se OAuth for cancelado", async () => {
     // Mock do supabase
-    vi.spyOn(supabaseServer, "createClient").mockReturnValue({
+    jest.spyOn(supabaseServer, "createClient").mockReturnValue({
       auth: {
         signInWithOAuth: async () => ({
           error: { message: "User cancelled" },
@@ -60,7 +59,7 @@ describe("signInWithOAuth", () => {
   });
 
   it("deve retornar erro se não houver URL de redirecionamento", async () => {
-    vi.spyOn(supabaseServer, "createClient").mockReturnValue({
+    jest.spyOn(supabaseServer, "createClient").mockReturnValue({
       auth: {
         signInWithOAuth: async () => ({ data: {}, error: undefined }),
       },

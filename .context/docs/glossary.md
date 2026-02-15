@@ -4,7 +4,7 @@ name: glossary
 description: Project terminology, type definitions, domain entities, and business rules
 category: glossary
 generated: 2026-01-27
-updated: 2026-02-14
+updated: 2026-02-15
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -98,6 +98,21 @@ scaffoldVersion: "2.0.0"
 - **Tabs**: Componente de navegação horizontal (usado em DRE/Balanço)
 - **shadcn/ui**: Biblioteca de componentes UI baseada em Radix UI
 - **Server Component**: Componente React renderizado no servidor
+- **FinancialInput**: Input especializado para entrada de valores monetários com formatação pt-BR
+- **DREChartsSection**: Seção de gráficos para DRE (Receita, Custos, EBITDA)
+- **FCFFChartsSection**: Seção de gráficos para FCFF
+- **Dynamic Import**: Técnica de carregamento lazy com `next/dynamic` para code splitting
+- **Skeleton Loading**: Estado de loading com placeholders visuais
+
+### Formatação e Utilitários
+
+- **formatCurrency**: Formata valores em R$ com separadores pt-BR
+- **formatPercentage**: Formata valores percentuais
+- **formatCompactNumber**: Formata números grandes (ex: "1,5 mi", "2,3 bi")
+- **formatInputNumber**: Formata valores para exibição em inputs
+- **parseInputNumber**: Remove formatação e retorna valor numérico
+- **Intl.NumberFormat**: API nativa de internacionalização de números
+- **pt-BR**: Locale brasileiro para formatação (ponto como separador de milhar, vírgula como decimal)
 - **Client Component**: Componente React renderizado no cliente (browser)
 
 ### Rotas e Navegação

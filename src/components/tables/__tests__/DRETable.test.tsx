@@ -4,28 +4,38 @@ import { DRECalculated } from '@/core/types';
 
 const mockDREData: DRECalculated[] = [
   {
-    ano: 0,
-    receita: 1000000,
+    year: 0,
+    receitaBruta: 1000000,
+    impostosEDevolucoes: 150000,
+    receitaLiquida: 850000,
     cmv: 400000,
-    lucrobruto: 600000,
+    lucroBruto: 450000,
     despesasOperacionais: 200000,
-    ebit: 400000,
-    despesasFinanceiras: 50000,
-    lucroAntesImpostos: 350000,
-    impostos: 105000,
-    lucroLiquido: 245000,
+    ebit: 250000,
+    depreciacaoAmortizacao: 50000,
+    ebitda: 300000,
+    despesasFinanceiras: 30000,
+    lucroAntesIR: 220000,
+    irCSLL: 75000,
+    lucroLiquido: 145000,
+    dividendos: 40000,
   },
   {
-    ano: 1,
-    receita: 1200000,
+    year: 1,
+    receitaBruta: 1200000,
+    impostosEDevolucoes: 180000,
+    receitaLiquida: 1020000,
     cmv: 480000,
-    lucrobruto: 720000,
+    lucroBruto: 540000,
     despesasOperacionais: 240000,
-    ebit: 480000,
-    despesasFinanceiras: 60000,
-    lucroAntesImpostos: 420000,
-    impostos: 126000,
-    lucroLiquido: 294000,
+    ebit: 300000,
+    depreciacaoAmortizacao: 60000,
+    ebitda: 360000,
+    despesasFinanceiras: 36000,
+    lucroAntesIR: 264000,
+    irCSLL: 90000,
+    lucroLiquido: 174000,
+    dividendos: 48000,
   },
 ];
 
@@ -35,6 +45,7 @@ describe('DRETable', () => {
 
     expect(screen.getByText('Receita Bruta')).toBeInTheDocument();
     expect(screen.getByText('Lucro Líquido')).toBeInTheDocument();
+    // Verifica se os headers de ano estão presentes
     expect(screen.getByText('Ano Base')).toBeInTheDocument();
     expect(screen.getByText('Ano 1')).toBeInTheDocument();
   });
@@ -56,10 +67,13 @@ describe('DRETable', () => {
       'Lucro Bruto',
       '(-) Despesas Operacionais',
       'EBIT',
+      '(+) Depreciação e Amortização',
+      'EBITDA',
       '(-) Despesas Financeiras',
       'LAIR',
       '(-) IR/CSLL',
       'Lucro Líquido',
+      '(-) Dividendos',
     ];
 
     expectedLines.forEach(line => {

@@ -4,33 +4,33 @@ import { FCFFCalculated } from '@/core/types';
 
 const mockFCFFData: FCFFCalculated[] = [
   {
-    ano: 0,
+    year: 0,
     ebit: 400000,
     impostos: 120000,
     nopat: 280000,
-    depreciacao: 50000,
+    depreciacaoAmortizacao: 50000,
     capex: 100000,
-    variacaoNecessidadeCapitalGiro: 20000,
+    ncg: 20000,
     fcff: 210000,
   },
   {
-    ano: 1,
+    year: 1,
     ebit: 480000,
     impostos: 144000,
     nopat: 336000,
-    depreciacao: 60000,
+    depreciacaoAmortizacao: 60000,
     capex: 120000,
-    variacaoNecessidadeCapitalGiro: 25000,
+    ncg: 25000,
     fcff: 251000,
   },
   {
-    ano: 2,
+    year: 2,
     ebit: 300000,
     impostos: 90000,
     nopat: 210000,
-    depreciacao: 40000,
+    depreciacaoAmortizacao: 40000,
     capex: 200000,
-    variacaoNecessidadeCapitalGiro: 30000,
+    ncg: 30000,
     fcff: 20000,
   },
 ];
@@ -41,7 +41,8 @@ describe('FCFFTable', () => {
 
     expect(screen.getByText('EBIT')).toBeInTheDocument();
     expect(screen.getByText('FCFF')).toBeInTheDocument();
-    expect(screen.getByText('Ano Base')).toBeInTheDocument();
+    // Verifica se os headers de ano estão presentes
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
 
   it('deve exibir mensagem quando não há dados', () => {
@@ -115,13 +116,13 @@ describe('FCFFTable', () => {
   it('deve lidar com FCFFs negativos', () => {
     const negativeData: FCFFCalculated[] = [
       {
-        ano: 0,
+        year: 0,
         ebit: 100000,
         impostos: 30000,
         nopat: 70000,
-        depreciacao: 10000,
+        depreciacaoAmortizacao: 10000,
         capex: 150000,
-        variacaoNecessidadeCapitalGiro: 20000,
+        ncg: 20000,
         fcff: -90000,
       },
     ];

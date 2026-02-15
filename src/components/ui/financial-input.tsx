@@ -27,15 +27,22 @@ export function FinancialInput({
   placeholder = "0,00",
   className = "",
 }: FinancialInputProps) {
-  const [displayValue, setDisplayValue] = useState(() => formatInputNumber(value));
+  const [displayValue, setDisplayValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Garantir que a formatação só acontece no cliente após hidratação
+  useEffect(() => {
+    setIsHydrated(true);
+    setDisplayValue(formatInputNumber(value));
+  }, []);
 
   // Sincroniza com valor externo apenas quando não está em foco
   useEffect(() => {
-    if (!isFocused) {
+    if (isHydrated && !isFocused) {
       setDisplayValue(formatInputNumber(value));
     }
-  }, [value, isFocused]);
+  }, [value, isFocused, isHydrated]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

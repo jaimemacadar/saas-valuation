@@ -7,4 +7,8 @@ module.exports = {
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
   },
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/src/core/", // Testes do core rodam com Vitest
+  ],
 };

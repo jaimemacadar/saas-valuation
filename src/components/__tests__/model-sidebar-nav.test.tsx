@@ -38,12 +38,12 @@ describe('ModelSidebarNav', () => {
     render(<ModelSidebarNav modelId={modelId} />);
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Premissas do Valuation')).toBeInTheDocument();
+    expect(screen.getByText('Dados Ano Base')).toBeInTheDocument();
+    expect(screen.getByText('Premissas Projeção')).toBeInTheDocument();
     expect(screen.getByText('DRE Projetado')).toBeInTheDocument();
     expect(screen.getByText('Balanço Projetado')).toBeInTheDocument();
     expect(screen.getByText('Fluxo de Caixa Livre')).toBeInTheDocument();
     expect(screen.getByText('Valuation')).toBeInTheDocument();
-    expect(screen.getByText('Análise de Sensibilidade')).toBeInTheDocument();
   });
 
   it('deve renderizar link do Dashboard com href correto', () => {
@@ -56,14 +56,18 @@ describe('ModelSidebarNav', () => {
     expect(dashboardLink?.textContent).toContain('Dashboard');
   });
 
-  it('deve gerar URL correta para Premissas do Valuation', () => {
+  it('deve gerar URLs corretas para páginas de input', () => {
     (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/input/base`);
 
     const { container } = render(<ModelSidebarNav modelId={modelId} />);
 
     const baseLink = container.querySelector(`a[href="/model/${modelId}/input/base"]`);
     expect(baseLink).toBeInTheDocument();
-    expect(baseLink?.textContent).toContain('Premissas do Valuation');
+    expect(baseLink?.textContent).toContain('Dados Ano Base');
+
+    const projectionsLink = container.querySelector(`a[href="/model/${modelId}/input/projections"]`);
+    expect(projectionsLink).toBeInTheDocument();
+    expect(projectionsLink?.textContent).toContain('Premissas Projeção');
   });
 
   it('deve gerar URLs corretas para todas as visualizações', () => {
@@ -77,14 +81,14 @@ describe('ModelSidebarNav', () => {
     expect(container.querySelector(`a[href="/model/${modelId}/view/valuation"]`)).toBeInTheDocument();
   });
 
-  it('deve renderizar link para análise de sensibilidade', () => {
-    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/sensitivity`);
+  it('deve marcar item ativo corretamente', () => {
+    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/input/projections`);
 
     const { container } = render(<ModelSidebarNav modelId={modelId} />);
 
-    const sensitivityLink = container.querySelector(`a[href="/model/${modelId}/sensitivity"]`);
-    expect(sensitivityLink).toBeInTheDocument();
-    expect(sensitivityLink?.textContent).toContain('Análise de Sensibilidade');
+    const projectionsLink = container.querySelector(`a[href="/model/${modelId}/input/projections"]`);
+    expect(projectionsLink).toBeInTheDocument();
+    expect(projectionsLink?.textContent).toContain('Premissas Projeção');
   });
 
   it('deve usar modelId diferente corretamente', () => {

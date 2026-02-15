@@ -2,13 +2,16 @@
 slug: components-ui
 category: architecture
 generatedAt: 2026-02-14
-updatedAt: 2026-02-14
+updatedAt: 2026-02-15
 relevantFiles:
   - ../../../src/components/app-sidebar.tsx
   - ../../../src/components/nav-main.tsx
   - ../../../src/components/nav-user.tsx
   - ../../../src/components/team-switcher.tsx
   - ../../../src/components/model-sidebar-nav.tsx
+  - ../../../src/components/ui/financial-input.tsx
+  - ../../../src/components/charts/DREChartsSection.tsx
+  - ../../../src/components/charts/FCFFChartsSection.tsx
 ---
 
 # Componentes de Interface do Usuário
@@ -662,10 +665,474 @@ expect(activeLink).toHaveAttribute('href', '/model/123/view/dre');
 
 ---
 
+## 💰 FinancialInput
+
+**Arquivo:** `src/components/ui/financial-input.tsx`
+
+### Descrição
+
+Componente especializado para entrada de valores monetários com formatação automática em tempo real seguindo padrão brasileiro (pt-BR).
+
+### Características
+
+- ✅ **Formatação automática** - Aplica separadores de milhar e decimais pt-BR
+- ✅ **Prefixo R$** - Exibe símbolo de moeda
+- ✅ **Parse bidirecional** - Converte entre string formatada e número
+- ✅ **Sincronização inteligente** - Atualiza apenas quando não está em foco
+- ✅ **Validação** - Suporte a required e disabled
+- ✅ **Acessibilidade** - Label associado e ARIA attributes
+
+### Props
+
+```typescript
+interface FinancialInputProps {
+  id: string;                    // ID do input (para label)
+  label: string;                 // Label descritivo
+  value: number;                 // Valor numérico atual
+  onChange: (value: string) => void;  // Callback com valor raw
+  required?: boolean;            // Campo obrigatório (padrão: false)
+  disabled?: boolean;            // Campo desabilitado (padrão: false)
+  placeholder?: string;          // Placeholder (padrão: "0,00")
+  className?: string;            // Classes CSS adicionais
+}
+```
+
+### Comportamento
+
+#### Estado de Formatação
+
+```typescript
+// Valor interno (display)
+const [displayValue, setDisplayValue] = useState(() => formatInputNumber(value));
+const [isFocused, setIsFocused] = useState(false);
+```
+
+**Durante edição (focado)**:
+- Aceita entrada livre do usuário
+- Não aplica formatação automática
+- Permite digitação fluida
+
+**Após perder foco (blur)**:
+- Aplica formatação completa
+- Normaliza separadores
+- Adiciona casas decimais se necessário
+
+#### Sincronização de Valores
+
+```typescript
+// Sincroniza com valor externo apenas quando não está em foco
+useEffect(() => {
+  if (!isFocused) {
+    setDisplayValue(formatInputNumber(value));
+  }
+}, [value, isFocused]);
+```
+
+**Evita conflitos** entre:
+- Edição manual do usuário
+- Atualizações externas de valor
+
+### Funções de Formatação
+
+**formatInputNumber**:
+```typescript
+formatInputNumber(1234567.89)  // "1.234.567,89"
+formatInputNumber(0)           // "0,00"
+formatInputNumber(null)        // ""
+```
+
+**parseInputNumber**:
+```typescript
+parseInputNumber("1.234.567,89")  // 1234567.89
+parseInputNumber("1.000")         // 1000
+parseInputNumber("")              // 0
+```
+
+### Exemplo de Uso
+
+```tsx
+import { FinancialInput } from '@/components/ui/financial-input';
+import { useState } from 'react';
+
+function DREForm() {
+  const [receita, setReceita] = useState(0);
+
+  return (
+    <FinancialInput
+      id="receita"
+      label="Receita Líquida"
+      value={receita}
+      onChange={(rawValue) => {
+        const parsed = parseInputNumber(rawValue);
+        setReceita(parsed);
+      }}
+      required
+    />
+  );
+}
+```
+
+### Integração com React Hook Form
+
+```tsx
+import { useForm } from 'react-hook-form';
+import { FinancialInput } from '@/components/ui/financial-input';
+import { parseInputNumber } from '@/lib/utils/formatters';
+
+function DREForm() {
+  const { watch, setValue } = useForm();
+  const receita = watch('receita', 0);
+
+  return (
+    <FinancialInput
+      id="receita"
+      label="Receita Líquida"
+      value={receita}
+      onChange={(raw) => setValue('receita', parseInputNumber(raw))}
+      required
+    />
+  );
+}
+```
+
+### Layout do Componente
+
+```tsx
+<div className="flex items-center justify-between gap-4">
+  <Label htmlFor={id}>
+    {label}
+    {required && <span className="text-destructive ml-1">*</span>}
+  </Label>
+  <div className="relative w-35">
+    <span className="absolute left-3 top-1/2 -translate-y-1/2">
+      R$
+    </span>
+    <Input
+      type="text"
+      value={displayValue}
+      className="pl-8 h-9 text-right"  {/* Alinhado à direita */}
+    />
+  </div>
+</div>
+```
+
+### Estilização
+
+- **Prefixo R$** - Posicionado absolutamente à esquerda
+- **Input** - Alinhado à direita (padrão financeiro)
+- **Largura fixa** - `w-35` para consistência
+- **Altura compacta** - `h-9` para densidade visual
+
+---
+
+## 📊 DREChartsSection
+
+**Arquivo:** `src/components/charts/DREChartsSection.tsx`
+
+### Descrição
+
+Seção de gráficos para visualização de dados do DRE (Demonstração de Resultado do Exercício). Carrega dinamicamente múltiplos gráficos de forma otimizada.
+
+### Características
+
+- ✅ **Carregamento dinâmico** - Usa `next/dynamic` para code splitting
+- ✅ **No SSR** - Evita problemas de hydration com Recharts
+- ✅ **Loading states** - Skeleton loaders durante carregamento
+- ✅ **Múltiplos gráficos** - Receita, Composição de Custos, EBITDA
+
+### Props
+
+```typescript
+interface DREChartsSectionProps {
+  data: DRECalculated[];  // Array de DRE calculado por ano
+}
+```
+
+### Gráficos Incluídos
+
+1. **RevenueChart** - Evolução de receita ao longo dos anos
+2. **CostCompositionChart** - Composição de custos e despesas
+3. **EBITDAChart** - Evolução de EBITDA e margens
+
+### Estrutura do Componente
+
+```tsx
+export function DREChartsSection({ data }: DREChartsSectionProps) {
+  return (
+    <div className="space-y-6">
+      <RevenueChart data={data} />
+      <CostCompositionChart data={data} />
+      <EBITDAChart data={data} />
+    </div>
+  );
+}
+```
+
+### Carregamento Dinâmico
+
+```typescript
+const RevenueChart = dynamic(
+  () => import('@/components/charts/RevenueChart').then((mod) => mod.RevenueChart),
+  { ssr: false, loading: () => <ChartSkeleton /> }
+);
+```
+
+**Benefícios**:
+- Reduz bundle inicial (lazy loading)
+- Evita erros de hydration
+- Melhora performance de primeira carga
+- Loading states elegantes
+
+### ChartSkeleton
+
+```tsx
+function ChartSkeleton() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-8 w-64" />      {/* Título */}
+      <Skeleton className="h-[400px] w-full" />  {/* Gráfico */}
+    </div>
+  );
+}
+```
+
+### Exemplo de Uso
+
+```tsx
+import { DREChartsSection } from '@/components/charts/DREChartsSection';
+
+function DREPage() {
+  const dreData = [
+    { year: 1, receitaBruta: 1000000, ... },
+    { year: 2, receitaBruta: 1500000, ... },
+    // ...
+  ];
+
+  return (
+    <Tabs>
+      <TabsList>
+        <TabsTrigger value="table">Tabela</TabsTrigger>
+        <TabsTrigger value="charts">Gráficos</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="charts">
+        <DREChartsSection data={dreData} />
+      </TabsContent>
+    </Tabs>
+  );
+}
+```
+
+### Integração com Server Components
+
+```tsx
+// page.tsx (Server Component)
+export default async function DREPage({ params }) {
+  const { id } = await params;
+  const result = await getModelById(id);
+  const dreData = result.data.model_data.dre || [];
+
+  return <DREChartsSection data={dreData} />;  // Passa dados do servidor
+}
+```
+
+---
+
+## 📈 FCFFChartsSection
+
+**Arquivo:** `src/components/charts/FCFFChartsSection.tsx`
+
+### Descrição
+
+Seção de gráficos para visualização de FCFF (Free Cash Flow to the Firm). Similar ao DREChartsSection, mas focado em fluxo de caixa livre.
+
+### Características
+
+- ✅ **Carregamento dinâmico** com Next.js dynamic
+- ✅ **No SSR** para compatibilidade com Recharts
+- ✅ **Skeleton loading** durante carregamento
+- ✅ **Visualização unificada** de FCFF
+
+### Props
+
+```typescript
+interface FCFFChartsSectionProps {
+  data: FCFFCalculated[];  // Array de FCFF calculado por ano
+}
+```
+
+### Gráfico Incluído
+
+**FCFFChart** - Evolução do fluxo de caixa livre ao longo dos anos
+
+### Estrutura do Componente
+
+```tsx
+export function FCFFChartsSection({ data }: FCFFChartsSectionProps) {
+  return <FCFFChart data={data} />;
+}
+```
+
+### Carregamento Dinâmico
+
+```typescript
+const FCFFChart = dynamic(
+  () => import('@/components/charts/FCFFChart').then((mod) => mod.FCFFChart),
+  { ssr: false, loading: () => <ChartSkeleton /> }
+);
+```
+
+### Exemplo de Uso
+
+```tsx
+import { FCFFChartsSection } from '@/components/charts/FCFFChartsSection';
+
+function FCFFPage() {
+  const fcffData = [
+    { year: 1, fcff: 500000, ... },
+    { year: 2, fcff: 750000, ... },
+    // ...
+  ];
+
+  return (
+    <Tabs>
+      <TabsList>
+        <TabsTrigger value="table">Tabela</TabsTrigger>
+        <TabsTrigger value="chart">Gráfico</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="chart">
+        <FCFFChartsSection data={fcffData} />
+      </TabsContent>
+    </Tabs>
+  );
+}
+```
+
+### Diferenças vs DREChartsSection
+
+| Aspecto | DREChartsSection | FCFFChartsSection |
+|---------|------------------|-------------------|
+| Gráficos | 3 gráficos (Receita, Custos, EBITDA) | 1 gráfico (FCFF) |
+| Complexidade | Alta (múltiplos datasets) | Média (dataset único) |
+| Layout | Grid vertical com espaçamento | Gráfico único |
+| Uso | Análise detalhada de P&L | Análise de fluxo de caixa |
+
+---
+
+## 🎨 Componentes de Gráficos Individuais
+
+### RevenueChart
+
+**Arquivo:** `src/components/charts/RevenueChart.tsx`
+
+Gráfico de barras mostrando evolução de receita bruta e líquida.
+
+**Dados exibidos**:
+- Receita Bruta
+- Receita Líquida
+- Comparação ano a ano
+
+### CostCompositionChart
+
+**Arquivo:** `src/components/charts/CostCompositionChart.tsx`
+
+Gráfico de barras empilhadas mostrando composição de custos e despesas.
+
+**Dados exibidos**:
+- CPV (Custo dos Produtos Vendidos)
+- Despesas Operacionais
+- Despesas Comerciais
+- Despesas Administrativas
+
+### EBITDAChart
+
+**Arquivo:** `src/components/charts/EBITDAChart.tsx`
+
+Gráfico de linhas + barras mostrando EBITDA e margem.
+
+**Dados exibidos**:
+- EBITDA (valor absoluto)
+- Margem EBITDA (%)
+- Evolução temporal
+
+### FCFFChart
+
+**Arquivo:** `src/components/charts/FCFFChart.tsx`
+
+Gráfico de barras mostrando evolução do fluxo de caixa livre.
+
+**Dados exibidos**:
+- FCFF por ano
+- Tendência de crescimento
+- Valores positivos/negativos com cores
+
+---
+
+## 🛠️ Padrões de Desenvolvimento
+
+### Carregamento de Componentes de Charts
+
+**SEMPRE use dynamic import para charts**:
+
+```tsx
+// ✅ CORRETO
+const MyChart = dynamic(
+  () => import('./MyChart').then(mod => mod.MyChart),
+  { ssr: false, loading: () => <ChartSkeleton /> }
+);
+
+// ❌ INCORRETO
+import { MyChart } from './MyChart';  // Causa problemas de hydration
+```
+
+### Skeleton Loading States
+
+**Padrão consistente**:
+
+```tsx
+function ChartSkeleton() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-8 w-64" />      // Título
+      <Skeleton className="h-[400px] w-full" />  // Gráfico
+    </div>
+  );
+}
+```
+
+### Props de Dados
+
+**Sempre tipar com tipos do core**:
+
+```tsx
+import type { DRECalculated, FCFFCalculated } from '@/core/types';
+
+interface MyChartProps {
+  data: DRECalculated[];  // ✅ Tipo do domínio
+}
+```
+
+### Organização de Arquivos
+
+```
+src/components/charts/
+  ├── DREChartsSection.tsx       // Seção agregadora
+  ├── FCFFChartsSection.tsx      // Seção agregadora
+  ├── RevenueChart.tsx           // Gráfico individual
+  ├── CostCompositionChart.tsx   // Gráfico individual
+  ├── EBITDAChart.tsx            // Gráfico individual
+  └── FCFFChart.tsx              // Gráfico individual
+```
+
+---
+
 ## 📚 Ver Também
 
 - [Architecture Overview](../architecture.md)
 - [Routing](./routing.md)
+- [Formatadores Financeiros](../architecture.md#sistema-de-formatação-financeira)
 - [Componentes UI Base (shadcn/ui)](https://ui.shadcn.com)
 - [Lucide Icons](https://lucide.dev)
 - [Radix UI](https://www.radix-ui.com/)
+- [Recharts](https://recharts.org)

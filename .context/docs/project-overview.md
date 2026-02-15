@@ -4,7 +4,7 @@ name: project-overview
 description: High-level overview of the project, its purpose, and key components
 category: overview
 generated: 2026-01-27
-updated: 2026-02-14
+updated: 2026-02-15
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -60,16 +60,23 @@ See [`codebase-map.json`](./codebase-map.json) for the complete list of exports,
 - Exclusão com confirmação
 
 ### 💰 Visualização Financeira
-- **DRE (Demonstração de Resultado)** - tabs por ano
+- **DRE (Demonstração de Resultado)** - tabs por ano com visualização em tabela e gráficos
+  - Gráficos de Receita, Composição de Custos e EBITDA
+  - Carregamento dinâmico de componentes de visualização
 - **Balanço Patrimonial** - tabs por ano
-- **FCFF (Free Cash Flow to Firm)** - projeções
+- **FCFF (Free Cash Flow to Firm)** - projeções com visualização em tabela e gráficos
+  - Gráfico de evolução do fluxo de caixa livre
 - Cálculos automáticos de campos dependentes
 
-### 📝 Entrada de Dados (Em desenvolvimento)
+### 📝 Entrada de Dados
 - Formulários de entrada para Ano Base
 - Tabs horizontais: DRE | Balanço Patrimonial
 - Validação de balanço (Ativo = Passivo + PL)
 - Premissas de Projeção
+- **FinancialInput** - Componente especializado para entrada de valores monetários
+  - Formatação automática em tempo real (R$ com separadores pt-BR)
+  - Parse e validação de entrada
+  - Sincronização bidirecional de valores
 
 ### 🚧 Modo Mock para Desenvolvimento
 - **Sistema completo de mock data** sem necessidade de Supabase
@@ -85,7 +92,9 @@ See [`codebase-map.json`](./codebase-map.json) for the complete list of exports,
 - **Linguagem**: TypeScript
 - **Backend**: Supabase (Auth + PostgreSQL + Storage)
 - **UI**: Tailwind CSS + Radix UI + shadcn/ui
+- **Charts**: Recharts (carregamento dinâmico com Next.js dynamic)
 - **Forms**: React Hook Form + Zod
+- **Cálculos**: Decimal.js para precisão financeira
 - **Testing**: Jest + React Testing Library
 - **Linting**: ESLint + TypeScript ESLint
 - **Development**: Mock system para desenvolvimento offline

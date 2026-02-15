@@ -4,7 +4,7 @@ name: architecture
 description: System architecture, layers, patterns, and design decisions
 category: architecture
 generated: 2026-01-27
-updated: 2026-02-14
+updated: 2026-02-15
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -153,6 +153,7 @@ O projeto utiliza **Radix UI** e **shadcn/ui** para componentes acessíveis e co
 **Componentes Base** (`src/components/ui/`):
 - `button`, `card`, `dialog`, `form`, `input`, `label`, `tabs`
 - `sheet`, `sidebar`, `tooltip`, `badge`, `separator`
+- `financial-input` - Input especializado para valores monetários
 - Todos seguem padrões de acessibilidade WAI-ARIA
 
 **Componentes de Layout**:
@@ -160,9 +161,76 @@ O projeto utiliza **Radix UI** e **shadcn/ui** para componentes acessíveis e co
 - `AppSidebar` - Navegação lateral colapsável
 - `DevModeIndicator` - Indicador visual de modo mock
 
+**Componentes de Visualização** (`src/components/charts/`):
+- `DREChartsSection` - Seção de gráficos para DRE (Receita, Custos, EBITDA)
+- `FCFFChartsSection` - Seção de gráficos para FCFF
+- `RevenueChart`, `CostCompositionChart`, `EBITDAChart`, `FCFFChart` - Gráficos individuais
+- Carregamento dinâmico com `next/dynamic` para evitar problemas de hydration
+- Skeleton loading states durante carregamento
+
 **Componentes de Domínio** (`src/app/(dashboard)/`):
 - `ModelCard` - Card de modelo com ações CRUD
 - Forms de entrada de dados (DRE, Balanço)
+- Tabelas financeiras (DRETable, BalanceSheetTable, FCFFTable)
+
+## Sistema de Formatação Financeira
+
+O projeto possui um sistema robusto de formatação de números financeiros em `src/lib/utils/formatters.ts`:
+
+**Formatadores Disponíveis**:
+- `formatCurrency(value)` - Formata valores monetários em R$ (ex: "R$ 1.234.567,89")
+- `formatPercentage(value)` - Formata percentuais (ex: "15,34%")
+- `formatCompactNumber(value)` - Formata números grandes de forma compacta (ex: "1,5 mi", "2,3 bi")
+- `formatNumber(value)` - Formata números com separadores de milhar pt-BR
+- `formatMultiple(value)` - Formata múltiplos de valuation (ex: "15,23x")
+- `formatInputNumber(value)` - Formata valores para exibição em inputs
+- `parseInputNumber(value)` - Remove formatação e retorna valor numérico
+
+**Características**:
+- Padrão brasileiro (pt-BR) para todos os formatadores
+- Suporte a valores nulos/undefined com fallbacks apropriados
+- Integração com `Intl.NumberFormat` para internacionalização
+- Funções bidirecionais para inputs (format/parse)
+
+## Arquitetura de Visualização de Dados
+
+### Carregamento Dinâmico de Gráficos
+
+Para evitar problemas de hydration com bibliotecas de gráficos (Recharts), os componentes de visualização usam **carregamento dinâmico**:
+
+```typescript
+const RevenueChart = dynamic(
+  () => import('@/components/charts/RevenueChart').then((mod) => mod.RevenueChart),
+  { ssr: false, loading: () => <ChartSkeleton /> }
+);
+```
+
+**Benefícios**:
+- ✅ Evita erros de hydration com componentes client-side
+- ✅ Reduz bundle inicial (code splitting)
+- ✅ Melhora performance de primeira renderização
+- ✅ Loading states elegantes com skeleton loaders
+
+### Organização de Componentes de Charts
+
+**Seções Agregadoras** (`DREChartsSection`, `FCFFChartsSection`):
+- Componentes "client component" que orquestram múltiplos gráficos
+- Carregam gráficos individuais dinamicamente
+- Gerenciam estados de loading com skeletons
+
+**Gráficos Individuais** (`RevenueChart`, `FCFFChart`, etc.):
+- Componentes puros de visualização
+- Recebem dados via props
+- Usam Recharts para renderização
+
+**Fluxo de Dados**:
+```
+Page (Server Component)
+  → Busca dados do backend
+  → Passa para ChartsSection (Client Component)
+    → Carrega dinamicamente Charts individuais
+      → Renderiza com Recharts
+```
 
 ## Top Directories Snapshot
 
@@ -170,7 +238,9 @@ O projeto utiliza **Radix UI** e **shadcn/ui** para componentes acessíveis e co
   - `(auth)/` — Páginas de autenticação
   - `(dashboard)/` — Páginas protegidas do dashboard
 - `src/components/` — UI components and layout
-  - `ui/` — Componentes base (Radix UI)
+  - `ui/` — Componentes base (Radix UI + custom)
+  - `charts/` — Componentes de visualização (gráficos)
+  - `tables/` — Componentes de tabelas financeiras
   - `dev/` — Componentes de desenvolvimento
 - `src/core/` — Domain logic and calculations
   - `calculations/` — Cálculos de valuation, WACC, etc.
@@ -179,6 +249,7 @@ O projeto utiliza **Radix UI** e **shadcn/ui** para componentes acessíveis e co
   - `supabase/` — Cliente e auth Supabase
   - `mock/` — Sistema de mock para desenvolvimento
   - `actions/` — Server actions (Next.js)
+  - `utils/` — Utilitários (formatters, helpers)
 - `src/types/` — Shared type definitions
 - `src/styles/` — Design system and global styles
 

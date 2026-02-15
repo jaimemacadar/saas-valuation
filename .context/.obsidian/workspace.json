@@ -94,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "plans/premissas-de-projecao.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks"
+              "title": "Links inversos para premissas-de-projecao"
             }
           },
           {
@@ -182,6 +183,9 @@
   },
   "active": "d854d9899aba4bf2",
   "lastOpenFiles": [
+    "workflow/validacao-automatica.md",
+    "workflow/validacao-automatica.md.tmp.33420.1771196275948",
+    "workflow/teste-end-to-end.md",
     "workflow/plan-tracking/premissas-de-projecao.json",
     "workflow/plan-tracking",
     "plans/premissas-de-projecao.md.tmp.33580.1771098368899",
@@ -196,8 +200,6 @@
     "workflow/archive/plans-2026-02-14T19-25-20-804Z/plan-tracking",
     "workflow/archive/plans-2026-02-14T19-25-20-804Z",
     "workflow/archive/Entrada-de-Dados-2026-02-14T19-25-20-793Z/status.yaml",
-    "workflow/archive/Entrada-de-Dados-2026-02-14T19-25-20-793Z",
-    "plans/card-valuations.md.tmp.33580.1771095934860",
     "docs/qa/components-ui.md",
     "docs/architecture.md",
     "docs/data-flow.md",
