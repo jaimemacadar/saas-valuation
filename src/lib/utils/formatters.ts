@@ -204,3 +204,50 @@ export function formatCellWithColor(
     className: value >= 0 ? 'text-green-600' : 'text-red-600',
   };
 }
+
+/**
+ * Formata número para exibição em input (com separadores de milhares)
+ * @param value - Valor numérico
+ * @returns String formatada com separadores pt-BR
+ *
+ * @example
+ * formatInputNumber(1234567.89) // "1.234.567,89"
+ * formatInputNumber(0) // "0,00"
+ */
+export function formatInputNumber(value: number | string): string {
+  if (value === '' || value === null || value === undefined) {
+    return '';
+  }
+
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+
+  if (isNaN(numValue)) {
+    return '';
+  }
+
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numValue);
+}
+
+/**
+ * Remove formatação de número do input e retorna valor numérico
+ * @param value - String formatada
+ * @returns Número sem formatação
+ *
+ * @example
+ * parseInputNumber("1.234.567,89") // 1234567.89
+ * parseInputNumber("1.000") // 1000
+ */
+export function parseInputNumber(value: string): number {
+  if (!value || value === '') {
+    return 0;
+  }
+
+  // Remove separadores de milhares (pontos) e substitui vírgula por ponto
+  const cleaned = value.replace(/\./g, '').replace(',', '.');
+  const parsed = parseFloat(cleaned);
+
+  return isNaN(parsed) ? 0 : parsed;
+}

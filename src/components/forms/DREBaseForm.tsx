@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save, CheckCircle2 } from "lucide-react";
 import { saveDREBase } from "@/lib/actions/models";
 import { DREBaseInputs } from "@/core/types";
-import { formatCurrency } from "@/lib/utils/formatters";
+import { formatCurrency, parseInputNumber } from "@/lib/utils/formatters";
+import { FinancialInput } from "@/components/ui/financial-input";
 
 interface DREBaseFormProps {
   modelId: string;
@@ -48,7 +47,7 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
   );
 
   const handleChange = (field: keyof DREBaseInputs, value: string) => {
-    const numValue = parseFloat(value) || 0;
+    const numValue = parseInputNumber(value);
     setFormData(prev => ({ ...prev, [field]: numValue }));
     setSuccess(false);
   };
@@ -83,7 +82,7 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
   const lucroLiquido = lucroAntesIR - formData.irCSLL;
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="max-w-xl">
       <Card>
         <CardHeader>
           <CardTitle>Demonstração do Resultado do Exercício (DRE)</CardTitle>
@@ -109,50 +108,24 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold border-b pb-2">Receita</h3>
 
-            <div className="space-y-2">
-              <Label htmlFor="receitaBruta">
-                Receita Bruta <span className="text-destructive">*</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  R$
-                </span>
-                <Input
-                  id="receitaBruta"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.receitaBruta}
-                  onChange={(e) => handleChange("receitaBruta", e.target.value)}
-                  className="pl-10"
-                  required
-                  disabled={isLoading}
-                  placeholder="0,00"
-                />
-              </div>
-            </div>
+            <div className="space-y-3">
+              <FinancialInput
+                id="receitaBruta"
+                label="Receita Bruta"
+                value={formData.receitaBruta}
+                onChange={(value) => handleChange("receitaBruta", value)}
+                required
+                disabled={isLoading}
+              />
 
-            <div className="space-y-2">
-              <Label htmlFor="impostosEDevolucoes">
-                (-) Impostos e Devoluções <span className="text-destructive">*</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  R$
-                </span>
-                <Input
-                  id="impostosEDevolucoes"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.impostosEDevolucoes}
-                  onChange={(e) => handleChange("impostosEDevolucoes", e.target.value)}
-                  className="pl-10"
-                  required
-                  disabled={isLoading}
-                  placeholder="0,00"
-                />
-              </div>
+              <FinancialInput
+                id="impostosEDevolucoes"
+                label="(-) Impostos e Devoluções"
+                value={formData.impostosEDevolucoes}
+                onChange={(value) => handleChange("impostosEDevolucoes", value)}
+                required
+                disabled={isLoading}
+              />
             </div>
 
             <div className="rounded-lg bg-muted p-3">
@@ -167,27 +140,15 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold border-b pb-2">Custos e Despesas</h3>
 
-            <div className="space-y-2">
-              <Label htmlFor="cmv">
-                (-) Custo das Mercadorias Vendidas (CMV) <span className="text-destructive">*</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  R$
-                </span>
-                <Input
-                  id="cmv"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.cmv}
-                  onChange={(e) => handleChange("cmv", e.target.value)}
-                  className="pl-10"
-                  required
-                  disabled={isLoading}
-                  placeholder="0,00"
-                />
-              </div>
+            <div className="space-y-3">
+              <FinancialInput
+                id="cmv"
+                label="(-) CMV"
+                value={formData.cmv}
+                onChange={(value) => handleChange("cmv", value)}
+                required
+                disabled={isLoading}
+              />
             </div>
 
             <div className="rounded-lg bg-muted p-3">
@@ -197,27 +158,15 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="despesasOperacionais">
-                (-) Despesas Operacionais <span className="text-destructive">*</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  R$
-                </span>
-                <Input
-                  id="despesasOperacionais"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.despesasOperacionais}
-                  onChange={(e) => handleChange("despesasOperacionais", e.target.value)}
-                  className="pl-10"
-                  required
-                  disabled={isLoading}
-                  placeholder="0,00"
-                />
-              </div>
+            <div className="space-y-3">
+              <FinancialInput
+                id="despesasOperacionais"
+                label="(-) Despesas Operacionais"
+                value={formData.despesasOperacionais}
+                onChange={(value) => handleChange("despesasOperacionais", value)}
+                required
+                disabled={isLoading}
+              />
             </div>
 
             <div className="rounded-lg bg-muted p-3">
@@ -232,27 +181,15 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold border-b pb-2">Impostos e Dividendos</h3>
 
-            <div className="space-y-2">
-              <Label htmlFor="irCSLL">
-                (-) IR/CSLL <span className="text-destructive">*</span>
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  R$
-                </span>
-                <Input
-                  id="irCSLL"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.irCSLL}
-                  onChange={(e) => handleChange("irCSLL", e.target.value)}
-                  className="pl-10"
-                  required
-                  disabled={isLoading}
-                  placeholder="0,00"
-                />
-              </div>
+            <div className="space-y-3">
+              <FinancialInput
+                id="irCSLL"
+                label="(-) IR/CSLL"
+                value={formData.irCSLL}
+                onChange={(value) => handleChange("irCSLL", value)}
+                required
+                disabled={isLoading}
+              />
             </div>
 
             <div className="rounded-lg bg-muted p-3">
@@ -262,26 +199,14 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="dividendos">
-                (-) Dividendos
-              </Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  R$
-                </span>
-                <Input
-                  id="dividendos"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.dividendos}
-                  onChange={(e) => handleChange("dividendos", e.target.value)}
-                  className="pl-10"
-                  disabled={isLoading}
-                  placeholder="0,00"
-                />
-              </div>
+            <div className="space-y-3">
+              <FinancialInput
+                id="dividendos"
+                label="(-) Dividendos"
+                value={formData.dividendos}
+                onChange={(value) => handleChange("dividendos", value)}
+                disabled={isLoading}
+              />
             </div>
           </div>
 

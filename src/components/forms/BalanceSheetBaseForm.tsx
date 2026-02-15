@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save, CheckCircle2 } from "lucide-react";
 import { saveBalanceSheetBase } from "@/lib/actions/models";
 import { BalanceSheetBaseInputs } from "@/core/types";
-import { formatCurrency } from "@/lib/utils/formatters";
+import { formatCurrency, parseInputNumber } from "@/lib/utils/formatters";
+import { FinancialInput } from "@/components/ui/financial-input";
 
 interface BalanceSheetBaseFormProps {
   modelId: string;
@@ -89,7 +88,7 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
     field: string,
     value: string
   ) => {
-    const numValue = parseFloat(value) || 0;
+    const numValue = parseInputNumber(value);
     setFormData((prev) => ({
       ...prev,
       [section]: {
@@ -159,7 +158,7 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
   const balanceado = Math.abs(ativoTotal - passivoTotal) < 0.01;
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="max-w-4xl">
       <Card>
         <CardHeader>
           <CardTitle>Balanço Patrimonial</CardTitle>
@@ -187,263 +186,202 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
             </div>
           )}
 
-          {/* ATIVO CIRCULANTE */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold border-b pb-2">Ativo Circulante</h3>
+          {/* Layout de duas colunas: Ativo | Passivo + PL */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* COLUNA ESQUERDA - ATIVO */}
+            <div className="flex flex-col space-y-6">
+              {/* ATIVO CIRCULANTE */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold border-b pb-2">Ativo Circulante</h3>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="caixaEquivalentes">Caixa e Equivalentes</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                <div className="space-y-3">
+                  <FinancialInput
                     id="caixaEquivalentes"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="Caixa e Equivalentes"
                     value={formData.ativoCirculante.caixaEquivalentes}
-                    onChange={(e) => handleChange("ativoCirculante", "caixaEquivalentes", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("ativoCirculante", "caixaEquivalentes", value)}
                     disabled={isLoading}
                   />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="aplicacoesFinanceiras">Aplicações Financeiras</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                  <FinancialInput
                     id="aplicacoesFinanceiras"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="Aplicações Financeiras"
                     value={formData.ativoCirculante.aplicacoesFinanceiras}
-                    onChange={(e) => handleChange("ativoCirculante", "aplicacoesFinanceiras", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("ativoCirculante", "aplicacoesFinanceiras", value)}
                     disabled={isLoading}
                   />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="contasReceber">Contas a Receber</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                  <FinancialInput
                     id="contasReceber"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="Contas a Receber"
                     value={formData.ativoCirculante.contasReceber}
-                    onChange={(e) => handleChange("ativoCirculante", "contasReceber", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("ativoCirculante", "contasReceber", value)}
                     disabled={isLoading}
                   />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="estoques">Estoques</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                  <FinancialInput
                     id="estoques"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="Estoques"
                     value={formData.ativoCirculante.estoques}
-                    onChange={(e) => handleChange("ativoCirculante", "estoques", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("ativoCirculante", "estoques", value)}
                     disabled={isLoading}
                   />
                 </div>
+
+                <div className="rounded-lg bg-muted p-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">Total Ativo Circulante</span>
+                    <span className="font-semibold">{formatCurrency(totalAtivoCirculante)}</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="rounded-lg bg-muted p-3">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">Total Ativo Circulante</span>
-                <span className="font-semibold">{formatCurrency(totalAtivoCirculante)}</span>
-              </div>
-            </div>
-          </div>
+              {/* ATIVO REALIZÁVEL LP */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold border-b pb-2">Ativo Realizável Longo Prazo</h3>
 
-          {/* ATIVO REALIZÁVEL LP */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold border-b pb-2">Ativo Realizável Longo Prazo</h3>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="ativoImobilizadoBruto">Ativo Imobilizado Bruto</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                <div className="space-y-3">
+                  <FinancialInput
                     id="ativoImobilizadoBruto"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="Ativo Imobilizado Bruto"
                     value={formData.ativoRealizavelLP.ativoImobilizadoBruto}
-                    onChange={(e) => handleChange("ativoRealizavelLP", "ativoImobilizadoBruto", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("ativoRealizavelLP", "ativoImobilizadoBruto", value)}
                     disabled={isLoading}
                   />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="depreciacaoAcumulada">(-) Depreciação Acumulada</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                  <FinancialInput
                     id="depreciacaoAcumulada"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="(-) Depreciação Acumulada"
                     value={formData.ativoRealizavelLP.depreciacaoAcumulada}
-                    onChange={(e) => handleChange("ativoRealizavelLP", "depreciacaoAcumulada", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("ativoRealizavelLP", "depreciacaoAcumulada", value)}
                     disabled={isLoading}
                   />
+                </div>
+
+                <div className="rounded-lg bg-muted p-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">Total Ativo Realizável LP</span>
+                    <span className="font-semibold">{formatCurrency(totalAtivoRealizavelLP)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total do Ativo */}
+              <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-3 mt-auto">
+                <div className="flex justify-between text-sm font-semibold">
+                  <span>ATIVO TOTAL</span>
+                  <span>{formatCurrency(ativoTotal)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg bg-muted p-3">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">Total Ativo Realizável LP</span>
-                <span className="font-semibold">{formatCurrency(totalAtivoRealizavelLP)}</span>
-              </div>
-            </div>
-          </div>
+            {/* COLUNA DIREITA - PASSIVO + PL */}
+            <div className="flex flex-col space-y-6">
+              {/* PASSIVO CIRCULANTE */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold border-b pb-2">Passivo Circulante</h3>
 
-          {/* PASSIVO CIRCULANTE */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold border-b pb-2">Passivo Circulante</h3>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="fornecedores">Fornecedores</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                <div className="space-y-3">
+                  <FinancialInput
                     id="fornecedores"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="Fornecedores"
                     value={formData.passivoCirculante.fornecedores}
-                    onChange={(e) => handleChange("passivoCirculante", "fornecedores", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("passivoCirculante", "fornecedores", value)}
                     disabled={isLoading}
                   />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="emprestimosFinanciamentosCP">Empréstimos/Financiamentos CP</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                  <FinancialInput
                     id="emprestimosFinanciamentosCP"
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    label="Empréstimos/Financ. CP"
                     value={formData.passivoCirculante.emprestimosFinanciamentosCP}
-                    onChange={(e) => handleChange("passivoCirculante", "emprestimosFinanciamentosCP", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("passivoCirculante", "emprestimosFinanciamentosCP", value)}
                     disabled={isLoading}
                   />
                 </div>
+
+                <div className="rounded-lg bg-muted p-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">Total Passivo Circulante</span>
+                    <span className="font-semibold">{formatCurrency(totalPassivoCirculante)}</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="rounded-lg bg-muted p-3">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">Total Passivo Circulante</span>
-                <span className="font-semibold">{formatCurrency(totalPassivoCirculante)}</span>
+              {/* PASSIVO REALIZÁVEL LP */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold border-b pb-2">Passivo Realizável Longo Prazo</h3>
+
+                <div className="space-y-3">
+                  <FinancialInput
+                    id="emprestimosFinanciamentosLP"
+                    label="Empréstimos/Financ. LP"
+                    value={formData.passivoRealizavelLP.emprestimosFinanciamentosLP}
+                    onChange={(value) => handleChange("passivoRealizavelLP", "emprestimosFinanciamentosLP", value)}
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="rounded-lg bg-muted p-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">Total Passivo Realizável LP</span>
+                    <span className="font-semibold">{formatCurrency(totalPassivoRealizavelLP)}</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          {/* PASSIVO REALIZÁVEL LP */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold border-b pb-2">Passivo Realizável Longo Prazo</h3>
+              {/* PATRIMÔNIO LÍQUIDO */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold border-b pb-2">Patrimônio Líquido</h3>
 
-            <div className="space-y-2">
-              <Label htmlFor="emprestimosFinanciamentosLP">Empréstimos/Financiamentos LP</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                <Input
-                  id="emprestimosFinanciamentosLP"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={formData.passivoRealizavelLP.emprestimosFinanciamentosLP}
-                  onChange={(e) => handleChange("passivoRealizavelLP", "emprestimosFinanciamentosLP", e.target.value)}
-                  className="pl-10"
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* PATRIMÔNIO LÍQUIDO */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold border-b pb-2">Patrimônio Líquido</h3>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="capitalSocial">Capital Social</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                <div className="space-y-3">
+                  <FinancialInput
                     id="capitalSocial"
-                    type="number"
-                    step="0.01"
+                    label="Capital Social"
                     value={formData.patrimonioLiquido.capitalSocial}
-                    onChange={(e) => handleChange("patrimonioLiquido", "capitalSocial", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("patrimonioLiquido", "capitalSocial", value)}
                     disabled={isLoading}
                   />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lucrosAcumulados">Lucros Acumulados</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                  <Input
+                  <FinancialInput
                     id="lucrosAcumulados"
-                    type="number"
-                    step="0.01"
+                    label="Lucros Acumulados"
                     value={formData.patrimonioLiquido.lucrosAcumulados}
-                    onChange={(e) => handleChange("patrimonioLiquido", "lucrosAcumulados", e.target.value)}
-                    className="pl-10"
+                    onChange={(value) => handleChange("patrimonioLiquido", "lucrosAcumulados", value)}
                     disabled={isLoading}
                   />
+                </div>
+
+                <div className="rounded-lg bg-muted p-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">Total Patrimônio Líquido</span>
+                    <span className="font-semibold">{formatCurrency(totalPatrimonioLiquido)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total do Passivo */}
+              <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-3 mt-auto">
+                <div className="flex justify-between text-sm font-semibold">
+                  <span>PASSIVO TOTAL</span>
+                  <span className={balanceado ? "text-green-600" : "text-destructive"}>
+                    {formatCurrency(passivoTotal)}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Resumo Final */}
-          <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-4 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Ativo Total</span>
-              <span className="font-medium">{formatCurrency(ativoTotal)}</span>
-            </div>
-            <div className="flex justify-between text-sm font-semibold border-t pt-2">
-              <span>Passivo Total</span>
-              <span className={balanceado ? "text-green-600" : "text-destructive"}>
-                {formatCurrency(passivoTotal)}
-              </span>
-            </div>
-            {balanceado && (
-              <div className="text-xs text-green-600 text-center pt-2">
-                ✓ Balanço equilibrado
+          {/* Status do Balanceamento */}
+          {balanceado && (
+            <div className="rounded-lg border-2 border-green-500/20 bg-green-500/5 p-3 text-center">
+              <div className="text-sm text-green-600 font-medium">
+                ✓ Balanço Patrimonial Equilibrado
               </div>
-            )}
-          </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                Ativo Total = Passivo Total: {formatCurrency(ativoTotal)}
+              </div>
+            </div>
+          )}
         </CardContent>
 
         <CardFooter>
