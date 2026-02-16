@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
   ColumnDef,
   flexRender,
 } from '@tanstack/react-table';
+import { Loader2, Check } from 'lucide-react';
 import { DRECalculated, DREProjectionInputs } from '@/core/types';
 import { formatCurrency, formatPercentage } from '@/lib/utils/formatters';
 import {
@@ -17,6 +19,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { PremiseInput } from './PremiseInput';
+import { useDREProjectionPersist } from '@/hooks/useDREProjectionPersist';
 
 interface DRETableProps {
   data: DRECalculated[];
@@ -43,12 +47,35 @@ export function DRETable({
   modelId,
   onProjectionChange
 }: DRETableProps) {
+  // State local de premissas para UX responsiva
+  const [localProjections, setLocalProjections] = useState<DREProjectionInputs[]>(
+    projectionInputs || []
+  );
+
+  // Hook de persistência com debounce (sempre chamado, mas só executa se modelId existir)
+  const persistResult = useDREProjectionPersist({
+    modelId: modelId || '',
+    projectionData: localProjections,
+    debounceMs: 800,
+  });
+
+  const { isSaving, lastSavedAt } = modelId ? persistResult : { isSaving: false, lastSavedAt: null };
+
   // Helper para extrair valores de premissa
   const getPremiseValues = (field: keyof DREProjectionInputs): Record<string, number | null> => {
-    if (!projectionInputs) return {};
+    if (!localProjections || localProjections.length === 0) return {};
     return Object.fromEntries(
-      projectionInputs.map((p) => [p.year, p[field] as number])
+      localProjections.map((p) => [p.year, p[field] as number])
     );
+  };
+
+  // Handler para atualizar premissas
+  const handlePremiseChange = (year: number, field: keyof DREProjectionInputs, value: number) => {
+    const updated = localProjections.map((p) =>
+      p.year === year ? { ...p, [field]: value } : p
+    );
+    setLocalProjections(updated);
+    onProjectionChange?.(updated);
   };
 
   // Constrói as linhas da tabela com premissas intercaladas
@@ -219,24 +246,46 @@ export function DRETable({
         const value = row.original.values[yearData.year];
         const rowType = row.original.type;
         const isMargin = row.original.isMargin;
+        const premiseField = row.original.premiseField;
 
+        // Renderiza input editável para premissas
+        if (rowType === 'premise' && premiseField) {
+          // Ano Base não é editável
+          if (yearData.year === 0) {
+            return (
+              <div className="text-right text-xs text-muted-foreground">
+                —
+              </div>
+            );
+          }
+
+          // Renderiza PremiseInput para anos projetados
+          return (
+            <div className="flex justify-end">
+              <PremiseInput
+                value={value}
+                onChange={(newValue) => handlePremiseChange(yearData.year, premiseField, newValue)}
+                disabled={!modelId}
+              />
+            </div>
+          );
+        }
+
+        // Renderiza valores calculados (read-only)
         return (
           <div
             className={cn(
               'text-right tabular-nums',
               rowType === 'total' && 'font-bold border-t-2 border-t-foreground',
               rowType === 'subtotal' && 'font-semibold',
-              rowType === 'premise' && 'text-xs',
               value !== null && value < 0 && 'text-red-600'
             )}
           >
-            {rowType === 'premise'
-              ? value !== null ? formatPercentage(value / 100) : '—'
-              : value !== null
-                ? isMargin
-                  ? formatPercentage(value)
-                  : formatCurrency(value)
-                : '-'}
+            {value !== null
+              ? isMargin
+                ? formatPercentage(value)
+                : formatCurrency(value)
+              : '-'}
           </div>
         );
       },
@@ -258,8 +307,26 @@ export function DRETable({
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <div className="space-y-2">
+      {/* Indicador de salvamento */}
+      {modelId && projectionInputs && projectionInputs.length > 0 && (
+        <div className="flex items-center justify-end text-sm text-muted-foreground">
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span>Salvando...</span>
+            </>
+          ) : lastSavedAt ? (
+            <>
+              <Check className="mr-2 h-4 w-4 text-green-600" />
+              <span>Salvo às {lastSavedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+            </>
+          ) : null}
+        </div>
+      )}
+
+      <div className="rounded-md border">
+        <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -301,6 +368,7 @@ export function DRETable({
           ))}
         </TableBody>
       </Table>
+      </div>
     </div>
   );
 }
