@@ -1,7 +1,22 @@
 'use client';
 
-import { useRef, KeyboardEvent } from 'react';
+import { useRef, KeyboardEvent, useState, forwardRef, useImperativeHandle } from 'react';
+import { ChevronsRight, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface PremiseInputProps {
   value: number | null;
@@ -10,6 +25,13 @@ interface PremiseInputProps {
   disabled?: boolean;
   tabIndex?: number;
   className?: string;
+  showCopyRight?: boolean;
+  onCopyRight?: () => void;
+  showTrend?: boolean;
+  onApplyTrend?: (startValue: number, endValue: number) => void;
+  onNavigateNext?: () => void;
+  onNavigatePrevious?: () => void;
+  onNavigateDown?: () => void;
 }
 
 /**
@@ -18,15 +40,31 @@ interface PremiseInputProps {
  * prevenindo loops de unmount/remount causados por react-table.
  * Só dispara onChange no blur, após validação.
  */
-export function PremiseInput({
-  value,
-  onChange,
-  onBlur,
-  disabled = false,
-  tabIndex,
-  className,
-}: PremiseInputProps) {
+export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(function PremiseInput(
+  {
+    value,
+    onChange,
+    onBlur,
+    disabled = false,
+    tabIndex,
+    className,
+    showCopyRight = false,
+    onCopyRight,
+    showTrend = false,
+    onApplyTrend,
+    onNavigateNext,
+    onNavigatePrevious,
+    onNavigateDown,
+  },
+  ref
+) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [startValue, setStartValue] = useState('');
+  const [endValue, setEndValue] = useState('');
+
+  // Expõe o input element via ref
+  useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
 
   const formatted = value != null ? value.toFixed(2) : '0.00';
 
@@ -51,10 +89,19 @@ export function PremiseInput({
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Tab') {
+      e.preventDefault();
       inputRef.current?.blur();
-    }
-    if (e.key === 'Escape') {
+      if (e.shiftKey) {
+        onNavigatePrevious?.();
+      } else {
+        onNavigateNext?.();
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      inputRef.current?.blur();
+      onNavigateDown?.();
+    } else if (e.key === 'Escape') {
       if (inputRef.current) {
         inputRef.current.value = formatted;
       }
@@ -62,8 +109,22 @@ export function PremiseInput({
     }
   };
 
+  const handleApplyTrend = () => {
+    const start = parseFloat(startValue.replace(',', '.'));
+    const end = parseFloat(endValue.replace(',', '.'));
+
+    if (!isNaN(start) && !isNaN(end) && onApplyTrend) {
+      const clampedStart = Math.max(0, Math.min(100, start));
+      const clampedEnd = Math.max(0, Math.min(100, end));
+      onApplyTrend(clampedStart, clampedEnd);
+      setIsPopoverOpen(false);
+      setStartValue('');
+      setEndValue('');
+    }
+  };
+
   return (
-    <div className="relative inline-flex items-center">
+    <div className="relative inline-flex items-center gap-1">
       <input
         ref={inputRef}
         key={formatted}
@@ -86,7 +147,122 @@ export function PremiseInput({
         )}
         aria-label="Taxa percentual"
       />
-      <span className="ml-1 text-xs text-muted-foreground">%</span>
+      <span className="text-xs text-muted-foreground">%</span>
+
+      {showCopyRight && onCopyRight && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={onCopyRight}
+                disabled={disabled}
+                aria-label="Copiar para todos os anos"
+              >
+                <ChevronsRight className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Copiar para todos os anos</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+
+      {showTrend && onApplyTrend && (
+        <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    disabled={disabled}
+                    aria-label="Aplicar tendência"
+                  >
+                    <TrendingUp className="h-3.5 w-3.5" />
+                  </Button>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Aplicar tendência</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <PopoverContent className="w-80">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Aplicar Tendência</h4>
+                <p className="text-xs text-muted-foreground">
+                  Define valores inicial e final para interpolação linear entre os anos.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="start-value" className="text-xs">
+                    Valor inicial (%)
+                  </Label>
+                  <Input
+                    id="start-value"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="Ex: 5.0"
+                    value={startValue}
+                    onChange={(e) => setStartValue(e.target.value)}
+                    className="h-8 text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="end-value" className="text-xs">
+                    Valor final (%)
+                  </Label>
+                  <Input
+                    id="end-value"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="Ex: 15.0"
+                    value={endValue}
+                    onChange={(e) => setEndValue(e.target.value)}
+                    className="h-8 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsPopoverOpen(false);
+                    setStartValue('');
+                    setEndValue('');
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleApplyTrend}
+                  disabled={!startValue || !endValue}
+                >
+                  Aplicar
+                </Button>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   );
-}
+});
