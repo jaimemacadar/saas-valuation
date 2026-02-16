@@ -52,14 +52,11 @@ export function DRETable({
     projectionInputs || []
   );
 
-  // Hook de persistência com debounce (sempre chamado, mas só executa se modelId existir)
-  const persistResult = useDREProjectionPersist({
+  // Hook de persistência com debounce — API imperativa (save chamado explicitamente)
+  const { isSaving, lastSavedAt, save } = useDREProjectionPersist({
     modelId: modelId || '',
-    projectionData: localProjections,
     debounceMs: 800,
   });
-
-  const { isSaving, lastSavedAt } = modelId ? persistResult : { isSaving: false, lastSavedAt: null };
 
   // Helper para extrair valores de premissa
   const getPremiseValues = (field: keyof DREProjectionInputs): Record<string, number | null> => {
@@ -76,6 +73,11 @@ export function DRETable({
     );
     setLocalProjections(updated);
     onProjectionChange?.(updated);
+
+    // Dispara save com debounce
+    if (modelId) {
+      save(updated);
+    }
   };
 
   // Constrói as linhas da tabela com premissas intercaladas
@@ -86,7 +88,7 @@ export function DRETable({
       field: 'receita',
       values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
     },
-    ...(projectionInputs ? [{
+    ...(projectionInputs && projectionInputs.length > 0 ? [{
       label: '↳ Taxa de crescimento',
       type: 'premise' as const,
       field: 'receitaBrutaGrowth',
@@ -100,7 +102,7 @@ export function DRETable({
       field: 'impostos',
       values: Object.fromEntries(data.map((d) => [d.year, d.impostosEDevolucoes * -1])),
     },
-    ...(projectionInputs ? [{
+    ...(projectionInputs && projectionInputs.length > 0 ? [{
       label: '↳ Taxa sobre receita bruta',
       type: 'premise' as const,
       field: 'impostosEDevolucoesRate',
@@ -120,7 +122,7 @@ export function DRETable({
       field: 'cmv',
       values: Object.fromEntries(data.map((d) => [d.year, d.cmv * -1])),
     },
-    ...(projectionInputs ? [{
+    ...(projectionInputs && projectionInputs.length > 0 ? [{
       label: '↳ Taxa CMV',
       type: 'premise' as const,
       field: 'cmvRate',
@@ -142,7 +144,7 @@ export function DRETable({
         data.map((d) => [d.year, d.despesasOperacionais * -1])
       ),
     },
-    ...(projectionInputs ? [{
+    ...(projectionInputs && projectionInputs.length > 0 ? [{
       label: '↳ Taxa despesas operacionais',
       type: 'premise' as const,
       field: 'despesasOperacionaisRate',
@@ -188,7 +190,7 @@ export function DRETable({
       field: 'irCSLL',
       values: Object.fromEntries(data.map((d) => [d.year, d.irCSLL * -1])),
     },
-    ...(projectionInputs ? [{
+    ...(projectionInputs && projectionInputs.length > 0 ? [{
       label: '↳ Taxa IR/CSLL',
       type: 'premise' as const,
       field: 'irCSLLRate',
@@ -208,7 +210,7 @@ export function DRETable({
       field: 'dividendos',
       values: Object.fromEntries(data.map((d) => [d.year, d.dividendos * -1])),
     },
-    ...(projectionInputs ? [{
+    ...(projectionInputs && projectionInputs.length > 0 ? [{
       label: '↳ Taxa de dividendos',
       type: 'premise' as const,
       field: 'dividendosRate',

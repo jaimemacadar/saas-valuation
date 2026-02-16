@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, KeyboardEvent, useEffect } from 'react';
+import { useState, useRef, KeyboardEvent } from 'react';
 import { cn } from '@/lib/utils';
 
 interface PremiseInputProps {
@@ -20,47 +20,27 @@ export function PremiseInput({
   tabIndex,
   className,
 }: PremiseInputProps) {
-  const [displayValue, setDisplayValue] = useState(
-    value !== null ? value.toFixed(2) : '0.00'
-  );
-  const [isFocused, setIsFocused] = useState(false);
+  const [editingValue, setEditingValue] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const prevValueRef = useRef(value);
 
-  // Sincroniza com mudanças externas do value quando não está focado
-  if (value !== prevValueRef.current && !isFocused) {
-    prevValueRef.current = value;
-  }
-
-  useEffect(() => {
-    if (!isFocused && value !== null && value !== prevValueRef.current) {
-      setDisplayValue(value.toFixed(2));
-      prevValueRef.current = value;
-    }
-  }, [value, isFocused]);
+  // Display: valor formatado quando não está editando, input bruto quando está
+  const displayValue = isEditing
+    ? editingValue
+    : (value != null ? value.toFixed(2) : '0.00');
 
   const handleFocus = () => {
-    setIsFocused(true);
-    // Remove formatação ao focar (só número)
-    if (value !== null) {
-      setDisplayValue(value.toString());
-    }
+    setIsEditing(true);
+    setEditingValue(value != null ? value.toString() : '0');
   };
 
   const handleBlur = () => {
-    setIsFocused(false);
+    setIsEditing(false);
 
-    // Valida e formata
-    const numValue = parseFloat(displayValue);
+    const numValue = parseFloat(editingValue);
     if (!isNaN(numValue)) {
       const clamped = Math.max(0, Math.min(100, numValue));
-      setDisplayValue(clamped.toFixed(2));
       onChange(clamped);
-      prevValueRef.current = clamped;
-    } else {
-      const fallback = value !== null ? value : 0;
-      setDisplayValue(fallback.toFixed(2));
-      prevValueRef.current = fallback;
     }
 
     onBlur?.();
@@ -68,13 +48,16 @@ export function PremiseInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
-    // Permite apenas números, ponto e vírgula
     const cleaned = rawValue.replace(/[^\d.,]/g, '').replace(',', '.');
-    setDisplayValue(cleaned);
+    setEditingValue(cleaned);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      inputRef.current?.blur();
+    }
+    if (e.key === 'Escape') {
+      setEditingValue(value != null ? value.toString() : '0');
       inputRef.current?.blur();
     }
   };
