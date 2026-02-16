@@ -27,11 +27,21 @@ export function useDREProjectionPersist({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const prevDataRef = useRef<string>('');
+
+  // Inicializa com os dados atuais para NÃO disparar save na montagem
+  const prevDataRef = useRef<string>(JSON.stringify(projectionData));
+  // Flag para ignorar o primeiro render (montagem)
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     // Não faz nada se modelId for vazio
     if (!modelId) {
+      return;
+    }
+
+    // Ignora o primeiro render (montagem) — só salva quando o usuário edita
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true;
       return;
     }
 
