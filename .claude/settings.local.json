@@ -27,7 +27,9 @@
       "Bash(npx next build)",
       "Bash(npx vitest run:*)",
       "Bash(balance \")",
-      "Bash(npm run test:core:*)"
+      "Bash(npm run test:core:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)"
     ]
   }
 }

@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "premissas-de-projecao",
+      "path": "plans/premissas-de-projecao.md",
+      "title": "Plano: Premissas de Projeção e Engine de Cálculo",
+      "summary": "Implementar página de Premissas de Projeção com tabela inline editável (conforme PRD seção B), integrar engine de cálculo do core e popular automaticamente dados calculados para exibição nas páginas de DRE Projetado e Balanço Projetado.",
+      "linkedAt": "2026-02-14T19:37:20.590Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "premissas-de-projecao"
+}

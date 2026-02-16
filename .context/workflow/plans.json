@@ -1,14 +1,14 @@
 {
   "active": [
     {
-      "slug": "premissas-de-projecao",
-      "path": "plans/premissas-de-projecao.md",
-      "title": "Plano: Premissas de Projeção e Engine de Cálculo",
-      "summary": "Implementar página de Premissas de Projeção com tabela inline editável (conforme PRD seção B), integrar engine de cálculo do core e popular automaticamente dados calculados para exibição nas páginas de DRE Projetado e Balanço Projetado.",
-      "linkedAt": "2026-02-14T19:37:20.590Z",
+      "slug": "premissas-inline-dre",
+      "path": "plans/premissas-inline-dre.md",
+      "title": "Premissas de Projeção Inline na DRETable",
+      "summary": "Implementar linhas de premissas editáveis inline dentro da tabela DRE, com inputs percentuais, copiar para direita, tendência, tooltips e navegação Tab/Enter — conforme item 2.1 do fase-3.md (PRD Item B).",
+      "linkedAt": "2026-02-15T23:46:51.932Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "premissas-de-projecao"
+  "primary": "premissas-inline-dre"
 }

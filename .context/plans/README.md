@@ -11,6 +11,7 @@ This directory contains plans for coordinating work across documentation and pla
 6. [Mock Data System](./mock-data-system.md)
 7. [PRD](./PRD.md)
 8. [Premissas De Projecao](./premissas-de-projecao.md)
+9. [Premissas Inline Dre](./premissas-inline-dre.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

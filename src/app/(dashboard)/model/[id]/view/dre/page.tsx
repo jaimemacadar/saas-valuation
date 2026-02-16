@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DRETable } from '@/components/tables/DRETable';
 import { DREChartsSection } from '@/components/charts/DREChartsSection';
-import { DRECalculated } from '@/core/types';
+import { DRECalculated, DREProjectionInputs } from '@/core/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default async function DREPage({ params }: { params: Promise<{ id: string }> }) {
@@ -15,9 +15,13 @@ export default async function DREPage({ params }: { params: Promise<{ id: string
     notFound();
   }
 
-  // Parse model_data para extrair DRE calculado
-  const modelData = result.data.model_data as { dre?: DRECalculated[] };
+  // Parse model_data para extrair DRE calculado e premissas
+  const modelData = result.data.model_data as {
+    dre?: DRECalculated[];
+    dreProjection?: DREProjectionInputs[];
+  };
   const dreData = modelData?.dre || [];
+  const dreProjection = modelData?.dreProjection || [];
 
   return (
     <>
@@ -37,7 +41,11 @@ export default async function DREPage({ params }: { params: Promise<{ id: string
         </TabsList>
 
         <TabsContent value="table" className="space-y-4">
-          <DRETable data={dreData} />
+          <DRETable
+            data={dreData}
+            projectionInputs={dreProjection}
+            modelId={id}
+          />
         </TabsContent>
 
         <TabsContent value="charts">

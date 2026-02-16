@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "workflow/teste-end-to-end.md",
+                "file": "plans/premissas-inline-dre.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "teste-end-to-end"
+              "title": "premissas-inline-dre"
             }
           }
         ]
@@ -183,24 +183,26 @@
   },
   "active": "d854d9899aba4bf2",
   "lastOpenFiles": [
+    "plans/fase-3.md",
+    "plans/premissas-inline-dre.md.tmp.33420.1771199208018",
+    "plans/premissas-inline-dre.md",
+    "workflow/archive/plans-2026-02-15T23-44-08-591Z/plan-tracking/premissas-de-projecao.json",
+    "workflow/archive/plans-2026-02-15T23-44-08-591Z/plans.json",
+    "workflow/archive/plans-2026-02-15T23-44-08-591Z/plan-tracking",
+    "workflow/archive/plans-2026-02-15T23-44-08-591Z",
+    "workflow/archive/Premissas-de-Proje--o-2026-02-15T23-44-08-574Z/status.yaml",
+    "workflow/archive/Premissas-de-Proje--o-2026-02-15T23-44-08-574Z",
+    "plans/entrada-de-dados.md",
+    "plans/fase-3-2-ajustes.md",
+    "workflow/teste-end-to-end.md",
     "plans/premissas-de-projecao.md",
     "workflow/RELATORIO-FINAL-PHASE-4.md",
     "workflow/RELATORIO-FINAL-PHASE-4.md.tmp.33420.1771196386590",
     "workflow/validacao-automatica.md",
     "workflow/validacao-automatica.md.tmp.33420.1771196275948",
-    "workflow/teste-end-to-end.md",
     "workflow/plan-tracking/premissas-de-projecao.json",
-    "workflow/plan-tracking",
-    "plans/premissas-de-projecao.md.tmp.33580.1771098368899",
-    "plans/premissas-de-projecao.md.tmp.33580.1771098359925",
     "plans/PRD.md",
-    "plans/fase-3.md",
-    "plans/entrada-de-dados.md",
     "plans/card-valuations.md",
-    "workflow/archive/plans-2026-02-14T19-25-20-804Z/plan-tracking/entrada-de-dados.json",
-    "workflow/archive/plans-2026-02-14T19-25-20-804Z/plans.json",
-    "workflow/archive/plans-2026-02-14T19-25-20-804Z/plan-tracking",
-    "workflow/archive/plans-2026-02-14T19-25-20-804Z",
     "docs/qa/components-ui.md",
     "docs/architecture.md",
     "docs/data-flow.md",

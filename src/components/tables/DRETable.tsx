@@ -6,7 +6,7 @@ import {
   ColumnDef,
   flexRender,
 } from '@tanstack/react-table';
-import { DRECalculated } from '@/core/types';
+import { DRECalculated, DREProjectionInputs } from '@/core/types';
 import { formatCurrency, formatPercentage } from '@/lib/utils/formatters';
 import {
   Table,
@@ -21,26 +21,37 @@ import { cn } from '@/lib/utils';
 interface DRETableProps {
   data: DRECalculated[];
   showMargins?: boolean;
+  projectionInputs?: DREProjectionInputs[];
+  modelId?: string;
+  onProjectionChange?: (data: DREProjectionInputs[]) => void;
 }
 
 type DRERowData = {
   label: string;
-  type: 'header' | 'value' | 'subtotal' | 'total';
-  field: string; // Campo de referência (não usado diretamente)
+  type: 'header' | 'value' | 'subtotal' | 'total' | 'premise';
+  field: string;
   values: Record<string, number | null>;
   isMargin?: boolean;
+  premiseField?: keyof DREProjectionInputs;
+  premiseTooltip?: string;
 };
 
-export function DRETable({ data, showMargins = true }: DRETableProps) {
-  if (!data || data.length === 0) {
-    return (
-      <div className="rounded-lg border p-8 text-center text-muted-foreground">
-        Nenhum dado de DRE disponível
-      </div>
+export function DRETable({
+  data,
+  showMargins = true,
+  projectionInputs,
+  modelId,
+  onProjectionChange
+}: DRETableProps) {
+  // Helper para extrair valores de premissa
+  const getPremiseValues = (field: keyof DREProjectionInputs): Record<string, number | null> => {
+    if (!projectionInputs) return {};
+    return Object.fromEntries(
+      projectionInputs.map((p) => [p.year, p[field] as number])
     );
-  }
+  };
 
-  // Constrói as linhas da tabela
+  // Constrói as linhas da tabela com premissas intercaladas
   const rows: DRERowData[] = [
     {
       label: 'Receita Bruta',
@@ -48,12 +59,28 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
       field: 'receita',
       values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
     },
+    ...(projectionInputs ? [{
+      label: '↳ Taxa de crescimento',
+      type: 'premise' as const,
+      field: 'receitaBrutaGrowth',
+      premiseField: 'receitaBrutaGrowth' as keyof DREProjectionInputs,
+      premiseTooltip: '% crescimento sobre receita bruta do ano anterior',
+      values: getPremiseValues('receitaBrutaGrowth'),
+    }] : []),
     {
       label: '(-) Impostos sobre Vendas',
       type: 'value',
       field: 'impostos',
       values: Object.fromEntries(data.map((d) => [d.year, d.impostosEDevolucoes * -1])),
     },
+    ...(projectionInputs ? [{
+      label: '↳ Taxa sobre receita bruta',
+      type: 'premise' as const,
+      field: 'impostosEDevolucoesRate',
+      premiseField: 'impostosEDevolucoesRate' as keyof DREProjectionInputs,
+      premiseTooltip: '% sobre Receita Bruta',
+      values: getPremiseValues('impostosEDevolucoesRate'),
+    }] : []),
     {
       label: 'Receita Líquida',
       type: 'total',
@@ -66,6 +93,14 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
       field: 'cmv',
       values: Object.fromEntries(data.map((d) => [d.year, d.cmv * -1])),
     },
+    ...(projectionInputs ? [{
+      label: '↳ Taxa CMV',
+      type: 'premise' as const,
+      field: 'cmvRate',
+      premiseField: 'cmvRate' as keyof DREProjectionInputs,
+      premiseTooltip: '% sobre Receita Líquida',
+      values: getPremiseValues('cmvRate'),
+    }] : []),
     {
       label: 'Lucro Bruto',
       type: 'subtotal',
@@ -80,6 +115,14 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
         data.map((d) => [d.year, d.despesasOperacionais * -1])
       ),
     },
+    ...(projectionInputs ? [{
+      label: '↳ Taxa despesas operacionais',
+      type: 'premise' as const,
+      field: 'despesasOperacionaisRate',
+      premiseField: 'despesasOperacionaisRate' as keyof DREProjectionInputs,
+      premiseTooltip: '% sobre Receita Líquida',
+      values: getPremiseValues('despesasOperacionaisRate'),
+    }] : []),
     {
       label: 'EBIT',
       type: 'total',
@@ -118,6 +161,14 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
       field: 'irCSLL',
       values: Object.fromEntries(data.map((d) => [d.year, d.irCSLL * -1])),
     },
+    ...(projectionInputs ? [{
+      label: '↳ Taxa IR/CSLL',
+      type: 'premise' as const,
+      field: 'irCSLLRate',
+      premiseField: 'irCSLLRate' as keyof DREProjectionInputs,
+      premiseTooltip: '% sobre LAIR',
+      values: getPremiseValues('irCSLLRate'),
+    }] : []),
     {
       label: 'Lucro Líquido',
       type: 'total',
@@ -130,6 +181,14 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
       field: 'dividendos',
       values: Object.fromEntries(data.map((d) => [d.year, d.dividendos * -1])),
     },
+    ...(projectionInputs ? [{
+      label: '↳ Taxa de dividendos',
+      type: 'premise' as const,
+      field: 'dividendosRate',
+      premiseField: 'dividendosRate' as keyof DREProjectionInputs,
+      premiseTooltip: '% sobre Lucro Líquido',
+      values: getPremiseValues('dividendosRate'),
+    }] : []),
   ];
 
   // Cria colunas dinamicamente
@@ -144,7 +203,8 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
             className={cn(
               'font-medium min-w-[200px] whitespace-nowrap',
               rowType === 'total' && 'font-bold',
-              rowType === 'subtotal' && 'font-semibold'
+              rowType === 'subtotal' && 'font-semibold',
+              rowType === 'premise' && 'text-xs text-muted-foreground pl-4'
             )}
           >
             {row.original.label}
@@ -166,14 +226,17 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
               'text-right tabular-nums',
               rowType === 'total' && 'font-bold border-t-2 border-t-foreground',
               rowType === 'subtotal' && 'font-semibold',
+              rowType === 'premise' && 'text-xs',
               value !== null && value < 0 && 'text-red-600'
             )}
           >
-            {value !== null
-              ? isMargin
-                ? formatPercentage(value)
-                : formatCurrency(value)
-              : '-'}
+            {rowType === 'premise'
+              ? value !== null ? formatPercentage(value / 100) : '—'
+              : value !== null
+                ? isMargin
+                  ? formatPercentage(value)
+                  : formatCurrency(value)
+                : '-'}
           </div>
         );
       },
@@ -185,6 +248,14 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="rounded-lg border p-8 text-center text-muted-foreground">
+        Nenhum dado de DRE disponível
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-md border">
@@ -217,7 +288,8 @@ export function DRETable({ data, showMargins = true }: DRETableProps) {
               key={row.id}
               className={cn(
                 row.original.type === 'total' && 'bg-muted/50',
-                row.original.type === 'subtotal' && 'bg-muted/30'
+                row.original.type === 'subtotal' && 'bg-muted/30',
+                row.original.type === 'premise' && 'bg-blue-50/50 dark:bg-blue-950/20'
               )}
             >
               {row.getVisibleCells().map((cell) => (
