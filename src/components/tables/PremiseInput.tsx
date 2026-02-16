@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, KeyboardEvent } from 'react';
+import { useRef, KeyboardEvent } from 'react';
 import { cn } from '@/lib/utils';
 
 interface PremiseInputProps {
@@ -12,6 +12,12 @@ interface PremiseInputProps {
   className?: string;
 }
 
+/**
+ * Input não-controlado para premissas de projeção.
+ * Usa defaultValue + key para evitar re-renders do React durante foco/digitação,
+ * prevenindo loops de unmount/remount causados por react-table.
+ * Só dispara onChange no blur, após validação.
+ */
 export function PremiseInput({
   value,
   onChange,
@@ -20,36 +26,28 @@ export function PremiseInput({
   tabIndex,
   className,
 }: PremiseInputProps) {
-  const [editingValue, setEditingValue] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Display: valor formatado quando não está editando, input bruto quando está
-  const displayValue = isEditing
-    ? editingValue
-    : (value != null ? value.toFixed(2) : '0.00');
+  const formatted = value != null ? value.toFixed(2) : '0.00';
 
-  const handleFocus = () => {
-    setIsEditing(true);
-    setEditingValue(value != null ? value.toString() : '0');
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-
-    const numValue = parseFloat(editingValue);
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(',', '.');
+    const numValue = parseFloat(raw);
     if (!isNaN(numValue)) {
       const clamped = Math.max(0, Math.min(100, numValue));
       onChange(clamped);
+      // Atualiza o valor exibido no input após blur
+      e.target.value = clamped.toFixed(2);
+    } else {
+      // Valor inválido: restaura o valor original
+      e.target.value = formatted;
     }
-
     onBlur?.();
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-    const cleaned = rawValue.replace(/[^\d.,]/g, '').replace(',', '.');
-    setEditingValue(cleaned);
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Seleciona todo o texto ao focar para facilitar edição
+    e.target.select();
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -57,7 +55,9 @@ export function PremiseInput({
       inputRef.current?.blur();
     }
     if (e.key === 'Escape') {
-      setEditingValue(value != null ? value.toString() : '0');
+      if (inputRef.current) {
+        inputRef.current.value = formatted;
+      }
       inputRef.current?.blur();
     }
   };
@@ -66,12 +66,12 @@ export function PremiseInput({
     <div className="relative inline-flex items-center">
       <input
         ref={inputRef}
+        key={formatted}
         type="text"
         inputMode="decimal"
-        value={displayValue}
-        onChange={handleChange}
-        onFocus={handleFocus}
+        defaultValue={formatted}
         onBlur={handleBlur}
+        onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         disabled={disabled}
         tabIndex={tabIndex}

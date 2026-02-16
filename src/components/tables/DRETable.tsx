@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -58,170 +58,173 @@ export function DRETable({
     debounceMs: 800,
   });
 
-  // Helper para extrair valores de premissa
-  const getPremiseValues = (field: keyof DREProjectionInputs): Record<string, number | null> => {
-    if (!localProjections || localProjections.length === 0) return {};
-    return Object.fromEntries(
-      localProjections.map((p) => [p.year, p[field] as number])
-    );
-  };
+  const hasPremises = !!(projectionInputs && projectionInputs.length > 0);
 
-  // Handler para atualizar premissas
-  const handlePremiseChange = (year: number, field: keyof DREProjectionInputs, value: number) => {
-    const updated = localProjections.map((p) =>
-      p.year === year ? { ...p, [field]: value } : p
-    );
-    setLocalProjections(updated);
-    onProjectionChange?.(updated);
+  // Handler para atualizar premissas — estável via useCallback
+  const handlePremiseChange = useCallback((year: number, field: keyof DREProjectionInputs, value: number) => {
+    setLocalProjections((prev) => {
+      const updated = prev.map((p) =>
+        p.year === year ? { ...p, [field]: value } : p
+      );
+      onProjectionChange?.(updated);
+      if (modelId) {
+        save(updated);
+      }
+      return updated;
+    });
+  }, [modelId, save, onProjectionChange]);
 
-    // Dispara save com debounce
-    if (modelId) {
-      save(updated);
-    }
-  };
+  // Memoiza rows para evitar novas referências a cada render
+  const rows: DRERowData[] = useMemo(() => {
+    const getPremiseValues = (field: keyof DREProjectionInputs): Record<string, number | null> => {
+      if (!localProjections || localProjections.length === 0) return {};
+      return Object.fromEntries(
+        localProjections.map((p) => [p.year, p[field] as number])
+      );
+    };
 
-  // Constrói as linhas da tabela com premissas intercaladas
-  const rows: DRERowData[] = [
-    {
-      label: 'Receita Bruta',
-      type: 'value',
-      field: 'receita',
-      values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
-    },
-    ...(projectionInputs && projectionInputs.length > 0 ? [{
-      label: '↳ Taxa de crescimento',
-      type: 'premise' as const,
-      field: 'receitaBrutaGrowth',
-      premiseField: 'receitaBrutaGrowth' as keyof DREProjectionInputs,
-      premiseTooltip: '% crescimento sobre receita bruta do ano anterior',
-      values: getPremiseValues('receitaBrutaGrowth'),
-    }] : []),
-    {
-      label: '(-) Impostos sobre Vendas',
-      type: 'value',
-      field: 'impostos',
-      values: Object.fromEntries(data.map((d) => [d.year, d.impostosEDevolucoes * -1])),
-    },
-    ...(projectionInputs && projectionInputs.length > 0 ? [{
-      label: '↳ Taxa sobre receita bruta',
-      type: 'premise' as const,
-      field: 'impostosEDevolucoesRate',
-      premiseField: 'impostosEDevolucoesRate' as keyof DREProjectionInputs,
-      premiseTooltip: '% sobre Receita Bruta',
-      values: getPremiseValues('impostosEDevolucoesRate'),
-    }] : []),
-    {
-      label: 'Receita Líquida',
-      type: 'total',
-      field: 'receitaLiquida',
-      values: Object.fromEntries(data.map((d) => [d.year, d.receitaLiquida])),
-    },
-    {
-      label: '(-) CMV',
-      type: 'value',
-      field: 'cmv',
-      values: Object.fromEntries(data.map((d) => [d.year, d.cmv * -1])),
-    },
-    ...(projectionInputs && projectionInputs.length > 0 ? [{
-      label: '↳ Taxa CMV',
-      type: 'premise' as const,
-      field: 'cmvRate',
-      premiseField: 'cmvRate' as keyof DREProjectionInputs,
-      premiseTooltip: '% sobre Receita Líquida',
-      values: getPremiseValues('cmvRate'),
-    }] : []),
-    {
-      label: 'Lucro Bruto',
-      type: 'subtotal',
-      field: 'lucrobruto',
-      values: Object.fromEntries(data.map((d) => [d.year, d.lucroBruto])),
-    },
-    {
-      label: '(-) Despesas Operacionais',
-      type: 'value',
-      field: 'despesasOperacionais',
-      values: Object.fromEntries(
-        data.map((d) => [d.year, d.despesasOperacionais * -1])
-      ),
-    },
-    ...(projectionInputs && projectionInputs.length > 0 ? [{
-      label: '↳ Taxa despesas operacionais',
-      type: 'premise' as const,
-      field: 'despesasOperacionaisRate',
-      premiseField: 'despesasOperacionaisRate' as keyof DREProjectionInputs,
-      premiseTooltip: '% sobre Receita Líquida',
-      values: getPremiseValues('despesasOperacionaisRate'),
-    }] : []),
-    {
-      label: 'EBIT',
-      type: 'total',
-      field: 'ebit',
-      values: Object.fromEntries(data.map((d) => [d.year, d.ebit])),
-    },
-    {
-      label: '(+) Depreciação e Amortização',
-      type: 'value',
-      field: 'depreciacaoAmortizacao',
-      values: Object.fromEntries(data.map((d) => [d.year, d.depreciacaoAmortizacao])),
-    },
-    {
-      label: 'EBITDA',
-      type: 'subtotal',
-      field: 'ebitda',
-      values: Object.fromEntries(data.map((d) => [d.year, d.ebitda])),
-    },
-    {
-      label: '(-) Despesas Financeiras',
-      type: 'value',
-      field: 'despesasFinanceiras',
-      values: Object.fromEntries(
-        data.map((d) => [d.year, d.despesasFinanceiras * -1])
-      ),
-    },
-    {
-      label: 'LAIR',
-      type: 'subtotal',
-      field: 'lucroAntesIR',
-      values: Object.fromEntries(data.map((d) => [d.year, d.lucroAntesIR])),
-    },
-    {
-      label: '(-) IR/CSLL',
-      type: 'value',
-      field: 'irCSLL',
-      values: Object.fromEntries(data.map((d) => [d.year, d.irCSLL * -1])),
-    },
-    ...(projectionInputs && projectionInputs.length > 0 ? [{
-      label: '↳ Taxa IR/CSLL',
-      type: 'premise' as const,
-      field: 'irCSLLRate',
-      premiseField: 'irCSLLRate' as keyof DREProjectionInputs,
-      premiseTooltip: '% sobre LAIR',
-      values: getPremiseValues('irCSLLRate'),
-    }] : []),
-    {
-      label: 'Lucro Líquido',
-      type: 'total',
-      field: 'lucroLiquido',
-      values: Object.fromEntries(data.map((d) => [d.year, d.lucroLiquido])),
-    },
-    {
-      label: '(-) Dividendos',
-      type: 'value',
-      field: 'dividendos',
-      values: Object.fromEntries(data.map((d) => [d.year, d.dividendos * -1])),
-    },
-    ...(projectionInputs && projectionInputs.length > 0 ? [{
-      label: '↳ Taxa de dividendos',
-      type: 'premise' as const,
-      field: 'dividendosRate',
-      premiseField: 'dividendosRate' as keyof DREProjectionInputs,
-      premiseTooltip: '% sobre Lucro Líquido',
-      values: getPremiseValues('dividendosRate'),
-    }] : []),
-  ];
+    return [
+      {
+        label: 'Receita Bruta',
+        type: 'value',
+        field: 'receita',
+        values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
+      },
+      ...(hasPremises ? [{
+        label: '↳ Taxa de crescimento',
+        type: 'premise' as const,
+        field: 'receitaBrutaGrowth',
+        premiseField: 'receitaBrutaGrowth' as keyof DREProjectionInputs,
+        premiseTooltip: '% crescimento sobre receita bruta do ano anterior',
+        values: getPremiseValues('receitaBrutaGrowth'),
+      }] : []),
+      {
+        label: '(-) Impostos sobre Vendas',
+        type: 'value',
+        field: 'impostos',
+        values: Object.fromEntries(data.map((d) => [d.year, d.impostosEDevolucoes * -1])),
+      },
+      ...(hasPremises ? [{
+        label: '↳ Taxa sobre receita bruta',
+        type: 'premise' as const,
+        field: 'impostosEDevolucoesRate',
+        premiseField: 'impostosEDevolucoesRate' as keyof DREProjectionInputs,
+        premiseTooltip: '% sobre Receita Bruta',
+        values: getPremiseValues('impostosEDevolucoesRate'),
+      }] : []),
+      {
+        label: 'Receita Líquida',
+        type: 'total',
+        field: 'receitaLiquida',
+        values: Object.fromEntries(data.map((d) => [d.year, d.receitaLiquida])),
+      },
+      {
+        label: '(-) CMV',
+        type: 'value',
+        field: 'cmv',
+        values: Object.fromEntries(data.map((d) => [d.year, d.cmv * -1])),
+      },
+      ...(hasPremises ? [{
+        label: '↳ Taxa CMV',
+        type: 'premise' as const,
+        field: 'cmvRate',
+        premiseField: 'cmvRate' as keyof DREProjectionInputs,
+        premiseTooltip: '% sobre Receita Líquida',
+        values: getPremiseValues('cmvRate'),
+      }] : []),
+      {
+        label: 'Lucro Bruto',
+        type: 'subtotal',
+        field: 'lucrobruto',
+        values: Object.fromEntries(data.map((d) => [d.year, d.lucroBruto])),
+      },
+      {
+        label: '(-) Despesas Operacionais',
+        type: 'value',
+        field: 'despesasOperacionais',
+        values: Object.fromEntries(
+          data.map((d) => [d.year, d.despesasOperacionais * -1])
+        ),
+      },
+      ...(hasPremises ? [{
+        label: '↳ Taxa despesas operacionais',
+        type: 'premise' as const,
+        field: 'despesasOperacionaisRate',
+        premiseField: 'despesasOperacionaisRate' as keyof DREProjectionInputs,
+        premiseTooltip: '% sobre Receita Líquida',
+        values: getPremiseValues('despesasOperacionaisRate'),
+      }] : []),
+      {
+        label: 'EBIT',
+        type: 'total',
+        field: 'ebit',
+        values: Object.fromEntries(data.map((d) => [d.year, d.ebit])),
+      },
+      {
+        label: '(+) Depreciação e Amortização',
+        type: 'value',
+        field: 'depreciacaoAmortizacao',
+        values: Object.fromEntries(data.map((d) => [d.year, d.depreciacaoAmortizacao])),
+      },
+      {
+        label: 'EBITDA',
+        type: 'subtotal',
+        field: 'ebitda',
+        values: Object.fromEntries(data.map((d) => [d.year, d.ebitda])),
+      },
+      {
+        label: '(-) Despesas Financeiras',
+        type: 'value',
+        field: 'despesasFinanceiras',
+        values: Object.fromEntries(
+          data.map((d) => [d.year, d.despesasFinanceiras * -1])
+        ),
+      },
+      {
+        label: 'LAIR',
+        type: 'subtotal',
+        field: 'lucroAntesIR',
+        values: Object.fromEntries(data.map((d) => [d.year, d.lucroAntesIR])),
+      },
+      {
+        label: '(-) IR/CSLL',
+        type: 'value',
+        field: 'irCSLL',
+        values: Object.fromEntries(data.map((d) => [d.year, d.irCSLL * -1])),
+      },
+      ...(hasPremises ? [{
+        label: '↳ Taxa IR/CSLL',
+        type: 'premise' as const,
+        field: 'irCSLLRate',
+        premiseField: 'irCSLLRate' as keyof DREProjectionInputs,
+        premiseTooltip: '% sobre LAIR',
+        values: getPremiseValues('irCSLLRate'),
+      }] : []),
+      {
+        label: 'Lucro Líquido',
+        type: 'total',
+        field: 'lucroLiquido',
+        values: Object.fromEntries(data.map((d) => [d.year, d.lucroLiquido])),
+      },
+      {
+        label: '(-) Dividendos',
+        type: 'value',
+        field: 'dividendos',
+        values: Object.fromEntries(data.map((d) => [d.year, d.dividendos * -1])),
+      },
+      ...(hasPremises ? [{
+        label: '↳ Taxa de dividendos',
+        type: 'premise' as const,
+        field: 'dividendosRate',
+        premiseField: 'dividendosRate' as keyof DREProjectionInputs,
+        premiseTooltip: '% sobre Lucro Líquido',
+        values: getPremiseValues('dividendosRate'),
+      }] : []),
+    ];
+  }, [data, localProjections, hasPremises]);
 
-  // Cria colunas dinamicamente
-  const columns: ColumnDef<DRERowData>[] = [
+  // Memoiza columns para evitar novas referências a cada render
+  const columns: ColumnDef<DRERowData>[] = useMemo(() => [
     {
       accessorKey: 'label',
       header: '',
@@ -292,7 +295,7 @@ export function DRETable({
         );
       },
     })),
-  ];
+  ], [data, handlePremiseChange, modelId]);
 
   const table = useReactTable({
     data: rows,
@@ -311,7 +314,7 @@ export function DRETable({
   return (
     <div className="space-y-2">
       {/* Indicador de salvamento */}
-      {modelId && projectionInputs && projectionInputs.length > 0 && (
+      {modelId && hasPremises && (
         <div className="flex items-center justify-end text-sm text-muted-foreground">
           {isSaving ? (
             <>
