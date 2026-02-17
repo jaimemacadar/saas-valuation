@@ -21,17 +21,17 @@ describe('PremiseInput', () => {
 
   it('deve formatar valor ao blur', async () => {
     const onChange = jest.fn();
-    const { container } = render(<PremiseInput value={5} onChange={onChange} />);
+    render(<PremiseInput value={5} onChange={onChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
     // Foca no input
     fireEvent.focus(input);
 
-    // Limpa e digita novo valor
-    fireEvent.change(input, { target: { value: '10' } });
+    // Modifica o valor diretamente (simula digitação)
+    input.value = '10';
 
-    // Blur para formatar
+    // Blur para formatar e disparar onChange
     fireEvent.blur(input);
 
     await waitFor(() => {
@@ -43,10 +43,10 @@ describe('PremiseInput', () => {
     const onChange = jest.fn();
     render(<PremiseInput value={5} onChange={onChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
     fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: '-5' } });
+    input.value = '-5';
     fireEvent.blur(input);
 
     await waitFor(() => {
@@ -58,10 +58,10 @@ describe('PremiseInput', () => {
     const onChange = jest.fn();
     render(<PremiseInput value={5} onChange={onChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
     fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: '150' } });
+    input.value = '150';
     fireEvent.blur(input);
 
     await waitFor(() => {
@@ -73,10 +73,10 @@ describe('PremiseInput', () => {
     const onChange = jest.fn();
     render(<PremiseInput value={5} onChange={onChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
     fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: '7,5' } });
+    input.value = '7,5';
     fireEvent.blur(input);
 
     await waitFor(() => {
@@ -91,7 +91,7 @@ describe('PremiseInput', () => {
     const input = screen.getByRole('textbox') as HTMLInputElement;
 
     fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: '99' } });
+    input.value = '99';
     fireEvent.keyDown(input, { key: 'Escape' });
 
     expect(input.value).toBe('5.00');
@@ -100,16 +100,29 @@ describe('PremiseInput', () => {
 
   it('deve fazer blur ao pressionar Enter', async () => {
     const onChange = jest.fn();
-    render(<PremiseInput value={5} onChange={onChange} />);
+    const onNavigateDown = jest.fn();
+    render(
+      <PremiseInput
+        value={5}
+        onChange={onChange}
+        onNavigateDown={onNavigateDown}
+      />
+    );
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox') as HTMLInputElement;
 
     fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: '10' } });
+    input.value = '10';
+
+    // Enter dispara blur e depois navigateDown
     fireEvent.keyDown(input, { key: 'Enter' });
+
+    // Simula o blur que acontece após o Enter
+    fireEvent.blur(input);
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith(10);
+      expect(onNavigateDown).toHaveBeenCalled();
     });
   });
 

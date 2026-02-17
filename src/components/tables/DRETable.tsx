@@ -195,7 +195,7 @@ export function DRETable({
         values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
       },
       ...(hasPremises ? [{
-        label: '↳ Taxa de crescimento',
+        label: 'Crescimento anual (%)',
         type: 'premise' as const,
         field: 'receitaBrutaGrowth',
         premiseField: 'receitaBrutaGrowth' as keyof DREProjectionInputs,
@@ -209,7 +209,7 @@ export function DRETable({
         values: Object.fromEntries(data.map((d) => [d.year, d.impostosEDevolucoes * -1])),
       },
       ...(hasPremises ? [{
-        label: '↳ Taxa sobre receita bruta',
+        label: 'Impostos s/ vendas (%)',
         type: 'premise' as const,
         field: 'impostosEDevolucoesRate',
         premiseField: 'impostosEDevolucoesRate' as keyof DREProjectionInputs,
@@ -229,7 +229,7 @@ export function DRETable({
         values: Object.fromEntries(data.map((d) => [d.year, d.cmv * -1])),
       },
       ...(hasPremises ? [{
-        label: '↳ Taxa CMV',
+        label: 'CMV (%)',
         type: 'premise' as const,
         field: 'cmvRate',
         premiseField: 'cmvRate' as keyof DREProjectionInputs,
@@ -251,7 +251,7 @@ export function DRETable({
         ),
       },
       ...(hasPremises ? [{
-        label: '↳ Taxa despesas operacionais',
+        label: 'Despesas operacionais (%)',
         type: 'premise' as const,
         field: 'despesasOperacionaisRate',
         premiseField: 'despesasOperacionaisRate' as keyof DREProjectionInputs,
@@ -297,7 +297,7 @@ export function DRETable({
         values: Object.fromEntries(data.map((d) => [d.year, d.irCSLL * -1])),
       },
       ...(hasPremises ? [{
-        label: '↳ Taxa IR/CSLL',
+        label: 'IR/CSLL (%)',
         type: 'premise' as const,
         field: 'irCSLLRate',
         premiseField: 'irCSLLRate' as keyof DREProjectionInputs,
@@ -317,7 +317,7 @@ export function DRETable({
         values: Object.fromEntries(data.map((d) => [d.year, d.dividendos * -1])),
       },
       ...(hasPremises ? [{
-        label: '↳ Taxa de dividendos',
+        label: 'Dividendos (%)',
         type: 'premise' as const,
         field: 'dividendosRate',
         premiseField: 'dividendosRate' as keyof DREProjectionInputs,

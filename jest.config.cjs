@@ -3,6 +3,7 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.cjs"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^next/cache$": "<rootDir>/src/__mocks__/next-cache.ts",
   },
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",

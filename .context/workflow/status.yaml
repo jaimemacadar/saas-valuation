@@ -24,11 +24,13 @@ phases:
 
 execution:
   history:
-    - timestamp: "2026-02-16T00:40:03.871Z"
+    - timestamp: "2026-02-16T22:56:41.499Z"
       phase: E
-      action: started
-  last_activity: "2026-02-16T00:40:03.871Z"
-  resume_context: "Fase E (Execução) em progresso"
+      action: plan_phase_updated
+      plan: "premissas-inline-dre"
+      description: "Plan phase phase-3 updated to completed"
+  last_activity: "2026-02-16T22:56:41.499Z"
+  resume_context: "Fase do plano atualizada"
 
 approval:
   plan_created: true
