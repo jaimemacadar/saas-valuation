@@ -137,7 +137,7 @@ export function FCFFTable({ data }: FCFFTableProps) {
               value !== null && isFCFF && value < 0 && 'text-red-600'
             )}
           >
-            {value !== null ? formatCurrency(value) : '-'}
+            {value !== null ? formatCurrency(value, { showSymbol: false }) : '-'}
           </div>
         );
       },
@@ -194,7 +194,8 @@ export function FCFFTable({ data }: FCFFTableProps) {
                   <TableHead
                     key={header.id}
                     className={cn(
-                      header.id !== 'label' && 'text-right',
+                      header.id === 'label' && 'w-[220px] min-w-[200px]',
+                      header.id !== 'label' && 'w-[100px] min-w-[100px] text-right',
                       'font-semibold'
                     )}
                   >

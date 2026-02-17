@@ -35,6 +35,12 @@ export default async function BalanceSheetPage({
       />
 
       <div className="flex flex-1 flex-col gap-4 p-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">Balanço Patrimonial</h1>
+          <p className="text-muted-foreground">
+            Visualize o Balanço Patrimonial projetado com ativos, passivos e patrimônio líquido.
+          </p>
+        </div>
         <Suspense fallback={<BalanceSheetSkeleton />}>
           <BalanceSheetTable data={balanceSheetData} />
         </Suspense>

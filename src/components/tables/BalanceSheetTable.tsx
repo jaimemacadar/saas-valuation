@@ -191,9 +191,8 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                 rowType === "total" && "font-bold",
                 rowType === "item" && "text-muted-foreground",
               )}
-              style={{ paddingLeft: `${row.depth * 1.5}rem` }}
             >
-              {canExpand && (
+              {canExpand ? (
                 <button
                   onClick={row.getToggleExpandedHandler()}
                   className="cursor-pointer flex-shrink-0"
@@ -204,6 +203,8 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                     <ChevronRight className="h-4 w-4" />
                   )}
                 </button>
+              ) : (
+                <span className="h-4 w-4 flex-shrink-0" />
               )}
               <span className="truncate" title={row.original.label}>
                 {row.original.label}
@@ -280,9 +281,9 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                   <TableHead
                     key={header.id}
                     className={cn(
-                      header.id === "label" && "w-[300px] min-w-[200px]",
+                      header.id === "label" && "w-[250px] min-w-[200px]",
                       header.id !== "label" &&
-                        "w-[120px] min-w-[100px] text-right",
+                        "w-[100px] min-w-[100px] text-right",
                       "font-semibold",
                     )}
                   >

@@ -30,6 +30,12 @@ export default async function FCFFPage({ params }: { params: Promise<{ id: strin
       />
 
       <div className="flex flex-1 flex-col gap-4 p-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">Fluxo de Caixa Livre</h1>
+          <p className="text-muted-foreground">
+            Visualize o Fluxo de Caixa Livre para a Firma (FCFF) projetado, base para o cálculo de valuation.
+          </p>
+        </div>
         <Tabs defaultValue="table" className="w-full">
         <TabsList>
           <TabsTrigger value="table">Tabela</TabsTrigger>

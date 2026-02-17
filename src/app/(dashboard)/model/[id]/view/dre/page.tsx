@@ -34,6 +34,12 @@ export default async function DREPage({ params }: { params: Promise<{ id: string
       />
 
       <div className="flex flex-1 flex-col gap-4 p-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">DRE Projetado</h1>
+          <p className="text-muted-foreground">
+            Visualize a Demonstração de Resultado do Exercício projetada para os próximos anos.
+          </p>
+        </div>
         <Tabs defaultValue="table" className="w-full">
         <TabsList>
           <TabsTrigger value="table">Tabela</TabsTrigger>

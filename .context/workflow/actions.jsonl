@@ -329,3 +329,6 @@
 {"timestamp":"2026-02-17T03:06:34.090Z","tool":"plan","action":"link","status":"success","details":{"params":{"action":"link","planSlug":"dre-toggle-premises"},"result":{"success":true}}}
 {"timestamp":"2026-02-17T03:06:37.598Z","tool":"workflow-advance","action":"workflow-advance","status":"success","details":{"params":{"outputs":["plans/dre-toggle-premises.md"]},"result":{"success":true,"message":"Advanced to Execution phase","nextPhase":{"code":"E","name":"Execution"}}}}
 {"timestamp":"2026-02-17T03:12:21.826Z","tool":"workflow-advance","action":"workflow-advance","status":"success","details":{"params":{"outputs":["src/components/tables/DRETable.tsx"]},"result":{"success":true,"message":"Advanced to Validation phase","nextPhase":{"code":"V","name":"Validation"}}}}
+{"timestamp":"2026-02-17T21:48:30.256Z","tool":"agent","action":"discover","status":"success","details":{"params":{"action":"discover"},"result":{"success":true}}}
+{"timestamp":"2026-02-17T21:49:49.408Z","tool":"agent","action":"getInfo","status":"success","details":{"params":{"action":"getInfo","agentType":"frontend-specialist"},"result":{"success":true}}}
+{"timestamp":"2026-02-17T21:49:51.619Z","tool":"agent","action":"getDocs","status":"success","details":{"params":{"action":"getDocs","agent":"frontend-specialist"}}}

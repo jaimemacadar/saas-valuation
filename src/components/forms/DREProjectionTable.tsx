@@ -98,7 +98,7 @@ export function DREProjectionTable({
             step="0.01"
             min="0"
             max="100"
-            value={getValue() as number}
+            value={parseFloat((getValue() as number).toFixed(2))}
             onChange={(e) => handleCellChange(row.index, "impostosEDevolucoesRate", e.target.value)}
             className="text-center h-8"
             placeholder="8.0"
@@ -114,7 +114,7 @@ export function DREProjectionTable({
             step="0.01"
             min="0"
             max="100"
-            value={getValue() as number}
+            value={parseFloat((getValue() as number).toFixed(2))}
             onChange={(e) => handleCellChange(row.index, "cmvRate", e.target.value)}
             className="text-center h-8"
             placeholder="30.0"

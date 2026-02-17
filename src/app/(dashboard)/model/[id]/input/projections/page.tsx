@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DREProjectionForm } from "@/components/forms/DREProjectionForm";
 import { BalanceSheetProjectionForm } from "@/components/forms/BalanceSheetProjectionForm";
 import { getModelById } from "@/lib/actions/models";
+import { PageHeader } from "@/components/page-header";
 import type { DREBaseInputs, BalanceSheetBaseInputs, DREProjectionInputs, BalanceSheetProjectionInputs } from "@/core/types";
 
 export const metadata: Metadata = {
@@ -22,6 +22,7 @@ export default async function ProjectionsPage({ params }: ProjectionsPageProps) 
 
   // Buscar dados do modelo
   const modelResult = await getModelById(id);
+  const companyName = modelResult.success && modelResult.data ? modelResult.data.company_name : "";
   const modelData = modelResult.success && modelResult.data
     ? (modelResult.data.model_data as any)
     : {};
@@ -32,57 +33,47 @@ export default async function ProjectionsPage({ params }: ProjectionsPageProps) 
   const balanceSheetProjection = modelData.balanceSheetProjection as BalanceSheetProjectionInputs[] | undefined;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Premissas de Projeção</h1>
-        <p className="text-muted-foreground mt-2">
-          Configure as premissas de crescimento, margens e prazos médios para projetar os demonstrativos
+    <>
+      <PageHeader
+        breadcrumbs={[
+          { label: "Valuations", href: "/dashboard/models" },
+          { label: companyName, href: `/model/${id}/view/dre` },
+          { label: "Entrada de Dados" },
+          { label: "Premissas de Projeção" },
+        ]}
+      />
+
+      <div className="flex flex-1 flex-col gap-4 p-4">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold">Premissas de Projeção</h1>
+        <p className="text-muted-foreground">
+          Configure as taxas de crescimento, margens e prazos médios para projetar os demonstrativos financeiros.
         </p>
       </div>
-
-      <Tabs defaultValue="dre" className="space-y-4">
+      <Tabs defaultValue="dre" className="w-full">
         <TabsList>
           <TabsTrigger value="dre">DRE</TabsTrigger>
           <TabsTrigger value="balance-sheet">Balanço Patrimonial</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dre" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Premissas de Projeção - DRE</CardTitle>
-              <CardDescription>
-                Configure as taxas de crescimento e margens para cada ano de projeção da DRE
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DREProjectionForm
-                modelId={id}
-                initialData={dreProjection}
-                dreBase={dreBase}
-              />
-            </CardContent>
-          </Card>
+          <DREProjectionForm
+            modelId={id}
+            initialData={dreProjection}
+            dreBase={dreBase}
+          />
         </TabsContent>
 
         <TabsContent value="balance-sheet" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Premissas de Projeção - Balanço Patrimonial</CardTitle>
-              <CardDescription>
-                Configure os prazos médios, taxas e índices para projeção do Balanço Patrimonial
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BalanceSheetProjectionForm
-                modelId={id}
-                initialData={balanceSheetProjection}
-                balanceBase={balanceBase}
-                dreBase={dreBase}
-              />
-            </CardContent>
-          </Card>
+          <BalanceSheetProjectionForm
+            modelId={id}
+            initialData={balanceSheetProjection}
+            balanceBase={balanceBase}
+            dreBase={dreBase}
+          />
         </TabsContent>
       </Tabs>
     </div>
+    </>
   );
 }
