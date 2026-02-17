@@ -39,7 +39,7 @@ interface DRETableProps {
 
 type DRERowData = {
   label: string;
-  type: "header" | "value" | "subtotal" | "total" | "premise";
+  type: "header" | "value" | "subtotal" | "total" | "premise" | "annotation";
   field: string;
   values: Record<string, number | null>;
   isMargin?: boolean;
@@ -48,6 +48,7 @@ type DRERowData = {
   tooltip?: string;
   parentField?: string;
   hasPremise?: boolean;
+  noBorderTop?: boolean;
 };
 
 export function DRETable({
@@ -247,9 +248,10 @@ export function DRETable({
     return [
       {
         label: "Receita Bruta",
-        type: "value",
+        type: "total",
         field: "receita",
         hasPremise: hasPremises,
+        noBorderTop: true,
         values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
       },
       ...(hasPremises
@@ -351,28 +353,11 @@ export function DRETable({
         values: Object.fromEntries(data.map((d) => [d.year, d.ebit])),
       },
       {
-        label: "(+) Depreciação e Amortização",
-        type: "value",
-        field: "depreciacaoAmortizacao",
-        values: Object.fromEntries(
-          data.map((d) => [d.year, d.depreciacaoAmortizacao]),
-        ),
-        tooltip: "Ajuste para o cálculo do EBITDA",
-      },
-      {
-        label: "EBITDA",
-        type: "subtotal",
+        label: "└─ EBITDA",
+        type: "annotation",
         field: "ebitda",
         values: Object.fromEntries(data.map((d) => [d.year, d.ebitda])),
-      },
-      {
-        label: "(-) Depreciação e Amortização",
-        type: "value",
-        field: "depreciacaoAmortizacaoNegativa",
-        values: Object.fromEntries(
-          data.map((d) => [d.year, d.depreciacaoAmortizacao * -1]),
-        ),
-        tooltip: "Estorno da depreciação e amortização para o cálculo do LAIR",
+        tooltip: "EBIT + Depreciação e Amortização",
       },
       {
         label: "(-) Despesas Financeiras",
@@ -473,6 +458,8 @@ export function DRETable({
                 rowType === "total" && "font-bold",
                 rowType === "subtotal" && "font-semibold",
                 rowType === "premise" && "text-xs text-muted-foreground pl-6",
+                rowType === "annotation" &&
+                  "text-xs text-muted-foreground pl-6 italic",
                 hasPremise &&
                   "cursor-pointer select-none hover:text-foreground/80 transition-colors",
               )}
@@ -566,9 +553,13 @@ export function DRETable({
             <div
               className={cn(
                 "text-right tabular-nums",
+                rowType === "total" && "font-bold",
                 rowType === "total" &&
-                  "font-bold border-t-2 border-t-foreground",
+                  !row.original.noBorderTop &&
+                  "border-t-2 border-t-foreground",
                 rowType === "subtotal" && "font-semibold",
+                rowType === "annotation" &&
+                  "text-xs text-muted-foreground italic",
                 value !== null && value < 0 && "text-red-600",
               )}
             >
@@ -601,9 +592,32 @@ export function DRETable({
 
   return (
     <div className="space-y-2">
-      {/* Barra superior: toggle de premissas + indicador de salvamento */}
-      {hasPremises && (
-        <div className="flex items-center justify-between">
+      {/* Indicador de salvamento */}
+      {modelId && hasPremises && (
+        <div className="flex items-center justify-end text-sm text-muted-foreground">
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span>Salvando...</span>
+            </>
+          ) : lastSavedAt ? (
+            <>
+              <Check className="mr-2 h-4 w-4 text-green-600" />
+              <span>
+                Salvo às{" "}
+                {lastSavedAt.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </>
+          ) : null}
+        </div>
+      )}
+
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground italic pl-1 mb-0.4 self-end">Valores em R$ (Reais)</p>
+        {hasPremises && (
           <Button
             variant="outline"
             size="sm"
@@ -622,32 +636,8 @@ export function DRETable({
               </>
             )}
           </Button>
-
-          {modelId && (
-            <div className="flex items-center text-sm text-muted-foreground">
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  <span>Salvando...</span>
-                </>
-              ) : lastSavedAt ? (
-                <>
-                  <Check className="mr-2 h-4 w-4 text-green-600" />
-                  <span>
-                    Salvo às{" "}
-                    {lastSavedAt.toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                </>
-              ) : null}
-            </div>
-          )}
-        </div>
-      )}
-
-      <p className="text-xs text-muted-foreground">Valores em R$ (Reais)</p>
+        )}
+      </div>
 
       <div className="rounded-md border">
         <Table>
@@ -684,6 +674,8 @@ export function DRETable({
                   row.original.type === "subtotal" && "bg-muted/30",
                   row.original.type === "premise" &&
                     "bg-blue-50/50 dark:bg-blue-950/20",
+                  row.original.type === "annotation" &&
+                    "bg-amber-50/30 dark:bg-amber-950/20",
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
