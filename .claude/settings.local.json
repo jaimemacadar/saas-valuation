@@ -29,7 +29,10 @@
       "Bash(balance \")",
       "Bash(npm run test:core:*)",
       "Bash(npm run build:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(cmd //c \"dir .claude\\\\agents\\\\backend-specialist.md\")",
+      "Bash(cd:*)",
+      "Bash(npm run type-check:*)"
     ]
   }
 }

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,9 +8,9 @@ import {
   ColumnDef,
   flexRender,
   ExpandedState,
-} from '@tanstack/react-table';
-import { BalanceSheetCalculated } from '@/core/types';
-import { formatCurrency } from '@/lib/utils/formatters';
+} from "@tanstack/react-table";
+import { BalanceSheetCalculated } from "@/core/types";
+import { formatCurrency } from "@/lib/utils/formatters";
 import {
   Table,
   TableBody,
@@ -18,10 +18,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { cn } from '@/lib/utils';
-import { ChevronRight, ChevronDown, CheckCircle2, XCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { ChevronRight, ChevronDown, CheckCircle2, XCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface BalanceSheetTableProps {
   data: BalanceSheetCalculated[];
@@ -29,7 +29,7 @@ interface BalanceSheetTableProps {
 
 type BalanceSheetRowData = {
   label: string;
-  type: 'section' | 'item' | 'subtotal' | 'total';
+  type: "section" | "item" | "subtotal" | "total";
   field?: string; // Campo de referência (não usado diretamente)
   values: Record<string, number | null>;
   subRows?: BalanceSheetRowData[];
@@ -49,7 +49,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
   // Valida se Ativo = Passivo + PL
   const isBalanced = data.every((year) => {
     const diff = Math.abs(
-      year.ativoTotal - (year.passivoTotal + year.patrimonioLiquido.total)
+      year.ativoTotal - (year.passivoTotal + year.patrimonioLiquido.total),
     );
     return diff < 0.01; // Tolerância de R$ 0,01
   });
@@ -58,83 +58,59 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
   const rows: BalanceSheetRowData[] = useMemo(
     () => [
       {
-        label: 'ATIVO',
-        type: 'section' as const,
+        label: "ATIVO",
+        type: "section" as const,
         values: Object.fromEntries(data.map((d) => [d.year, d.ativoTotal])),
         subRows: [
           {
-            label: 'Ativo Circulante',
-            type: 'subtotal' as const,
-            values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.total])),
-            subRows: [
-              {
-                label: 'Caixa e Equivalentes',
-                type: 'item' as const,
-                field: 'caixa',
-                values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.caixaEquivalentes])),
-              },
-              {
-                label: 'Contas a Receber',
-                type: 'item' as const,
-                field: 'contasReceber',
-                values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.contasReceber])),
-              },
-              {
-                label: 'Estoques',
-                type: 'item' as const,
-                field: 'estoques',
-                values: Object.fromEntries(data.map((d) => [d.year, d.ativoCirculante.estoques])),
-              },
-            ],
-          },
-          {
-            label: 'Ativo Não Circulante',
-            type: 'subtotal' as const,
+            label: "Ativo Circulante",
+            type: "subtotal" as const,
             values: Object.fromEntries(
-              data.map((d) => [d.year, d.ativoTotal - d.ativoCirculante.total])
+              data.map((d) => [d.year, d.ativoCirculante.total]),
             ),
             subRows: [
               {
-                label: 'Imobilizado',
-                type: 'item' as const,
-                field: 'imobilizado',
-                values: Object.fromEntries(data.map((d) => [d.year, d.ativoRealizavelLP.imobilizado])),
-              },
-            ],
-          },
-        ],
-      },
-      {
-        label: 'PASSIVO',
-        type: 'section' as const,
-        values: Object.fromEntries(data.map((d) => [d.year, d.passivoTotal])),
-        subRows: [
-          {
-            label: 'Passivo Circulante',
-            type: 'subtotal' as const,
-            values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.total])),
-            subRows: [
-              {
-                label: 'Fornecedores',
-                type: 'item' as const,
-                field: 'fornecedores',
-                values: Object.fromEntries(data.map((d) => [d.year, d.passivoCirculante.fornecedores])),
-              },
-            ],
-          },
-          {
-            label: 'Passivo Não Circulante',
-            type: 'subtotal' as const,
-            values: Object.fromEntries(
-              data.map((d) => [d.year, d.passivoRealizavelLP.total])
-            ),
-            subRows: [
-              {
-                label: 'Empréstimos e Financiamentos LP',
-                type: 'item' as const,
-                field: 'emprestimosFinanciamentosLP',
+                label: "Caixa e Equivalentes",
+                type: "item" as const,
+                field: "caixa",
                 values: Object.fromEntries(
-                  data.map((d) => [d.year, d.passivoRealizavelLP.emprestimosFinanciamentosLP])
+                  data.map((d) => [
+                    d.year,
+                    d.ativoCirculante.caixaEquivalentes,
+                  ]),
+                ),
+              },
+              {
+                label: "Contas a Receber",
+                type: "item" as const,
+                field: "contasReceber",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.ativoCirculante.contasReceber]),
+                ),
+              },
+              {
+                label: "Estoques",
+                type: "item" as const,
+                field: "estoques",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.ativoCirculante.estoques]),
+                ),
+              },
+            ],
+          },
+          {
+            label: "Ativo Não Circulante",
+            type: "subtotal" as const,
+            values: Object.fromEntries(
+              data.map((d) => [d.year, d.ativoTotal - d.ativoCirculante.total]),
+            ),
+            subRows: [
+              {
+                label: "Imobilizado",
+                type: "item" as const,
+                field: "imobilizado",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.ativoRealizavelLP.imobilizado]),
                 ),
               },
             ],
@@ -142,20 +118,66 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
         ],
       },
       {
-        label: 'PATRIMÔNIO LÍQUIDO',
-        type: 'total' as const,
-        field: 'patrimonioLiquido',
-        values: Object.fromEntries(data.map((d) => [d.year, d.patrimonioLiquido.total])),
+        label: "PASSIVO",
+        type: "section" as const,
+        values: Object.fromEntries(data.map((d) => [d.year, d.passivoTotal])),
+        subRows: [
+          {
+            label: "Passivo Circulante",
+            type: "subtotal" as const,
+            values: Object.fromEntries(
+              data.map((d) => [d.year, d.passivoCirculante.total]),
+            ),
+            subRows: [
+              {
+                label: "Fornecedores",
+                type: "item" as const,
+                field: "fornecedores",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.passivoCirculante.fornecedores]),
+                ),
+              },
+            ],
+          },
+          {
+            label: "Passivo Não Circulante",
+            type: "subtotal" as const,
+            values: Object.fromEntries(
+              data.map((d) => [d.year, d.passivoRealizavelLP.total]),
+            ),
+            subRows: [
+              {
+                label: "Empréstimos e Financiamentos LP",
+                type: "item" as const,
+                field: "emprestimosFinanciamentosLP",
+                values: Object.fromEntries(
+                  data.map((d) => [
+                    d.year,
+                    d.passivoRealizavelLP.emprestimosFinanciamentosLP,
+                  ]),
+                ),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        label: "PATRIMÔNIO LÍQUIDO",
+        type: "total" as const,
+        field: "patrimonioLiquido",
+        values: Object.fromEntries(
+          data.map((d) => [d.year, d.patrimonioLiquido.total]),
+        ),
       },
     ],
-    [data]
+    [data],
   );
 
   const columns: ColumnDef<BalanceSheetRowData>[] = useMemo(
     () => [
       {
-        accessorKey: 'label',
-        header: '',
+        accessorKey: "label",
+        header: "",
         cell: ({ row }) => {
           const canExpand = row.getCanExpand();
           const rowType = row.original.type;
@@ -163,18 +185,18 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
           return (
             <div
               className={cn(
-                'flex items-center gap-2 min-w-[200px] whitespace-nowrap',
-                rowType === 'section' && 'font-bold text-base',
-                rowType === 'subtotal' && 'font-semibold',
-                rowType === 'total' && 'font-bold',
-                rowType === 'item' && 'text-muted-foreground'
+                "flex items-center gap-2 min-w-[200px] max-w-[400px]",
+                rowType === "section" && "font-bold text-base",
+                rowType === "subtotal" && "font-semibold",
+                rowType === "total" && "font-bold",
+                rowType === "item" && "text-muted-foreground",
               )}
               style={{ paddingLeft: `${row.depth * 1.5}rem` }}
             >
               {canExpand && (
                 <button
                   onClick={row.getToggleExpandedHandler()}
-                  className="cursor-pointer"
+                  className="cursor-pointer flex-shrink-0"
                 >
                   {row.getIsExpanded() ? (
                     <ChevronDown className="h-4 w-4" />
@@ -183,14 +205,16 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                   )}
                 </button>
               )}
-              {row.original.label}
+              <span className="truncate" title={row.original.label}>
+                {row.original.label}
+              </span>
             </div>
           );
         },
       },
       ...data.map((yearData) => ({
         id: `year-${yearData.year}`,
-        header: yearData.year === 0 ? 'Ano Base' : `Ano ${yearData.year}`,
+        header: yearData.year === 0 ? "Ano Base" : `Ano ${yearData.year}`,
         cell: ({ row }: { row: { original: BalanceSheetRowData } }) => {
           const value = row.original.values[yearData.year];
           const rowType = row.original.type;
@@ -198,19 +222,23 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
           return (
             <div
               className={cn(
-                'text-right tabular-nums',
-                rowType === 'section' && 'font-bold border-t-2 border-t-foreground',
-                rowType === 'subtotal' && 'font-semibold',
-                rowType === 'total' && 'font-bold border-t-2 border-t-foreground'
+                "text-right tabular-nums",
+                rowType === "section" &&
+                  "font-bold border-t-2 border-t-foreground",
+                rowType === "subtotal" && "font-semibold",
+                rowType === "total" &&
+                  "font-bold border-t-2 border-t-foreground",
               )}
             >
-              {value !== null ? formatCurrency(value, { showSymbol: false }) : '-'}
+              {value !== null
+                ? formatCurrency(value, { showSymbol: false })
+                : "-"}
             </div>
           );
         },
       })),
     ],
-    [data]
+    [data],
   );
 
   const table = useReactTable({
@@ -252,15 +280,17 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                   <TableHead
                     key={header.id}
                     className={cn(
-                      header.id !== 'label' && 'text-right',
-                      'font-semibold'
+                      header.id === "label" && "w-[300px] min-w-[200px]",
+                      header.id !== "label" &&
+                        "w-[120px] min-w-[100px] text-right",
+                      "font-semibold",
                     )}
                   >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -272,8 +302,8 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
               <TableRow
                 key={row.id}
                 className={cn(
-                  row.original.type === 'section' && 'bg-muted/50',
-                  row.original.type === 'total' && 'bg-muted/50'
+                  row.original.type === "section" && "bg-muted/50",
+                  row.original.type === "total" && "bg-muted/50",
                 )}
               >
                 {row.getVisibleCells().map((cell) => (

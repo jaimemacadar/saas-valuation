@@ -125,13 +125,35 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
         balanceSheetProjection: balanceSheetProjection.length,
       });
 
-      // IMPORTANTE: Se os arrays têm tamanhos diferentes, ajustar para o menor
-      // para evitar erro nos cálculos
-      const minLength = Math.min(dreProjection.length, balanceSheetProjection.length);
+      // IMPORTANTE: Se os arrays têm tamanhos diferentes, estender o menor
+      // copiando os valores do último ano para os anos faltantes
       if (dreProjection.length !== balanceSheetProjection.length) {
-        console.warn('[recalculateModel] Arrays com tamanhos diferentes! Usando mínimo:', minLength);
-        dreProjection = dreProjection.slice(0, minLength);
-        balanceSheetProjection = balanceSheetProjection.slice(0, minLength);
+        const maxLength = Math.max(dreProjection.length, balanceSheetProjection.length);
+        console.warn('[recalculateModel] Arrays com tamanhos diferentes! Estendendo para:', maxLength);
+
+        // Estender DRE se necessário
+        if (dreProjection.length < maxLength) {
+          const lastDREPremise = dreProjection[dreProjection.length - 1];
+          for (let year = dreProjection.length + 1; year <= maxLength; year++) {
+            dreProjection.push({
+              ...lastDREPremise,
+              year,
+            });
+          }
+          console.log('[recalculateModel] DRE estendido para', maxLength, 'anos');
+        }
+
+        // Estender BP se necessário
+        if (balanceSheetProjection.length < maxLength) {
+          const lastBPPremise = balanceSheetProjection[balanceSheetProjection.length - 1];
+          for (let year = balanceSheetProjection.length + 1; year <= maxLength; year++) {
+            balanceSheetProjection.push({
+              ...lastBPPremise,
+              year,
+            });
+          }
+          console.log('[recalculateModel] BP estendido para', maxLength, 'anos');
+        }
       }
     }
 
@@ -169,14 +191,19 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       };
     }
 
-    // Atualizar model_data com resultados calculados e premissas (se geradas)
+    // Verificar se as premissas foram estendidas
+    const premissasForamEstendidas =
+      dreProjection.length !== (currentModelData.dreProjection as any[])?.length ||
+      balanceSheetProjection.length !== (currentModelData.balanceSheetProjection as any[])?.length;
+
+    // Atualizar model_data com resultados calculados e premissas (se geradas ou estendidas)
     const updatedModelData = {
       ...currentModelData,
-      // Salvar premissas se foram geradas automaticamente
-      ...((!currentModelData.dreProjection || !currentModelData.balanceSheetProjection) && {
+      // Salvar premissas se foram geradas automaticamente OU estendidas
+      ...((!currentModelData.dreProjection || !currentModelData.balanceSheetProjection || premissasForamEstendidas) && {
         dreProjection,
         balanceSheetProjection,
-        anosProjecao,
+        anosProjecao: Math.max(dreProjection.length, balanceSheetProjection.length),
       }),
       // Salvar resultados calculados
       dre: dreResult.data,

@@ -301,7 +301,7 @@ export function BalanceSheetProjectionTable({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const renderTable = (table: ReturnType<typeof useReactTable>) => (
+  const renderTable = <T,>(table: ReturnType<typeof useReactTable<T>>) => (
     <div className="rounded-md border">
       <div className="overflow-x-auto">
         <table className="w-full">

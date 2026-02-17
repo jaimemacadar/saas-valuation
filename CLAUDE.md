@@ -1,26 +1,26 @@
 # Project Rules and Guidelines
 
-> Auto-generated from .context/docs on 2026-01-30T02:11:01.834Z
+> Auto-generated from .context/docs on 2026-02-17T01:08:47.384Z
 
 ## README
 
-# Documentation Index
+# Índice de Documentação
 
-Welcome to the repository knowledge base. Start with the project overview, then dive into specific guides as needed.
+Bem-vindo à base de conhecimento do repositório. Comece com a visão geral do projeto e depois explore os guias específicos conforme necessário.
 
-## Core Guides
-- [Project Overview](./project-overview.md)
-- [Architecture Notes](./architecture.md)
-- [Development Workflow](./development-workflow.md)
-- [Testing Strategy](./testing-strategy.md)
-- [Glossary & Domain Concepts](./glossary.md)
-- [Security & Compliance Notes](./security.md)
-- [Tooling & Productivity Guide](./tooling.md)
+## Guias Principais
+- [Visão Geral do Projeto](./project-overview.md)
+- [Notas de Arquitetura](./architecture.md)
+- [Fluxo de Desenvolvimento](./development-workflow.md)
+- [Estratégia de Testes](./testing-strategy.md)
+- [Glossário & Conceitos de Domínio](./glossary.md)
+- [Notas de Segurança & Conformidade](./security.md)
+- [Guia de Ferramentas & Produtividade](./tooling.md)
 
-## Repository Snapshot
+## Snapshot do Repositório
 - `AGENTS.md/`
 - `components.json/`
-- `docs/` — Living documentation produced by this tool.
+- `docs/` — Documentação viva produzida por esta ferramenta.
 - `eslint.config.mjs/`
 - `FASE_1_5_COMPLETA.md/`
 - `jest.config.js/`
@@ -34,25 +34,25 @@ Welcome to the repository knowledge base. Start with the project overview, then 
 - `public/`
 - `README.md/`
 - `scripts/`
-- `src/` — TypeScript source files and CLI entrypoints.
+- `src/` — Arquivos fonte TypeScript e pontos de entrada CLI.
 - `supabase/`
 - `tailwind.config.ts/`
 - `tsconfig.json/`
 - `vitest.config.ts/`
 
-## Document Map
-| Guide | File | Primary Inputs |
+## Mapa de Documentos
+| Guia | Arquivo | Fontes Principais |
 | --- | --- | --- |
-| Project Overview | `project-overview.md` | Roadmap, README, stakeholder notes |
-| Architecture Notes | `architecture.md` | ADRs, service boundaries, dependency graphs |
-| Development Workflow | `development-workflow.md` | Branching rules, CI config, contributing guide |
-| Testing Strategy | `testing-strategy.md` | Test configs, CI gates, known flaky suites |
-| Glossary & Domain Concepts | `glossary.md` | Business terminology, user personas, domain rules |
-| Security & Compliance Notes | `security.md` | Auth model, secrets management, compliance requirements |
-| Tooling & Productivity Guide | `tooling.md` | CLI scripts, IDE configs, automation workflows |
+| Visão Geral do Projeto | `project-overview.md` | Roadmap, README, notas de stakeholders |
+| Notas de Arquitetura | `architecture.md` | ADRs, limites de serviço, grafos de dependência |
+| Fluxo de Desenvolvimento | `development-workflow.md` | Regras de branching, config CI, guia de contribuição |
+| Estratégia de Testes | `testing-strategy.md` | Configs de teste, gates de CI, suítes conhecidas instáveis |
+| Glossário & Conceitos de Domínio | `glossary.md` | Terminologia de negócio, personas de usuário, regras de domínio |
+| Notas de Segurança & Conformidade | `security.md` | Modelo de auth, gestão de secrets, requisitos de conformidade |
+| Guia de Ferramentas & Produtividade | `tooling.md` | Scripts CLI, configs IDE, workflows de automação |
 
 
-## README
+## qa/README
 
 # Q&A Index
 
@@ -69,12 +69,17 @@ Generated: 2026-01-27T02:46:38.598Z
 - [How is the codebase organized?](./project-structure.md)
 - [How does routing work?](./routing.md)
 - [How does middleware work?](./middleware.md)
+- [What are the main UI components?](./components-ui.md)
 
 ## Features
 
 - [How does authentication work?](./authentication.md)
 - [How is data stored and accessed?](./database.md)
 - [What API endpoints are available?](./api-endpoints.md)
+
+## Development
+
+- [What custom hooks are available?](./custom-hooks.md)
 
 ## Operations
 
