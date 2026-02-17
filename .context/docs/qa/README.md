@@ -21,6 +21,10 @@ Generated: 2026-01-27T02:46:38.598Z
 - [How is data stored and accessed?](./database.md)
 - [What API endpoints are available?](./api-endpoints.md)
 
+## Development
+
+- [What custom hooks are available?](./custom-hooks.md)
+
 ## Operations
 
 - [How are errors handled?](./error-handling.md)

@@ -825,6 +825,854 @@ function DREForm() {
 
 ---
 
+## 📊 PremiseInput
+
+**Arquivo:** `src/components/tables/PremiseInput.tsx`
+
+### Descrição
+
+Componente especializado para entrada de premissas de projeção (valores percentuais) com funcionalidades avançadas de UX. Usado principalmente no DRETable para edição inline de premissas de crescimento, margens e taxas.
+
+### Características
+
+- ✅ **Input não-controlado** - Usa `defaultValue` + `key` para evitar re-renders durante digitação
+- ✅ **Formatação percentual** - Exibe valores com 2 casas decimais + sufixo "%"
+- ✅ **Validação automática** - Clamp entre 0-100% no blur
+- ✅ **Copiar para direita** - Botão para replicar valor do Ano 1 para todos os anos
+- ✅ **Aplicar tendência** - Popover com interpolação linear entre valor inicial e final
+- ✅ **Navegação por teclado** - Tab, Shift+Tab, Enter, Escape para navegação eficiente
+- ✅ **Tooltips informativos** - Explicações contextuais para cada funcionalidade
+- ✅ **Ref forwarding** - Expõe HTMLInputElement para navegação programática
+
+### Props
+
+```typescript
+interface PremiseInputProps {
+  value: number | null;              // Valor atual (0-100)
+  onChange: (value: number) => void; // Callback quando valor muda (no blur)
+  onBlur?: () => void;               // Callback adicional no blur
+  disabled?: boolean;                // Desabilita input e botões
+  tabIndex?: number;                 // Ordem de tabulação
+  className?: string;                // Classes CSS adicionais
+
+  // Funcionalidade "Copiar para direita"
+  showCopyRight?: boolean;           // Mostra botão ChevronsRight
+  onCopyRight?: () => void;          // Callback ao clicar em copiar
+
+  // Funcionalidade "Aplicar tendência"
+  showTrend?: boolean;               // Mostra botão TrendingUp
+  onApplyTrend?: (startValue: number, endValue: number) => void;
+
+  // Navegação por teclado
+  onNavigateNext?: () => void;       // Tab - próximo input (mesma linha)
+  onNavigatePrevious?: () => void;   // Shift+Tab - input anterior
+  onNavigateDown?: () => void;       // Enter - input abaixo (mesma coluna)
+}
+```
+
+### Comportamento de Input
+
+#### Input Não-Controlado
+
+```typescript
+<input
+  ref={inputRef}
+  key={formatted}  // ← Re-monta input quando valor externo muda
+  defaultValue={formatted}  // ← Não re-renderiza durante digitação
+  onBlur={handleBlur}
+/>
+```
+
+**Vantagens**:
+- ✅ Evita re-renders durante digitação
+- ✅ Previne loops de unmount/remount do react-table
+- ✅ Melhor performance com grandes tabelas
+- ✅ Experiência de digitação mais fluida
+
+#### Validação no Blur
+
+```typescript
+const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const raw = e.target.value.replace(',', '.');
+  const numValue = parseFloat(raw);
+  if (!isNaN(numValue)) {
+    const clamped = Math.max(0, Math.min(100, numValue));  // Clamp 0-100
+    onChange(clamped);
+    e.target.value = clamped.toFixed(2);
+  } else {
+    e.target.value = formatted;  // Restaura valor original se inválido
+  }
+};
+```
+
+### Funcionalidades de UX
+
+#### 1. Copiar para Direita
+
+Botão **ChevronsRight** que replica o valor do Ano 1 para todos os anos seguintes.
+
+```tsx
+{showCopyRight && onCopyRight && (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button onClick={onCopyRight}>
+          <ChevronsRight />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>Copiar para todos os anos</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+)}
+```
+
+**Uso típico**:
+```tsx
+<PremiseInput
+  value={projections[0].revenueGrowth}
+  showCopyRight={year === 1}  // Só no primeiro ano
+  onCopyRight={() => copyToAllYears('revenueGrowth')}
+/>
+```
+
+#### 2. Aplicar Tendência
+
+Popover com **interpolação linear** entre valor inicial e final.
+
+```tsx
+{showTrend && onApplyTrend && (
+  <Popover>
+    <PopoverTrigger asChild>
+      <Button>
+        <TrendingUp />
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent>
+      <Label>Valor inicial (%)</Label>
+      <Input value={startValue} onChange={...} />
+
+      <Label>Valor final (%)</Label>
+      <Input value={endValue} onChange={...} />
+
+      <Button onClick={handleApplyTrend}>Aplicar</Button>
+    </PopoverContent>
+  </Popover>
+)}
+```
+
+**Exemplo de aplicação de tendência**:
+```typescript
+// Usuário define: início = 10%, fim = 20%, 5 anos
+// Resultado: [10.0, 12.5, 15.0, 17.5, 20.0]
+const handleApplyTrend = (field: string, start: number, end: number) => {
+  const steps = projections.length - 1;
+  const increment = (end - start) / steps;
+
+  const updated = projections.map((p, i) => ({
+    ...p,
+    [field]: start + (increment * i)
+  }));
+};
+```
+
+#### 3. Navegação por Teclado
+
+Sistema de navegação eficiente para edição rápida de tabelas.
+
+| Tecla | Ação | Callback |
+|-------|------|----------|
+| **Tab** | Próxima célula (ano) na mesma linha | `onNavigateNext` |
+| **Shift+Tab** | Célula anterior | `onNavigatePrevious` |
+| **Enter** | Mesma coluna na próxima linha de premissa | `onNavigateDown` |
+| **Escape** | Cancela edição e remove foco | - |
+
+```typescript
+const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    inputRef.current?.blur();
+    e.shiftKey ? onNavigatePrevious?.() : onNavigateNext?.();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    inputRef.current?.blur();
+    onNavigateDown?.();
+  } else if (e.key === 'Escape') {
+    inputRef.current.value = formatted;  // Restaura valor
+    inputRef.current?.blur();
+  }
+};
+```
+
+### Integração com Sistema de Refs
+
+O componente usa `forwardRef` para expor o `HTMLInputElement` e permitir navegação programática.
+
+```typescript
+// PremiseInput.tsx
+export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(
+  function PremiseInput(props, ref) {
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
+
+    return <input ref={inputRef} />;
+  }
+);
+
+// DRETable.tsx
+const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+
+const navigateToCell = (rowIndex: number, colIndex: number) => {
+  const key = `${rowIndex}-${colIndex}`;
+  const input = inputRefs.current.get(key);
+  input?.focus();
+};
+
+<PremiseInput
+  ref={(el) => {
+    if (el) inputRefs.current.set(`${rowIndex}-${colIndex}`, el);
+  }}
+  onNavigateNext={() => navigateToCell(rowIndex, colIndex + 1)}
+  onNavigateDown={() => navigateToCell(rowIndex + 1, colIndex)}
+/>
+```
+
+### Exemplo Completo de Uso
+
+```tsx
+import { PremiseInput } from '@/components/tables/PremiseInput';
+import { useState, useRef } from 'react';
+
+function DREPremisesTable() {
+  const [projections, setProjections] = useState([
+    { year: 1, revenueGrowth: 10.0 },
+    { year: 2, revenueGrowth: 12.0 },
+    { year: 3, revenueGrowth: 15.0 },
+  ]);
+
+  const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+
+  const handleChange = (year: number, value: number) => {
+    setProjections(prev =>
+      prev.map(p => p.year === year ? { ...p, revenueGrowth: value } : p)
+    );
+  };
+
+  const handleCopyRight = () => {
+    const year1Value = projections[0].revenueGrowth;
+    setProjections(prev =>
+      prev.map((p, i) => i > 0 ? { ...p, revenueGrowth: year1Value } : p)
+    );
+  };
+
+  const handleApplyTrend = (start: number, end: number) => {
+    const steps = projections.length - 1;
+    const increment = (end - start) / steps;
+
+    setProjections(prev =>
+      prev.map((p, i) => ({ ...p, revenueGrowth: start + (increment * i) }))
+    );
+  };
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Premissa</th>
+          {projections.map(p => <th key={p.year}>Ano {p.year}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Crescimento de Receita</td>
+          {projections.map((p, colIndex) => (
+            <td key={p.year}>
+              <PremiseInput
+                ref={(el) => {
+                  if (el) inputRefs.current.set(`0-${colIndex}`, el);
+                }}
+                value={p.revenueGrowth}
+                onChange={(value) => handleChange(p.year, value)}
+                showCopyRight={p.year === 1}
+                onCopyRight={handleCopyRight}
+                showTrend={p.year === 1}
+                onApplyTrend={handleApplyTrend}
+                onNavigateNext={() => {
+                  const next = inputRefs.current.get(`0-${colIndex + 1}`);
+                  next?.focus();
+                }}
+                onNavigatePrevious={() => {
+                  const prev = inputRefs.current.get(`0-${colIndex - 1}`);
+                  prev?.focus();
+                }}
+              />
+            </td>
+          ))}
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+```
+
+### Estilização
+
+```tsx
+<div className="relative inline-flex items-center gap-1">
+  <input
+    className={cn(
+      'w-20 h-7 px-2 text-xs text-right',
+      'border border-input rounded-md',
+      'bg-background',
+      'focus:outline-none focus:ring-2 focus:ring-blue-500',
+      'disabled:cursor-not-allowed disabled:opacity-50',
+      'transition-colors'
+    )}
+  />
+  <span className="text-xs text-muted-foreground">%</span>
+  {/* Botões de ação */}
+</div>
+```
+
+**Características visuais**:
+- Largura fixa: `w-20` para consistência
+- Altura compacta: `h-7` para densidade
+- Alinhamento direito: `text-right` (padrão numérico)
+- Focus ring azul: indica input ativo
+- Sufixo "%": sempre visível ao lado direito
+
+### Acessibilidade
+
+- ✅ **ARIA labels** - Todos os botões têm `aria-label` descritivo
+- ✅ **Tooltips** - Explicações para usuários iniciantes
+- ✅ **Navegação por teclado** - Suporte completo sem mouse
+- ✅ **Input mode** - `inputMode="decimal"` para teclados mobile
+- ✅ **Focus management** - Focus automático após navegação
+- ✅ **Seleção automática** - Texto selecionado ao focar para edição rápida
+
+### Performance
+
+**Otimizações**:
+- Input não-controlado evita re-renders desnecessários
+- `key={formatted}` força re-montagem apenas quando valor externo muda
+- Refs estáveis com `Map` para navegação eficiente
+- Popover renderizado condicionalmente (só quando aberto)
+- Debounce de save no nível superior (DRETable)
+
+### Testes
+
+```typescript
+// PremiseInput.test.tsx
+describe('PremiseInput', () => {
+  it('formata valor com 2 casas decimais', () => {
+    render(<PremiseInput value={10.5} onChange={jest.fn()} />);
+    expect(screen.getByRole('textbox')).toHaveValue('10.50');
+  });
+
+  it('valida entrada entre 0-100', () => {
+    const onChange = jest.fn();
+    render(<PremiseInput value={50} onChange={onChange} />);
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: '150' } });
+    fireEvent.blur(input);
+
+    expect(onChange).toHaveBeenCalledWith(100);  // Clamped
+  });
+
+  it('navega para próximo input com Tab', () => {
+    const onNavigateNext = jest.fn();
+    render(<PremiseInput value={10} onChange={jest.fn()} onNavigateNext={onNavigateNext} />);
+
+    const input = screen.getByRole('textbox');
+    fireEvent.keyDown(input, { key: 'Tab' });
+
+    expect(onNavigateNext).toHaveBeenCalled();
+  });
+
+  it('aplica tendência linear', () => {
+    const onApplyTrend = jest.fn();
+    render(<PremiseInput value={10} onChange={jest.fn()} showTrend onApplyTrend={onApplyTrend} />);
+
+    fireEvent.click(screen.getByLabelText('Aplicar tendência'));
+    fireEvent.change(screen.getByLabelText(/valor inicial/i), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText(/valor final/i), { target: { value: '20' } });
+    fireEvent.click(screen.getByText('Aplicar'));
+
+    expect(onApplyTrend).toHaveBeenCalledWith(10, 20);
+  });
+});
+```
+
+---
+
+## 📋 DRETable
+
+**Arquivo:** `src/components/tables/DRETable.tsx`
+
+### Descrição
+
+Tabela completa de DRE (Demonstração de Resultado do Exercício) com suporte a **premissas inline editáveis**. Exibe linhas calculadas de receitas, custos e resultados intercaladas com linhas de premissas que permitem edição direta dos percentuais de projeção.
+
+### Características
+
+- ✅ **Premissas inline editáveis** - Inputs embutidos entre linhas calculadas
+- ✅ **Auto-save com debounce** - Persistência automática após 800ms de inatividade
+- ✅ **Navegação por teclado** - Sistema bidimensional com Tab/Enter
+- ✅ **Indicador visual de saving** - Ícone de loading durante persistência
+- ✅ **Timestamp de último save** - Feedback de quando foi salvo
+- ✅ **Cálculos em tempo real** - Recalcula DRE ao editar premissas
+- ✅ **Copiar e Tendência** - Funcionalidades de UX no primeiro ano
+- ✅ **Tooltips explicativos** - Ícone Info com base de cálculo de cada premissa
+- ✅ **Responsive rendering** - Usa react-table para performance
+
+### Props
+
+```typescript
+interface DRETableProps {
+  data: DRECalculated[];                    // DRE calculado por ano
+  showMargins?: boolean;                    // Exibir margens (%) (padrão: true)
+  projectionInputs?: DREProjectionInputs[]; // Premissas editáveis (opcional)
+  modelId?: string;                         // ID do modelo para auto-save
+  onProjectionChange?: (data: DREProjectionInputs[]) => void; // Callback ao mudar premissas
+}
+```
+
+### Tipos de Dados
+
+```typescript
+type DRECalculated = {
+  year: number;
+  receitaBruta: number;
+  receitaLiquida: number;
+  cpv: number;
+  lucroBruto: number;
+  despesasOperacionais: number;
+  despesasComerciais: number;
+  despesasAdministrativas: number;
+  ebitda: number;
+  depreciacao: number;
+  ebit: number;
+  // ... outros campos
+};
+
+type DREProjectionInputs = {
+  year: number;
+  revenueGrowth: number;        // % crescimento de receita
+  grossMargin: number;          // % margem bruta
+  opexAsRevenue: number;        // % despesas operacionais / receita
+  salesMarketingAsRevenue: number; // % comercial / receita
+  gaAsRevenue: number;          // % administrativo / receita
+};
+```
+
+### Estrutura da Tabela
+
+A tabela intercala **linhas de valores calculados** com **linhas de premissas editáveis**:
+
+```
+┌─────────────────────────────────────────────────────┐
+│ Receita Bruta        │  R$ 1.000.000  │  R$ 1.200.000 │
+├─────────────────────────────────────────────────────┤
+│ ℹ️ Crescimento (%)   │   [10.00%] 🠒 📈│   [20.00%] │  ← Premissa editável
+├─────────────────────────────────────────────────────┤
+│ Receita Líquida      │  R$ 850.000    │  R$ 1.020.000 │
+│ CPV                  │  R$ 350.000    │  R$ 420.000   │
+│ Lucro Bruto          │  R$ 500.000    │  R$ 600.000   │
+│   Margem Bruta %     │   58.82%       │   58.82%      │
+├─────────────────────────────────────────────────────┤
+│ ℹ️ Margem Bruta (%)  │   [58.00%] 🠒 📈│   [60.00%] │  ← Premissa editável
+└─────────────────────────────────────────────────────┘
+
+Legenda:
+🠒 = Botão "Copiar para direita" (só no Ano 1)
+📈 = Botão "Aplicar tendência" (só no Ano 1)
+ℹ️ = Tooltip com explicação
+```
+
+### Tipos de Linhas
+
+```typescript
+type DRERowData = {
+  label: string;                         // Nome da linha
+  type: 'header' | 'value' | 'subtotal' | 'total' | 'premise';
+  field: string;                         // Campo chave
+  values: Record<string, number | null>; // Valores por ano
+  isMargin?: boolean;                    // É uma margem (%)
+  premiseField?: keyof DREProjectionInputs; // Campo da premissa (se type=premise)
+  premiseTooltip?: string;               // Texto do tooltip (se type=premise)
+};
+```
+
+**Tipos de linha**:
+- `header` - Cabeçalho de seção (ex: "RECEITAS")
+- `value` - Linha de valor calculado (ex: "Receita Bruta")
+- `subtotal` - Subtotal (ex: "Lucro Bruto")
+- `total` - Total (ex: "EBITDA")
+- `premise` - **Linha de premissa editável** (ex: "Crescimento (%)")
+
+### Sistema de Auto-Save
+
+Integração com hook `useDREProjectionPersist` para persistência automática:
+
+```typescript
+const { isSaving, lastSavedAt, save } = useDREProjectionPersist({
+  modelId: modelId || '',
+  debounceMs: 800,
+});
+
+const handlePremiseChange = useCallback((year, field, value) => {
+  setLocalProjections((prev) => {
+    const updated = prev.map((p) =>
+      p.year === year ? { ...p, [field]: value } : p
+    );
+    onProjectionChange?.(updated);
+    if (modelId) {
+      save(updated);  // ← Auto-save com debounce
+    }
+    return updated;
+  });
+}, [modelId, save, onProjectionChange]);
+```
+
+**Indicadores visuais**:
+```tsx
+{isSaving && (
+  <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+)}
+{!isSaving && lastSavedAt && (
+  <Check className="h-3 w-3 text-green-600" />
+)}
+```
+
+### Sistema de Navegação Bidimensional
+
+Matriz de refs para navegação eficiente por teclado:
+
+```typescript
+// inputRefs[`rowIndex-colIndex`] = HTMLInputElement
+const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+
+// Navegação horizontal (Tab)
+const navigateNext = (rowIndex: number, colIndex: number) => {
+  const nextCol = colIndex + 1;
+  if (nextCol < data.length) {
+    const key = `${rowIndex}-${nextCol}`;
+    inputRefs.current.get(key)?.focus();
+  }
+};
+
+// Navegação vertical (Enter)
+const navigateDown = (rowIndex: number, colIndex: number) => {
+  const nextRow = rowIndex + 1;
+  const key = `${nextRow}-${colIndex}`;
+  inputRefs.current.get(key)?.focus();
+};
+```
+
+**Fluxo de navegação**:
+```
+       Tab →
+    ┌─────┬─────┬─────┐
+  ↓ │ 1-0 │ 1-1 │ 1-2 │
+Enter│     │     │     │
+  ↓ ├─────┼─────┼─────┤
+    │ 2-0 │ 2-1 │ 2-2 │
+    │     │     │     │
+    └─────┴─────┴─────┘
+```
+
+### Funcionalidades de UX
+
+#### 1. Copiar para Direita
+
+Disponível **apenas no Ano 1** de cada linha de premissa:
+
+```typescript
+const handleCopyRight = useCallback((field: keyof DREProjectionInputs) => {
+  setLocalProjections((prev) => {
+    const year1Value = prev.find((p) => p.year === 1)?.[field];
+    if (year1Value === undefined) return prev;
+
+    // Replica para anos 2, 3, 4, 5...
+    const updated = prev.map((p) =>
+      p.year > 1 ? { ...p, [field]: year1Value } : p
+    );
+
+    onProjectionChange?.(updated);
+    if (modelId) save(updated);
+    return updated;
+  });
+}, [modelId, save, onProjectionChange]);
+```
+
+#### 2. Aplicar Tendência
+
+Interpolação linear entre valor inicial e final:
+
+```typescript
+const handleApplyTrend = useCallback((
+  field: keyof DREProjectionInputs,
+  startValue: number,
+  endValue: number
+) => {
+  setLocalProjections((prev) => {
+    const years = prev.length;
+    const step = (endValue - startValue) / (years - 1);
+
+    const updated = prev.map((p, index) => ({
+      ...p,
+      [field]: startValue + (step * index)
+    }));
+
+    onProjectionChange?.(updated);
+    if (modelId) save(updated);
+    return updated;
+  });
+}, [modelId, save, onProjectionChange]);
+```
+
+**Exemplo**:
+```
+Início: 10%, Fim: 20%, 5 anos
+Resultado: [10.0, 12.5, 15.0, 17.5, 20.0]
+```
+
+#### 3. Tooltips Informativos
+
+Cada linha de premissa tem um ícone **ℹ️ Info** com explicação:
+
+```tsx
+<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Info className="h-3.5 w-3.5 text-muted-foreground" />
+    </TooltipTrigger>
+    <TooltipContent>
+      <p className="text-xs max-w-xs">
+        Percentual de crescimento aplicado sobre a receita do ano anterior.
+        Base: Receita Ano N-1
+      </p>
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
+```
+
+### Renderização de Células de Premissa
+
+```tsx
+// Célula de premissa editável
+if (row.original.type === 'premise' && row.original.premiseField) {
+  const projection = localProjections.find(p => p.year === year);
+  const value = projection?.[row.original.premiseField] ?? null;
+
+  return (
+    <PremiseInput
+      ref={(el) => {
+        if (el) inputRefs.current.set(`${rowIndex}-${colIndex}`, el);
+      }}
+      value={value}
+      onChange={(newValue) =>
+        handlePremiseChange(year, row.original.premiseField!, newValue)
+      }
+      showCopyRight={year === 1}
+      onCopyRight={() => handleCopyRight(row.original.premiseField!)}
+      showTrend={year === 1}
+      onApplyTrend={(start, end) =>
+        handleApplyTrend(row.original.premiseField!, start, end)
+      }
+      onNavigateNext={() => navigateNext(rowIndex, colIndex)}
+      onNavigatePrevious={() => navigatePrevious(rowIndex, colIndex)}
+      onNavigateDown={() => navigateDown(rowIndex, colIndex)}
+    />
+  );
+}
+```
+
+### Exemplo de Uso
+
+```tsx
+import { DRETable } from '@/components/tables/DRETable';
+import { useState } from 'react';
+
+function DREPage({ modelId }: { modelId: string }) {
+  const [dreData, setDREData] = useState<DRECalculated[]>([
+    { year: 1, receitaBruta: 1000000, ... },
+    { year: 2, receitaBruta: 1200000, ... },
+    // ...
+  ]);
+
+  const [projections, setProjections] = useState<DREProjectionInputs[]>([
+    { year: 1, revenueGrowth: 10, grossMargin: 58, ... },
+    { year: 2, revenueGrowth: 20, grossMargin: 60, ... },
+    // ...
+  ]);
+
+  const handleProjectionChange = (updated: DREProjectionInputs[]) => {
+    setProjections(updated);
+    // Recalcula DRE com novas premissas
+    const recalculated = calculateDRE(baseYear, updated);
+    setDREData(recalculated);
+  };
+
+  return (
+    <DRETable
+      data={dreData}
+      projectionInputs={projections}
+      modelId={modelId}
+      onProjectionChange={handleProjectionChange}
+      showMargins
+    />
+  );
+}
+```
+
+### Performance
+
+**Otimizações implementadas**:
+- ✅ **State local** para UX responsiva (evita re-renders do pai)
+- ✅ **Debounce de 800ms** no save (reduz chamadas à API)
+- ✅ **useCallback** para handlers (evita re-criação de funções)
+- ✅ **Input não-controlado** no PremiseInput (evita re-renders durante digitação)
+- ✅ **Map de refs** (lookup O(1) para navegação)
+- ✅ **react-table** para virtualização e performance de tabelas grandes
+
+### Testes
+
+```typescript
+// DRETable.test.tsx
+describe('DRETable com premissas inline', () => {
+  it('renderiza inputs de premissas editáveis', () => {
+    render(<DRETable data={dreData} projectionInputs={projections} />);
+    expect(screen.getAllByRole('textbox')).toHaveLength(10); // 2 premissas × 5 anos
+  });
+
+  it('atualiza premissa ao editar input', async () => {
+    const onProjectionChange = jest.fn();
+    render(
+      <DRETable
+        data={dreData}
+        projectionInputs={projections}
+        onProjectionChange={onProjectionChange}
+      />
+    );
+
+    const input = screen.getAllByRole('textbox')[0];
+    fireEvent.change(input, { target: { value: '15' } });
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(onProjectionChange).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ year: 1, revenueGrowth: 15 })
+        ])
+      );
+    });
+  });
+
+  it('copia valor do Ano 1 para todos os anos', () => {
+    const onProjectionChange = jest.fn();
+    render(
+      <DRETable
+        data={dreData}
+        projectionInputs={projections}
+        onProjectionChange={onProjectionChange}
+      />
+    );
+
+    fireEvent.click(screen.getByLabelText('Copiar para todos os anos'));
+
+    expect(onProjectionChange).toHaveBeenCalledWith(
+      projections.map((p, i) => ({
+        ...p,
+        revenueGrowth: projections[0].revenueGrowth
+      }))
+    );
+  });
+
+  it('aplica tendência linear', () => {
+    const onProjectionChange = jest.fn();
+    render(<DRETable data={dreData} projectionInputs={projections} onProjectionChange={onProjectionChange} />);
+
+    fireEvent.click(screen.getByLabelText('Aplicar tendência'));
+    fireEvent.change(screen.getByLabelText(/valor inicial/i), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText(/valor final/i), { target: { value: '20' } });
+    fireEvent.click(screen.getByText('Aplicar'));
+
+    expect(onProjectionChange).toHaveBeenCalledWith([
+      { year: 1, revenueGrowth: 10.0 },
+      { year: 2, revenueGrowth: 12.5 },
+      { year: 3, revenueGrowth: 15.0 },
+      { year: 4, revenueGrowth: 17.5 },
+      { year: 5, revenueGrowth: 20.0 },
+    ]);
+  });
+
+  it('navega com Tab para próximo input', () => {
+    render(<DRETable data={dreData} projectionInputs={projections} />);
+
+    const inputs = screen.getAllByRole('textbox');
+    inputs[0].focus();
+    fireEvent.keyDown(inputs[0], { key: 'Tab' });
+
+    expect(inputs[1]).toHaveFocus();
+  });
+
+  it('salva com debounce após edição', async () => {
+    const save = jest.fn();
+    jest.mock('@/hooks/useDREProjectionPersist', () => ({
+      useDREProjectionPersist: () => ({ save, isSaving: false })
+    }));
+
+    render(<DRETable data={dreData} projectionInputs={projections} modelId="123" />);
+
+    const input = screen.getAllByRole('textbox')[0];
+    fireEvent.change(input, { target: { value: '15' } });
+    fireEvent.blur(input);
+
+    // Aguarda debounce de 800ms
+    await waitFor(() => expect(save).toHaveBeenCalled(), { timeout: 1000 });
+  });
+});
+```
+
+### Integração com Backend
+
+```typescript
+// Hook useDREProjectionPersist.ts
+export function useDREProjectionPersist({ modelId, debounceMs = 800 }) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout>();
+
+  const save = useCallback(async (data: DREProjectionInputs[]) => {
+    // Cancela timeout anterior
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Agenda novo save com debounce
+    timeoutRef.current = setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        await updateDREProjections(modelId, data);
+        setLastSavedAt(new Date());
+      } catch (error) {
+        console.error('Erro ao salvar premissas:', error);
+      } finally {
+        setIsSaving(false);
+      }
+    }, debounceMs);
+  }, [modelId, debounceMs]);
+
+  return { isSaving, lastSavedAt, save };
+}
+```
+
+---
+
 ## 📊 DREChartsSection
 
 **Arquivo:** `src/components/charts/DREChartsSection.tsx`

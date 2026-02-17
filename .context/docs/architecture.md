@@ -173,6 +173,158 @@ O projeto utiliza **Radix UI** e **shadcn/ui** para componentes acessíveis e co
 - Forms de entrada de dados (DRE, Balanço)
 - Tabelas financeiras (DRETable, BalanceSheetTable, FCFFTable)
 
+## Sistema de Navegação e Input de Dados
+
+### Padrão de Input Não-Controlado
+
+Para componentes de input em tabelas grandes (especialmente premissas de projeção), utilizamos **inputs não-controlados** para otimizar performance e evitar problemas de re-rendering:
+
+**Implementação**:
+```typescript
+// PremiseInput.tsx
+<input
+  ref={inputRef}
+  key={formatted}           // ← Re-monta quando valor externo muda
+  defaultValue={formatted}  // ← Não re-renderiza durante digitação
+  onBlur={handleBlur}       // ← Valida e atualiza apenas no blur
+/>
+```
+
+**Benefícios**:
+- ✅ Evita loops de unmount/remount causados por react-table
+- ✅ Não re-renderiza durante digitação (melhor UX)
+- ✅ Performance superior em tabelas com muitos inputs
+- ✅ Validação acontece apenas quando necessário (blur)
+
+**Quando usar**:
+- Tabelas com muitos inputs editáveis
+- Inputs que precisam de navegação por teclado
+- Cenários onde re-renders frequentes causam problemas
+
+### Sistema de Navegação Bidimensional
+
+Para navegação eficiente em tabelas de premissas, implementamos um **sistema de refs bidimensional**:
+
+**Estrutura**:
+```typescript
+// DRETable.tsx
+const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+
+// Armazenamento: `rowIndex-colIndex` → HTMLInputElement
+inputRefs.current.set(`${rowIndex}-${colIndex}`, inputElement);
+
+// Navegação horizontal (Tab)
+const navigateNext = (rowIndex: number, colIndex: number) => {
+  const key = `${rowIndex}-${colIndex + 1}`;
+  inputRefs.current.get(key)?.focus();
+};
+
+// Navegação vertical (Enter)
+const navigateDown = (rowIndex: number, colIndex: number) => {
+  const key = `${rowIndex + 1}-${colIndex}`;
+  inputRefs.current.get(key)?.focus();
+};
+```
+
+**Teclas de navegação**:
+- `Tab` - Próxima célula (ano) na mesma linha de premissa
+- `Shift+Tab` - Célula anterior
+- `Enter` - Mesma coluna na próxima linha de premissa
+- `Escape` - Cancela edição e remove foco
+
+**Vantagens**:
+- Lookup O(1) usando Map
+- Navegação intuitiva similar a planilhas
+- Não depende de DOM queries
+- Type-safe e testável
+
+### Hook de Persistência com Debounce
+
+**useDREProjectionPersist** - Hook customizado para auto-save de premissas com debounce:
+
+```typescript
+// hooks/useDREProjectionPersist.ts
+export function useDREProjectionPersist({ modelId, debounceMs = 800 }) {
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout>();
+
+  const save = useCallback(async (data: DREProjectionInputs[]) => {
+    // Cancela timeout anterior
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Agenda novo save
+    timeoutRef.current = setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        await updateDREProjections(modelId, data);
+        setLastSavedAt(new Date());
+      } finally {
+        setIsSaving(false);
+      }
+    }, debounceMs);
+  }, [modelId, debounceMs]);
+
+  return { isSaving, lastSavedAt, save };
+}
+```
+
+**Características**:
+- ✅ API imperativa (método `save()` chamado explicitamente)
+- ✅ Debounce de 800ms (configurável)
+- ✅ Estados observáveis: `isSaving`, `lastSavedAt`
+- ✅ Cancela timeout anterior ao editar novamente
+- ✅ Feedback visual para o usuário
+
+**Uso típico**:
+```typescript
+const { isSaving, lastSavedAt, save } = useDREProjectionPersist({
+  modelId: '123',
+  debounceMs: 800,
+});
+
+const handleChange = (data: DREProjectionInputs[]) => {
+  setLocalState(data);  // Atualização imediata no estado local
+  save(data);           // Dispara save com debounce
+};
+
+// Indicador visual
+{isSaving && <Loader2 className="animate-spin" />}
+{!isSaving && lastSavedAt && <Check className="text-green-600" />}
+```
+
+### Componentes Popover para Inputs Avançados
+
+Utilizamos o componente **Popover** do shadcn/ui para funcionalidades avançadas de input:
+
+**Aplicar Tendência (Interpolação Linear)**:
+```typescript
+<Popover>
+  <PopoverTrigger asChild>
+    <Button variant="ghost" size="icon">
+      <TrendingUp />
+    </Button>
+  </PopoverTrigger>
+  <PopoverContent className="w-80">
+    <Label>Valor inicial (%)</Label>
+    <Input value={startValue} onChange={...} />
+
+    <Label>Valor final (%)</Label>
+    <Input value={endValue} onChange={...} />
+
+    <Button onClick={handleApplyTrend}>Aplicar</Button>
+  </PopoverContent>
+</Popover>
+```
+
+**Benefícios**:
+- ✅ Não polui a interface principal
+- ✅ Contexto claro para operações avançadas
+- ✅ Acessível (ESC para fechar, focus trap)
+- ✅ Posicionamento automático inteligente
+
 ## Sistema de Formatação Financeira
 
 O projeto possui um sistema robusto de formatação de números financeiros em `src/lib/utils/formatters.ts`:

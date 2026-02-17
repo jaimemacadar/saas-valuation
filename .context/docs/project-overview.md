@@ -61,8 +61,15 @@ See [`codebase-map.json`](./codebase-map.json) for the complete list of exports,
 
 ### 💰 Visualização Financeira
 - **DRE (Demonstração de Resultado)** - tabs por ano com visualização em tabela e gráficos
+  - **Premissas Inline Editáveis** - Edição direta de percentuais de projeção na tabela
+    - 🠒 **Copiar para Direita** - Botão para replicar valor do Ano 1 para todos os anos
+    - 📈 **Aplicar Tendência** - Popover com interpolação linear entre valor inicial e final
+    - ⌨️ **Navegação por Teclado** - Tab (próximo ano), Enter (próxima premissa), Shift+Tab (anterior), Escape (cancelar)
+    - ℹ️ **Tooltips Informativos** - Ícone Info com explicação da base de cálculo de cada premissa
+    - 💾 **Auto-save com Debounce** - Persistência automática após 800ms de inatividade com indicador visual
   - Gráficos de Receita, Composição de Custos e EBITDA
   - Carregamento dinâmico de componentes de visualização
+  - Cálculos em tempo real ao editar premissas
 - **Balanço Patrimonial** - tabs por ano
 - **FCFF (Free Cash Flow to Firm)** - projeções com visualização em tabela e gráficos
   - Gráfico de evolução do fluxo de caixa livre
