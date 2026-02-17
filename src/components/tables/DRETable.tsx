@@ -44,6 +44,7 @@ type DRERowData = {
   isMargin?: boolean;
   premiseField?: keyof DREProjectionInputs;
   premiseTooltip?: string;
+  tooltip?: string;
 };
 
 export function DRETable({
@@ -315,7 +316,7 @@ export function DRETable({
           ]
         : []),
       {
-        label: "EBIT",
+        label: "Lucro Operacional (EBIT)",
         type: "total",
         field: "ebit",
         values: Object.fromEntries(data.map((d) => [d.year, d.ebit])),
@@ -327,12 +328,22 @@ export function DRETable({
         values: Object.fromEntries(
           data.map((d) => [d.year, d.depreciacaoAmortizacao]),
         ),
+        tooltip: "Ajuste para o cálculo do EBITDA",
       },
       {
         label: "EBITDA",
         type: "subtotal",
         field: "ebitda",
         values: Object.fromEntries(data.map((d) => [d.year, d.ebitda])),
+      },
+      {
+        label: "(-) Depreciação e Amortização",
+        type: "value",
+        field: "depreciacaoAmortizacaoNegativa",
+        values: Object.fromEntries(
+          data.map((d) => [d.year, d.depreciacaoAmortizacao * -1]),
+        ),
+        tooltip: "Estorno da depreciação e amortização para o cálculo do LAIR",
       },
       {
         label: "(-) Despesas Financeiras",
@@ -343,8 +354,8 @@ export function DRETable({
         ),
       },
       {
-        label: "LAIR",
-        type: "subtotal",
+        label: "Lucro antes de IR/CSLL (LAIR)",
+        type: "total",
         field: "lucroAntesIR",
         values: Object.fromEntries(data.map((d) => [d.year, d.lucroAntesIR])),
       },
@@ -404,6 +415,8 @@ export function DRETable({
         cell: ({ row }) => {
           const rowType = row.original.type;
           const premiseTooltip = row.original.premiseTooltip;
+          const tooltip = row.original.tooltip;
+          const tooltipText = premiseTooltip || tooltip;
 
           return (
             <div
@@ -415,14 +428,14 @@ export function DRETable({
               )}
             >
               <span>{row.original.label}</span>
-              {rowType === "premise" && premiseTooltip && (
+              {tooltipText && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Info className="h-3 w-3 cursor-help text-muted-foreground/60 hover:text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent side="right" className="max-w-xs">
-                      <p className="text-xs">{premiseTooltip}</p>
+                      <p className="text-xs">{tooltipText}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -502,7 +515,7 @@ export function DRETable({
               {value !== null
                 ? isMargin
                   ? formatPercentage(value)
-                  : formatCurrency(value)
+                  : formatCurrency(value, { showSymbol: false })
                 : "-"}
             </div>
           );
@@ -550,6 +563,8 @@ export function DRETable({
           ) : null}
         </div>
       )}
+
+      <p className="text-xs text-muted-foreground">Valores em R$ (Reais)</p>
 
       <div className="rounded-md border">
         <Table>
