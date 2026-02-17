@@ -7,7 +7,8 @@ import {
   ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
-import { Loader2, Check, Info } from "lucide-react";
+import { Loader2, Check, Info, ChevronRight, ChevronDown, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { DRECalculated, DREProjectionInputs } from "@/core/types";
 import { formatCurrency, formatPercentage } from "@/lib/utils/formatters";
 import {
@@ -45,6 +46,8 @@ type DRERowData = {
   premiseField?: keyof DREProjectionInputs;
   premiseTooltip?: string;
   tooltip?: string;
+  parentField?: string;
+  hasPremise?: boolean;
 };
 
 export function DRETable({
@@ -58,6 +61,24 @@ export function DRETable({
   const [localProjections, setLocalProjections] = useState<
     DREProjectionInputs[]
   >(projectionInputs || []);
+
+  // Estado de visibilidade das premissas
+  const [showAllPremises, setShowAllPremises] = useState(false);
+  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const toggleAccount = useCallback((field: string) => {
+    setExpandedAccounts((prev) => {
+      const next = new Set(prev);
+      if (next.has(field)) {
+        next.delete(field);
+      } else {
+        next.add(field);
+      }
+      return next;
+    });
+  }, []);
 
   // Hook de persistência com debounce — API imperativa (save chamado explicitamente)
   const { isSaving, lastSavedAt, save } = useDREProjectionPersist({
@@ -228,6 +249,7 @@ export function DRETable({
         label: "Receita Bruta",
         type: "value",
         field: "receita",
+        hasPremise: hasPremises,
         values: Object.fromEntries(data.map((d) => [d.year, d.receitaBruta])),
       },
       ...(hasPremises
@@ -236,6 +258,7 @@ export function DRETable({
               label: "Crescimento anual (%)",
               type: "premise" as const,
               field: "receitaBrutaGrowth",
+              parentField: "receita",
               premiseField: "receitaBrutaGrowth" as keyof DREProjectionInputs,
               premiseTooltip:
                 "% crescimento sobre receita bruta do ano anterior",
@@ -247,6 +270,7 @@ export function DRETable({
         label: "(-) Impostos sobre Vendas",
         type: "value",
         field: "impostos",
+        hasPremise: hasPremises,
         values: Object.fromEntries(
           data.map((d) => [d.year, d.impostosEDevolucoes * -1]),
         ),
@@ -257,6 +281,7 @@ export function DRETable({
               label: "Impostos s/ vendas (%)",
               type: "premise" as const,
               field: "impostosEDevolucoesRate",
+              parentField: "impostos",
               premiseField:
                 "impostosEDevolucoesRate" as keyof DREProjectionInputs,
               premiseTooltip: "% sobre Receita Bruta",
@@ -274,6 +299,7 @@ export function DRETable({
         label: "(-) CMV",
         type: "value",
         field: "cmv",
+        hasPremise: hasPremises,
         values: Object.fromEntries(data.map((d) => [d.year, d.cmv * -1])),
       },
       ...(hasPremises
@@ -282,6 +308,7 @@ export function DRETable({
               label: "CMV (%)",
               type: "premise" as const,
               field: "cmvRate",
+              parentField: "cmv",
               premiseField: "cmvRate" as keyof DREProjectionInputs,
               premiseTooltip: "% sobre Receita Líquida",
               values: getPremiseValues("cmvRate"),
@@ -298,6 +325,7 @@ export function DRETable({
         label: "(-) Despesas Operacionais",
         type: "value",
         field: "despesasOperacionais",
+        hasPremise: hasPremises,
         values: Object.fromEntries(
           data.map((d) => [d.year, d.despesasOperacionais * -1]),
         ),
@@ -308,6 +336,7 @@ export function DRETable({
               label: "Despesas operacionais (%)",
               type: "premise" as const,
               field: "despesasOperacionaisRate",
+              parentField: "despesasOperacionais",
               premiseField:
                 "despesasOperacionaisRate" as keyof DREProjectionInputs,
               premiseTooltip: "% sobre Receita Líquida",
@@ -363,6 +392,7 @@ export function DRETable({
         label: "(-) IR/CSLL",
         type: "value",
         field: "irCSLL",
+        hasPremise: hasPremises,
         values: Object.fromEntries(data.map((d) => [d.year, d.irCSLL * -1])),
       },
       ...(hasPremises
@@ -371,6 +401,7 @@ export function DRETable({
               label: "IR/CSLL (%)",
               type: "premise" as const,
               field: "irCSLLRate",
+              parentField: "irCSLL",
               premiseField: "irCSLLRate" as keyof DREProjectionInputs,
               premiseTooltip: "% sobre LAIR",
               values: getPremiseValues("irCSLLRate"),
@@ -387,6 +418,7 @@ export function DRETable({
         label: "(-) Dividendos",
         type: "value",
         field: "dividendos",
+        hasPremise: hasPremises,
         values: Object.fromEntries(
           data.map((d) => [d.year, d.dividendos * -1]),
         ),
@@ -397,6 +429,7 @@ export function DRETable({
               label: "Dividendos (%)",
               type: "premise" as const,
               field: "dividendosRate",
+              parentField: "dividendos",
               premiseField: "dividendosRate" as keyof DREProjectionInputs,
               premiseTooltip: "% sobre Lucro Líquido",
               values: getPremiseValues("dividendosRate"),
@@ -405,6 +438,16 @@ export function DRETable({
         : []),
     ];
   }, [data, localProjections, hasPremises]);
+
+  // Filtra rows de premissa que não estão visíveis
+  const visibleRows = useMemo(() => {
+    return rows.filter((row) => {
+      if (row.type !== "premise") return true;
+      if (!row.parentField) return true;
+      if (showAllPremises) return true;
+      return expandedAccounts.has(row.parentField);
+    });
+  }, [rows, showAllPremises, expandedAccounts]);
 
   // Memoiza columns para evitar novas referências a cada render
   const columns: ColumnDef<DRERowData>[] = useMemo(
@@ -417,6 +460,11 @@ export function DRETable({
           const premiseTooltip = row.original.premiseTooltip;
           const tooltip = row.original.tooltip;
           const tooltipText = premiseTooltip || tooltip;
+          const hasPremise = row.original.hasPremise;
+          const field = row.original.field;
+
+          const isExpanded =
+            hasPremise && (showAllPremises || expandedAccounts.has(field));
 
           return (
             <div
@@ -424,9 +472,21 @@ export function DRETable({
                 "font-medium min-w-[200px] whitespace-nowrap flex items-center gap-1.5",
                 rowType === "total" && "font-bold",
                 rowType === "subtotal" && "font-semibold",
-                rowType === "premise" && "text-xs text-muted-foreground pl-4",
+                rowType === "premise" && "text-xs text-muted-foreground pl-6",
+                hasPremise &&
+                  "cursor-pointer select-none hover:text-foreground/80 transition-colors",
               )}
+              onClick={hasPremise ? () => toggleAccount(field) : undefined}
             >
+              {hasPremise && (
+                <span className="text-muted-foreground/60 flex-shrink-0">
+                  {isExpanded ? (
+                    <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200" />
+                  ) : (
+                    <ChevronRight className="h-3.5 w-3.5 transition-transform duration-200" />
+                  )}
+                </span>
+              )}
               <span>{row.original.label}</span>
               {tooltipText && (
                 <TooltipProvider>
@@ -522,11 +582,11 @@ export function DRETable({
         },
       })),
     ],
-    [data, handlePremiseChange, modelId],
+    [data, handlePremiseChange, modelId, showAllPremises, expandedAccounts, toggleAccount],
   );
 
   const table = useReactTable({
-    data: rows,
+    data: visibleRows,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -541,26 +601,49 @@ export function DRETable({
 
   return (
     <div className="space-y-2">
-      {/* Indicador de salvamento */}
-      {modelId && hasPremises && (
-        <div className="flex items-center justify-end text-sm text-muted-foreground">
-          {isSaving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              <span>Salvando...</span>
-            </>
-          ) : lastSavedAt ? (
-            <>
-              <Check className="mr-2 h-4 w-4 text-green-600" />
-              <span>
-                Salvo às{" "}
-                {lastSavedAt.toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </span>
-            </>
-          ) : null}
+      {/* Barra superior: toggle de premissas + indicador de salvamento */}
+      {hasPremises && (
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAllPremises((prev) => !prev)}
+            className="h-7 gap-1.5 text-xs"
+          >
+            {showAllPremises ? (
+              <>
+                <EyeOff className="h-3.5 w-3.5" />
+                Ocultar premissas
+              </>
+            ) : (
+              <>
+                <Eye className="h-3.5 w-3.5" />
+                Exibir premissas
+              </>
+            )}
+          </Button>
+
+          {modelId && (
+            <div className="flex items-center text-sm text-muted-foreground">
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <span>Salvando...</span>
+                </>
+              ) : lastSavedAt ? (
+                <>
+                  <Check className="mr-2 h-4 w-4 text-green-600" />
+                  <span>
+                    Salvo às{" "}
+                    {lastSavedAt.toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </>
+              ) : null}
+            </div>
+          )}
         </div>
       )}
 

@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "premissas-inline-dre",
+      "path": "plans/premissas-inline-dre.md",
+      "title": "Premissas de Projeção Inline na DRETable",
+      "summary": "Implementar linhas de premissas editáveis inline dentro da tabela DRE, com inputs percentuais, copiar para direita, tendência, tooltips e navegação Tab/Enter — conforme item 2.1 do fase-3.md (PRD Item B).",
+      "linkedAt": "2026-02-15T23:46:51.932Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "premissas-inline-dre"
+}
