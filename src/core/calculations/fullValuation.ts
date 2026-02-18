@@ -48,10 +48,47 @@ export function executeFullValuation(
 
     const validatedInput = validationResult.data;
 
-    // 2. Calcular projeção de DRE
+    // 2–5. Fluxo iterativo DRE → BP → DRE (integração sem circularidade)
+    // Pass 1: DRE parcial (despesasFinanceiras = 0)
+    const drePass1 = calculateAllDRE(
+      validatedInput.dreBase,
+      validatedInput.dreProjection,
+    );
+
+    if (!drePass1.success || !drePass1.data) {
+      return {
+        success: false,
+        errors: drePass1.errors || ["Erro ao calcular DRE (pass 1)"],
+      };
+    }
+
+    // Pass 2: BP com DRE parcial → extrai despesasFinanceiras e depreciacaoAnual
+    const bpPass1 = calculateAllBalanceSheet(
+      validatedInput.balanceSheetBase,
+      drePass1.data,
+      validatedInput.balanceSheetProjection,
+    );
+
+    if (!bpPass1.success || !bpPass1.data) {
+      return {
+        success: false,
+        errors: bpPass1.errors || ["Erro ao calcular Balanço Patrimonial (pass 1)"],
+      };
+    }
+
+    const bpDataForDRE = bpPass1.data
+      .filter((bp) => bp.year > 0)
+      .map((bp) => ({
+        year: bp.year,
+        despesasFinanceiras: bp.despesasFinanceiras,
+        depreciacaoAnual: bp.depreciacaoAnual,
+      }));
+
+    // Pass 3: DRE final com D&A e despesasFinanceiras reais do BP
     const dreResult = calculateAllDRE(
       validatedInput.dreBase,
       validatedInput.dreProjection,
+      bpDataForDRE,
     );
 
     if (!dreResult.success || !dreResult.data) {
@@ -63,7 +100,7 @@ export function executeFullValuation(
 
     const dreProjetado = dreResult.data;
 
-    // 3. Calcular projeção de Balanço Patrimonial
+    // Pass 4: BP final com DRE corrigido → lucrosAcumulados corretos
     const bpResult = calculateAllBalanceSheet(
       validatedInput.balanceSheetBase,
       dreProjetado,
@@ -172,7 +209,9 @@ export function executeQuickValuation(
       prazoFornecedores: 25,
       prazoImpostosAPagar: 7,
       prazoObrigacoesSociais: 11,
-      taxaNovosEmprestimosFinanciamentos: 5,
+      taxaNovosEmprestimosCP: 5,
+      taxaNovosEmprestimosLP: 5,
+      taxaJurosEmprestimo: 12,
     }),
   );
 

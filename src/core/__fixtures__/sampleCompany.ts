@@ -105,7 +105,7 @@ export const sampleBalanceSheetBase: BalanceSheetBaseInputs = {
   },
   patrimonioLiquido: {
     capitalSocial: 2_000_000,
-    lucrosAcumulados: 800_000,
+    lucrosAcumulados: 1_000_000, // corrigido para equilibrar: Ativo 5.8M = Passivo 2.8M + PL 3.0M
   },
 };
 
@@ -122,7 +122,9 @@ export const sampleBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 22, // dias
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 10, // 10% crescimento
+    taxaNovosEmprestimosCP: 10,
+    taxaNovosEmprestimosLP: 10,
+    taxaJurosEmprestimo: 12,
   },
   {
     year: 2,
@@ -136,7 +138,9 @@ export const sampleBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 24,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 8,
+    taxaNovosEmprestimosCP: 8,
+    taxaNovosEmprestimosLP: 8,
+    taxaJurosEmprestimo: 12,
   },
   {
     year: 3,
@@ -150,7 +154,9 @@ export const sampleBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 26,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 6,
+    taxaNovosEmprestimosCP: 6,
+    taxaNovosEmprestimosLP: 6,
+    taxaJurosEmprestimo: 12,
   },
   {
     year: 4,
@@ -164,7 +170,9 @@ export const sampleBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 28,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 5,
+    taxaNovosEmprestimosCP: 5,
+    taxaNovosEmprestimosLP: 5,
+    taxaJurosEmprestimo: 12,
   },
   {
     year: 5,
@@ -178,7 +186,9 @@ export const sampleBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 30,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 5,
+    taxaNovosEmprestimosCP: 5,
+    taxaNovosEmprestimosLP: 5,
+    taxaJurosEmprestimo: 12,
   },
 ];
 
@@ -308,7 +318,9 @@ export const startupBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 29,
     prazoImpostosAPagar: 9,
     prazoObrigacoesSociais: 14,
-    taxaNovosEmprestimosFinanciamentos: 50, // Crescimento agressivo de dívida
+    taxaNovosEmprestimosCP: 50,
+    taxaNovosEmprestimosLP: 50,
+    taxaJurosEmprestimo: 18, // Taxa alta para startup
   },
   {
     year: 2,
@@ -322,7 +334,9 @@ export const startupBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 32,
     prazoImpostosAPagar: 9,
     prazoObrigacoesSociais: 14,
-    taxaNovosEmprestimosFinanciamentos: 30,
+    taxaNovosEmprestimosCP: 30,
+    taxaNovosEmprestimosLP: 30,
+    taxaJurosEmprestimo: 18,
   },
   {
     year: 3,
@@ -336,7 +350,9 @@ export const startupBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 34,
     prazoImpostosAPagar: 9,
     prazoObrigacoesSociais: 14,
-    taxaNovosEmprestimosFinanciamentos: 20,
+    taxaNovosEmprestimosCP: 20,
+    taxaNovosEmprestimosLP: 20,
+    taxaJurosEmprestimo: 18,
   },
   {
     year: 4,
@@ -350,7 +366,9 @@ export const startupBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 36,
     prazoImpostosAPagar: 9,
     prazoObrigacoesSociais: 14,
-    taxaNovosEmprestimosFinanciamentos: 15,
+    taxaNovosEmprestimosCP: 15,
+    taxaNovosEmprestimosLP: 15,
+    taxaJurosEmprestimo: 18,
   },
   {
     year: 5,
@@ -364,7 +382,9 @@ export const startupBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 38,
     prazoImpostosAPagar: 9,
     prazoObrigacoesSociais: 14,
-    taxaNovosEmprestimosFinanciamentos: 10,
+    taxaNovosEmprestimosCP: 10,
+    taxaNovosEmprestimosLP: 10,
+    taxaJurosEmprestimo: 18,
   },
 ];
 
@@ -494,7 +514,9 @@ export const matureBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 22,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 3, // Baixo endividamento
+    taxaNovosEmprestimosCP: 3,
+    taxaNovosEmprestimosLP: 3,
+    taxaJurosEmprestimo: 10, // Taxa baixa para empresa madura
   },
   {
     year: 2,
@@ -508,7 +530,9 @@ export const matureBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 24,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 2,
+    taxaNovosEmprestimosCP: 2,
+    taxaNovosEmprestimosLP: 2,
+    taxaJurosEmprestimo: 10,
   },
   {
     year: 3,
@@ -522,7 +546,9 @@ export const matureBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 26,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 2,
+    taxaNovosEmprestimosCP: 2,
+    taxaNovosEmprestimosLP: 2,
+    taxaJurosEmprestimo: 10,
   },
   {
     year: 4,
@@ -536,7 +562,9 @@ export const matureBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 28,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 2,
+    taxaNovosEmprestimosCP: 2,
+    taxaNovosEmprestimosLP: 2,
+    taxaJurosEmprestimo: 10,
   },
   {
     year: 5,
@@ -550,7 +578,9 @@ export const matureBalanceSheetProjection: BalanceSheetProjectionInputs[] = [
     prazoFornecedores: 30,
     prazoImpostosAPagar: 7,
     prazoObrigacoesSociais: 11,
-    taxaNovosEmprestimosFinanciamentos: 2,
+    taxaNovosEmprestimosCP: 2,
+    taxaNovosEmprestimosLP: 2,
+    taxaJurosEmprestimo: 10,
   },
 ];
 

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/project-overview.md",
-                "mode": "source",
+                "file": "plans/tabelas-auxiliares-bp.md",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "project-overview"
+              "title": "tabelas-auxiliares-bp"
             }
           }
         ]
@@ -183,37 +183,39 @@
   },
   "active": "5d4144e365fbb5d7",
   "lastOpenFiles": [
+    "plans/PRD.md",
+    "plans/tabelas-auxiliares-bp.md",
+    "plans/README.md",
+    "workflow/plan-tracking/tabelas-auxiliares-bp.json",
+    "workflow/plan-tracking",
+    "plans/tabelas-auxiliares-bp.md.tmp.28028.1771373159238",
+    "plans/tabelas-auxiliares-bp.md.tmp.28028.1771372178290",
+    "workflow/archive/plans-2026-02-17T23-47-14-325Z/plan-tracking/dre-toggle-premises.json",
+    "workflow/archive/plans-2026-02-17T23-47-14-325Z/plan-tracking",
+    "workflow/archive/plans-2026-02-17T23-47-14-325Z/plans.json",
+    "workflow/archive/plans-2026-02-17T23-47-14-325Z",
+    "workflow/archive/dre-toggle-premises-2026-02-17T23-47-14-305Z/status.yaml",
+    "workflow/archive/dre-toggle-premises-2026-02-17T23-47-14-305Z",
+    "docs/project-overview.md",
     "plans/dre-toggle-premises.md",
-    "workflow/archive/plans-2026-02-17T03-05-19-771Z/plan-tracking/premissas-inline-dre.json",
-    "workflow/archive/plans-2026-02-17T03-05-19-771Z/plans.json",
-    "workflow/archive/plans-2026-02-17T03-05-19-771Z/plan-tracking",
-    "workflow/archive/plans-2026-02-17T03-05-19-771Z",
-    "workflow/archive/premissas-inline-dre-2026-02-17T03-05-19-731Z/status.yaml",
-    "workflow/archive/premissas-inline-dre-2026-02-17T03-05-19-731Z",
     "agents/architect-specialist.md",
     "docs/architecture.md",
     "docs/qa/custom-hooks.md",
     "Sem título.canvas",
-    "Sem título.base",
     "plans/premissas-inline-dre.md",
     "plans/fase-3.md",
-    "plans/premissas-inline-dre.md.tmp.33420.1771199208018",
-    "workflow/archive/plans-2026-02-15T23-44-08-591Z/plan-tracking/premissas-de-projecao.json",
-    "workflow/archive/plans-2026-02-15T23-44-08-591Z/plans.json",
     "plans/entrada-de-dados.md",
     "plans/fase-3-2-ajustes.md",
     "workflow/teste-end-to-end.md",
     "plans/premissas-de-projecao.md",
     "workflow/RELATORIO-FINAL-PHASE-4.md",
     "workflow/validacao-automatica.md",
-    "plans/PRD.md",
     "plans/card-valuations.md",
     "docs/qa/components-ui.md",
     "docs/data-flow.md",
     "skills/code-review/SKILL.md",
     "skills/bug-investigation/SKILL.md",
     "skills/api-design/SKILL.md",
-    "plans/README.md",
     "docs/development-workflow.md"
   ]
 }

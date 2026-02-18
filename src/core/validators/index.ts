@@ -11,7 +11,7 @@ export const DREBaseInputsSchema = z.object({
   despesasOperacionais: z
     .number()
     .nonnegative("Despesas operacionais devem ser não-negativas"),
-  irCSLL: z.number().nonnegative("IR/CSLL deve ser não-negativo"),
+  irCSLL: z.number(), // Pode ser negativo (crédito fiscal em empresas com prejuízo)
   dividendos: z.number().nonnegative("Dividendos devem ser não-negativos"),
 });
 
@@ -160,10 +160,18 @@ export const BalanceSheetProjectionInputsSchema = z.object({
     .number()
     .min(0)
     .max(360, "Prazo deve estar entre 0 e 360 dias"),
-  taxaNovosEmprestimosFinanciamentos: z
+  taxaNovosEmprestimosCP: z
     .number()
     .min(-100)
-    .max(100, "Taxa de novos empréstimos deve estar entre -100% e 100%"),
+    .max(100, "Taxa de novos empréstimos CP deve estar entre -100% e 100%"),
+  taxaNovosEmprestimosLP: z
+    .number()
+    .min(-100)
+    .max(100, "Taxa de novos empréstimos LP deve estar entre -100% e 100%"),
+  taxaJurosEmprestimo: z
+    .number()
+    .min(0)
+    .max(100, "Taxa de juros deve estar entre 0% e 100%"),
 });
 
 export type BalanceSheetProjectionInputsValidated = z.infer<
@@ -201,7 +209,7 @@ export const FullValuationInputSchema = z.object({
   taxaCrescimentoPerpetuo: z
     .number()
     .min(0)
-    .max(0.1, "Taxa de crescimento perpétuo deve estar entre 0 e 10%"),
+    .max(50, "Taxa de crescimento perpétuo deve estar entre 0 e 50%"),
   anosProjecao: z
     .number()
     .int()

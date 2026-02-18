@@ -1,14 +1,14 @@
 {
   "active": [
     {
-      "slug": "dre-toggle-premises",
-      "path": "plans/dre-toggle-premises.md",
-      "title": "Toggle de Visibilidade das Premissas de Projeção na DRE",
-      "summary": "Permitir ocultar/exibir premissas de projeção na tabela DRE individualmente (clicando na linha da conta) e globalmente (toggle button)",
-      "linkedAt": "2026-02-17T03:06:34.083Z",
+      "slug": "tabelas-auxiliares-bp",
+      "path": "plans/tabelas-auxiliares-bp.md",
+      "title": "Tabelas Auxiliares do Balanço Patrimonial",
+      "summary": "Criar tabelas auxiliares (Investimento, Capital de Giro, Empréstimos e Financiamentos) para ajuste de premissas de projeção do Balanço Patrimonial, com funcionalidades similares à DRETable, acessíveis via tabs na página do BP.",
+      "linkedAt": "2026-02-17T23:49:42.781Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "dre-toggle-premises"
+  "primary": "tabelas-auxiliares-bp"
 }

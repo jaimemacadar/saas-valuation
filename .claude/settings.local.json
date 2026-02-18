@@ -33,7 +33,10 @@
       "Bash(cmd //c \"dir .claude\\\\agents\\\\backend-specialist.md\")",
       "Bash(cd:*)",
       "Bash(npm run type-check:*)",
-      "mcp__ai-context__agent"
+      "mcp__ai-context__agent",
+      "Bash(npx jest:*)",
+      "Bash(git stash:*)",
+      "Bash(python3:*)"
     ]
   }
 }

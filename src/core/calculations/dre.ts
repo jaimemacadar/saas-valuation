@@ -162,16 +162,27 @@ export function calculateDREProjetado(
 }
 
 /**
+ * Dados do BP por ano para integração DRE↔BP
+ */
+export interface BPDataForDRE {
+  year: number;
+  despesasFinanceiras: number;
+  depreciacaoAnual: number;
+}
+
+/**
  * Calcula projeção completa de DRE (ano base + anos projetados)
- * NOTA: Versão simplificada sem BP - D&A e Desp. Fin. = 0
  *
  * @param dreBase - Dados de entrada do ano base
  * @param premissasProjecao - Array de premissas por ano (1, 2, 3...)
+ * @param bpData - Opcional: dados do BP por ano (despesasFinanceiras, depreciacaoAnual)
+ *                 Quando fornecido, integra corretamente DRE↔BP eliminando os 0 hardcoded
  * @returns Array com DRE do ano base + DREs projetados
  */
 export function calculateAllDRE(
   dreBase: DREBaseInputs,
   premissasProjecao: DREProjectionInputs[],
+  bpData?: BPDataForDRE[],
 ): CalculationResult<DRECalculated[]> {
   try {
     // Validar entradas
@@ -182,7 +193,7 @@ export function calculateAllDRE(
       };
     }
 
-    // Calcular ano base (year 0)
+    // Calcular ano base (year 0) — D&A e despesas financeiras do ano base vêm do input direto
     const resultadoBase = calculateDREBase(dreBase, 0, 0);
     if (!resultadoBase.success || !resultadoBase.data) {
       return {
@@ -197,9 +208,17 @@ export function calculateAllDRE(
     for (const premissas of premissasProjecao) {
       const dreAnterior = dreProjetado[dreProjetado.length - 1];
 
-      // NOTA: Versão simplificada - D&A e Desp. Fin. serão calculados
-      // quando integrado com BP (Phase 1, Task #3)
-      const resultado = calculateDREProjetado(dreAnterior, premissas, 0, 0);
+      // Buscar D&A e despesas financeiras do BP para este ano (se disponível)
+      const bpAno = bpData?.find((b) => b.year === premissas.year);
+      const depreciacaoAmortizacao = bpAno?.depreciacaoAnual ?? 0;
+      const despesasFinanceiras = bpAno?.despesasFinanceiras ?? 0;
+
+      const resultado = calculateDREProjetado(
+        dreAnterior,
+        premissas,
+        depreciacaoAmortizacao,
+        despesasFinanceiras,
+      );
 
       if (!resultado.success || !resultado.data) {
         return {

@@ -32,6 +32,14 @@ interface PremiseInputProps {
   onNavigateNext?: () => void;
   onNavigatePrevious?: () => void;
   onNavigateDown?: () => void;
+  /** Valor mínimo aceito (padrão: 0) */
+  min?: number;
+  /** Valor máximo aceito (padrão: 100) */
+  max?: number;
+  /** Unidade exibida após o input (padrão: "%") */
+  unit?: string;
+  /** Casas decimais exibidas (padrão: 2) */
+  decimals?: number;
 }
 
 /**
@@ -55,6 +63,10 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
     onNavigateNext,
     onNavigatePrevious,
     onNavigateDown,
+    min = 0,
+    max = 100,
+    unit = '%',
+    decimals = 2,
   },
   ref
 ) {
@@ -66,16 +78,16 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
   // Expõe o input element via ref
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement, []);
 
-  const formatted = value != null ? value.toFixed(2) : '0.00';
+  const formatted = value != null ? value.toFixed(decimals) : (0).toFixed(decimals);
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(',', '.');
     const numValue = parseFloat(raw);
     if (!isNaN(numValue)) {
-      const clamped = Math.max(0, Math.min(100, numValue));
+      const clamped = Math.max(min, Math.min(max, numValue));
       onChange(clamped);
       // Atualiza o valor exibido no input após blur
-      e.target.value = clamped.toFixed(2);
+      e.target.value = clamped.toFixed(decimals);
     } else {
       // Valor inválido: restaura o valor original
       e.target.value = formatted;
@@ -114,8 +126,8 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
     const end = parseFloat(endValue.replace(',', '.'));
 
     if (!isNaN(start) && !isNaN(end) && onApplyTrend) {
-      const clampedStart = Math.max(0, Math.min(100, start));
-      const clampedEnd = Math.max(0, Math.min(100, end));
+      const clampedStart = Math.max(min, Math.min(max, start));
+      const clampedEnd = Math.max(min, Math.min(max, end));
       onApplyTrend(clampedStart, clampedEnd);
       setIsPopoverOpen(false);
       setStartValue('');
@@ -145,9 +157,9 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
           'transition-colors',
           className
         )}
-        aria-label="Taxa percentual"
+        aria-label={`Valor em ${unit}`}
       />
-      <span className="text-xs text-muted-foreground">%</span>
+      <span className="text-xs text-muted-foreground">{unit}</span>
 
       {showCopyRight && onCopyRight && (
         <TooltipProvider>

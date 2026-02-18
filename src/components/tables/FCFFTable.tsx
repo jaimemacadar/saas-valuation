@@ -195,7 +195,7 @@ export function FCFFTable({ data }: FCFFTableProps) {
                     key={header.id}
                     className={cn(
                       header.id === 'label' && 'w-[220px] min-w-[200px]',
-                      header.id !== 'label' && 'w-[100px] min-w-[100px] text-right',
+                      header.id !== 'label' && 'w-[110px] min-w-[100px] text-right',
                       'font-semibold'
                     )}
                   >

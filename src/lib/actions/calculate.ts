@@ -157,31 +157,55 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       }
     }
 
-    // Calcular projeções
-    console.log('[recalculateModel] Calculando DRE com', dreProjection.length, 'anos de projeção');
-    const dreResult = calculateAllDRE(dreBase, dreProjection);
-    console.log('[recalculateModel] Resultado DRE:', {
+    // ============================================================
+    // Fluxo iterativo DRE → BP → DRE (integração sem circularidade)
+    // Pass 1: DRE parcial (despesasFinanceiras = 0) → receita e EBIT corretos
+    // Pass 2: BP com DRE parcial → empréstimos e depreciacaoAnual corretos
+    // Pass 3: DRE final com D&A e despesasFinanceiras do BP → lucroLiquido correto
+    // Pass 4: BP final com DRE correto → lucrosAcumulados corretos
+    // ============================================================
+    console.log('[recalculateModel] Calculando DRE (pass 1) com', dreProjection.length, 'anos');
+    const drePass1 = calculateAllDRE(dreBase, dreProjection);
+    if (!drePass1.success || !drePass1.data) {
+      console.error('[recalculateModel] Erro ao calcular DRE pass 1:', drePass1.errors);
+      return { error: "Erro ao calcular DRE projetado" };
+    }
+
+    const bpPass1 = calculateAllBalanceSheet(balanceSheetBase, drePass1.data, balanceSheetProjection);
+    if (!bpPass1.success || !bpPass1.data) {
+      return { error: "Erro ao calcular Balanço Patrimonial projetado" };
+    }
+
+    // Extrair D&A e despesasFinanceiras do BP para cada ano projetado
+    const bpDataForDRE = bpPass1.data
+      .filter((bp) => bp.year > 0)
+      .map((bp) => ({
+        year: bp.year,
+        despesasFinanceiras: bp.despesasFinanceiras,
+        depreciacaoAnual: bp.depreciacaoAnual,
+      }));
+
+    // DRE final com dados reais do BP
+    const dreResult = calculateAllDRE(dreBase, dreProjection, bpDataForDRE);
+    console.log('[recalculateModel] Resultado DRE (final):', {
       success: dreResult.success,
       dataLength: dreResult.data?.length,
       errors: dreResult.errors,
     });
 
     if (!dreResult.success || !dreResult.data) {
-      console.error('[recalculateModel] Erro ao calcular DRE:', dreResult.errors);
-      return {
-        error: "Erro ao calcular DRE projetado",
-      };
+      console.error('[recalculateModel] Erro ao calcular DRE final:', dreResult.errors);
+      return { error: "Erro ao calcular DRE projetado" };
     }
 
+    // BP final com DRE corrigido (lucrosAcumulados corretos)
     const balanceSheetResult = calculateAllBalanceSheet(
       balanceSheetBase,
       dreResult.data,
       balanceSheetProjection
     );
     if (!balanceSheetResult.success || !balanceSheetResult.data) {
-      return {
-        error: "Erro ao calcular Balanço Patrimonial projetado",
-      };
+      return { error: "Erro ao calcular Balanço Patrimonial projetado" };
     }
 
     const fcffResult = calculateAllFCFF(dreResult.data, balanceSheetResult.data);

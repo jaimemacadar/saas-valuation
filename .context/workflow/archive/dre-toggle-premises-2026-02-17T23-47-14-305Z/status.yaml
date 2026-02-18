@@ -1,0 +1,43 @@
+project:
+  name: "dre-toggle-premises"
+  scale: SMALL
+  started: "2026-02-17T03:05:19.787Z"
+  current_phase: V
+
+phases:
+  P:
+    status: filled
+    started_at: "2026-02-17T03:05:19.787Z"
+    completed_at: "2026-02-17T03:06:37.587Z"
+  R:
+    status: skipped
+    reason: "Not required for scale SMALL"
+  E:
+    status: filled
+    started_at: "2026-02-17T03:06:37.588Z"
+    completed_at: "2026-02-17T03:12:21.811Z"
+  V:
+    status: completed
+    started_at: "2026-02-17T03:12:21.814Z"
+    completed_at: "2026-02-17T23:29:09.858Z"
+    outputs:
+      - path: "src/components/tables/DRETable.tsx"
+        status: filled
+      - path: ".context/plans/dre-toggle-premises.md"
+        status: filled
+  C:
+    status: skipped
+    reason: "Not required for scale SMALL"
+
+execution:
+  history:
+    - timestamp: "2026-02-17T23:29:09.858Z"
+      phase: V
+      action: completed
+  last_activity: "2026-02-17T23:29:09.858Z"
+  resume_context: "Fase V (Validação) concluída"
+
+approval:
+  plan_created: true
+  plan_approved: false
+

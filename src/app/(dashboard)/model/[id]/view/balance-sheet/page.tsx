@@ -1,10 +1,12 @@
-import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getModelById } from '@/lib/actions/models';
 import { PageHeader } from '@/components/page-header';
-import { Skeleton } from '@/components/ui/skeleton';
 import { BalanceSheetTable } from '@/components/tables/BalanceSheetTable';
-import { BalanceSheetCalculated } from '@/core/types';
+import { InvestmentTable } from '@/components/tables/InvestmentTable';
+import { WorkingCapitalTable } from '@/components/tables/WorkingCapitalTable';
+import { LoansTable } from '@/components/tables/LoansTable';
+import { BalanceSheetCalculated, BalanceSheetProjectionInputs } from '@/core/types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default async function BalanceSheetPage({
   params,
@@ -18,11 +20,13 @@ export default async function BalanceSheetPage({
     notFound();
   }
 
-  // Parse model_data para extrair Balanço calculado
   const modelData = result.data.model_data as {
     balanceSheet?: BalanceSheetCalculated[];
+    balanceSheetProjection?: BalanceSheetProjectionInputs[];
   };
+
   const balanceSheetData = modelData?.balanceSheet || [];
+  const balanceSheetProjection = modelData?.balanceSheetProjection || [];
 
   return (
     <>
@@ -38,22 +42,48 @@ export default async function BalanceSheetPage({
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Balanço Patrimonial</h1>
           <p className="text-muted-foreground">
-            Visualize o Balanço Patrimonial projetado com ativos, passivos e patrimônio líquido.
+            Visualize o Balanço Patrimonial projetado e edite as premissas de Investimento,
+            Capital de Giro e Empréstimos.
           </p>
         </div>
-        <Suspense fallback={<BalanceSheetSkeleton />}>
-          <BalanceSheetTable data={balanceSheetData} />
-        </Suspense>
+
+        <Tabs defaultValue="balance-sheet" className="w-full">
+          <TabsList>
+            <TabsTrigger value="balance-sheet">Balanço Patrimonial</TabsTrigger>
+            <TabsTrigger value="investment">Investimento</TabsTrigger>
+            <TabsTrigger value="working-capital">Capital de Giro</TabsTrigger>
+            <TabsTrigger value="loans">Empréstimos</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="balance-sheet" className="space-y-4">
+            <BalanceSheetTable data={balanceSheetData} />
+          </TabsContent>
+
+          <TabsContent value="investment" className="space-y-4">
+            <InvestmentTable
+              data={balanceSheetData}
+              projectionInputs={balanceSheetProjection}
+              modelId={id}
+            />
+          </TabsContent>
+
+          <TabsContent value="working-capital" className="space-y-4">
+            <WorkingCapitalTable
+              data={balanceSheetData}
+              projectionInputs={balanceSheetProjection}
+              modelId={id}
+            />
+          </TabsContent>
+
+          <TabsContent value="loans" className="space-y-4">
+            <LoansTable
+              data={balanceSheetData}
+              projectionInputs={balanceSheetProjection}
+              modelId={id}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </>
-  );
-}
-
-function BalanceSheetSkeleton() {
-  return (
-    <div className="space-y-3">
-      <Skeleton className="h-12 w-full" />
-      <Skeleton className="h-96 w-full" />
-    </div>
   );
 }

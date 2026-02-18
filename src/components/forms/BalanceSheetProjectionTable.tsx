@@ -64,7 +64,9 @@ export function BalanceSheetProjectionTable({
       prazoFornecedores: lastYear?.prazoFornecedores || 22,
       prazoImpostosAPagar: lastYear?.prazoImpostosAPagar || 7,
       prazoObrigacoesSociais: lastYear?.prazoObrigacoesSociais || 11,
-      taxaNovosEmprestimosFinanciamentos: lastYear?.taxaNovosEmprestimosFinanciamentos || 5,
+      taxaNovosEmprestimosCP: lastYear?.taxaNovosEmprestimosCP || 5,
+      taxaNovosEmprestimosLP: lastYear?.taxaNovosEmprestimosLP || 5,
+      taxaJurosEmprestimo: lastYear?.taxaJurosEmprestimo || 12,
     };
 
     onChange([...data, newYear]);
@@ -115,16 +117,44 @@ export function BalanceSheetProjectionTable({
         ),
       },
       {
-        accessorKey: "taxaNovosEmprestimosFinanciamentos",
-        header: () => <div className="text-center">Taxa Novos<br/>Empréstimos (%)</div>,
+        accessorKey: "taxaNovosEmprestimosCP",
+        header: () => <div className="text-center">Novos Emp. CP<br/>(%)</div>,
         cell: ({ row, getValue }) => (
           <Input
             type="number"
             step="0.01"
             value={getValue() as number}
-            onChange={(e) => handleCellChange(row.index, "taxaNovosEmprestimosFinanciamentos", e.target.value)}
+            onChange={(e) => handleCellChange(row.index, "taxaNovosEmprestimosCP", e.target.value)}
             className="text-center h-8"
             placeholder="5.0"
+          />
+        ),
+      },
+      {
+        accessorKey: "taxaNovosEmprestimosLP",
+        header: () => <div className="text-center">Novos Emp. LP<br/>(%)</div>,
+        cell: ({ row, getValue }) => (
+          <Input
+            type="number"
+            step="0.01"
+            value={getValue() as number}
+            onChange={(e) => handleCellChange(row.index, "taxaNovosEmprestimosLP", e.target.value)}
+            className="text-center h-8"
+            placeholder="5.0"
+          />
+        ),
+      },
+      {
+        accessorKey: "taxaJurosEmprestimo",
+        header: () => <div className="text-center">Taxa Juros<br/>(% a.a.)</div>,
+        cell: ({ row, getValue }) => (
+          <Input
+            type="number"
+            step="0.01"
+            value={getValue() as number}
+            onChange={(e) => handleCellChange(row.index, "taxaJurosEmprestimo", e.target.value)}
+            className="text-center h-8"
+            placeholder="12.0"
           />
         ),
       },
@@ -373,7 +403,8 @@ export function BalanceSheetProjectionTable({
             <ul className="list-disc list-inside space-y-1 text-xs">
               <li><strong>Taxa Depreciação:</strong> % anual sobre Ativo Imobilizado Bruto</li>
               <li><strong>Índice Imob./Vendas:</strong> CAPEX como % da Receita Bruta (ex: 0.05 = 5%)</li>
-              <li><strong>Taxa Novos Empréstimos:</strong> % de crescimento da dívida</li>
+              <li><strong>Novos Emp. CP/LP:</strong> % de crescimento da dívida de curto e longo prazo</li>
+              <li><strong>Taxa Juros:</strong> % a.a. sobre dívida total → base para despesas financeiras e Kd no WACC</li>
             </ul>
           </div>
         </TabsContent>

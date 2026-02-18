@@ -136,6 +136,7 @@ export function calculateBPBase(
         capex: 0,
         novosEmprestimosFinanciamentosCP: 0,
         novosEmprestimosFinanciamentosLP: 0,
+        despesasFinanceiras: 0,
         capitalGiro: capitalGiro.toNumber(),
         ncg: 0,
         ativoTotal: ativoTotal.toNumber(),
@@ -246,13 +247,16 @@ export function calculateBPProjetado(
       .times(premissas.prazoObrigacoesSociais)
       .div(360);
 
-    // Empréstimos CP: aplicar taxa de novos empréstimos
-    const taxaNovosEmp = new Decimal(
-      premissas.taxaNovosEmprestimosFinanciamentos,
+    // Empréstimos CP: aplicar taxa de novos empréstimos CP
+    // Suporte a legado: fallback para taxaNovosEmprestimosFinanciamentos se CP/LP não existirem
+    const taxaCP = new Decimal(
+      premissas.taxaNovosEmprestimosCP ??
+      (premissas as any).taxaNovosEmprestimosFinanciamentos ??
+      0
     ).div(100);
     const novosEmprestimosCP = new Decimal(
       bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
-    ).times(taxaNovosEmp);
+    ).times(taxaCP);
     const pcEmprestimosCP = new Decimal(
       bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
     ).plus(novosEmprestimosCP);
@@ -269,13 +273,24 @@ export function calculateBPProjetado(
       .plus(pcOutras);
 
     // ========== PASSIVO REALIZÁVEL LP ==========
+    const taxaLP = new Decimal(
+      premissas.taxaNovosEmprestimosLP ??
+      (premissas as any).taxaNovosEmprestimosFinanciamentos ??
+      0
+    ).div(100);
     const novosEmprestimosLP = new Decimal(
       bpAnterior.passivoRealizavelLP.emprestimosFinanciamentosLP,
-    ).times(taxaNovosEmp);
+    ).times(taxaLP);
     const prlpEmprestimosLP = new Decimal(
       bpAnterior.passivoRealizavelLP.emprestimosFinanciamentosLP,
     ).plus(novosEmprestimosLP);
     const totalPRLP = prlpEmprestimosLP;
+
+    // ========== DESPESAS FINANCEIRAS ==========
+    // despesasFinanceiras = dívida total × taxaJurosEmprestimo
+    const taxaJuros = new Decimal(premissas.taxaJurosEmprestimo ?? 0).div(100);
+    const dividaTotal = pcEmprestimosCP.plus(prlpEmprestimosLP);
+    const despesasFinanceiras = dividaTotal.times(taxaJuros);
 
     // ========== PATRIMÔNIO LÍQUIDO ==========
     // Capital Social: manter
@@ -340,6 +355,7 @@ export function calculateBPProjetado(
         capex: capex.toNumber(),
         novosEmprestimosFinanciamentosCP: novosEmprestimosCP.toNumber(),
         novosEmprestimosFinanciamentosLP: novosEmprestimosLP.toNumber(),
+        despesasFinanceiras: despesasFinanceiras.toNumber(),
         capitalGiro: capitalGiro.toNumber(),
         ncg: ncg.toNumber(),
         ativoTotal: ativoTotal.toNumber(),

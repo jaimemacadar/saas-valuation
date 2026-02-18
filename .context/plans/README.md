@@ -13,6 +13,7 @@ This directory contains plans for coordinating work across documentation and pla
 8. [PRD](./PRD.md)
 9. [Premissas De Projecao](./premissas-de-projecao.md)
 10. [Premissas Inline Dre](./premissas-inline-dre.md)
+11. [Tabelas Auxiliares Bp](./tabelas-auxiliares-bp.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

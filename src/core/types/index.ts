@@ -215,7 +215,9 @@ export interface BalanceSheetProjectionInputs {
   prazoObrigacoesSociais: number;
 
   // Empréstimos
-  taxaNovosEmprestimosFinanciamentos: number; // % sobre saldo anterior
+  taxaNovosEmprestimosCP: number;  // % de crescimento da dívida de Curto Prazo
+  taxaNovosEmprestimosLP: number;  // % de crescimento da dívida de Longo Prazo
+  taxaJurosEmprestimo: number;     // % a.a. sobre dívida total → base para Kd no WACC
 }
 
 /**
@@ -269,6 +271,7 @@ export interface BalanceSheetCalculated {
   capex: number;
   novosEmprestimosFinanciamentosCP: number;
   novosEmprestimosFinanciamentosLP: number;
+  despesasFinanceiras: number; // dívida total × taxaJurosEmprestimo
   capitalGiro: number;
   ncg: number; // Necessidade de Capital de Giro (variação)
 

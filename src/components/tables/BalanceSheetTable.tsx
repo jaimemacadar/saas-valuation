@@ -283,7 +283,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                     className={cn(
                       header.id === "label" && "w-[250px] min-w-[200px]",
                       header.id !== "label" &&
-                        "w-[100px] min-w-[100px] text-right",
+                        "w-[110px] min-w-[100px] text-right",
                       "font-semibold",
                     )}
                   >

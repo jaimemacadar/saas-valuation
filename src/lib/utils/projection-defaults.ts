@@ -108,7 +108,9 @@ export function generateBalanceSheetProjectionDefaults(
       prazoFornecedores,
       prazoImpostosAPagar,
       prazoObrigacoesSociais,
-      taxaNovosEmprestimosFinanciamentos: 5, // 5% de crescimento da dívida
+      taxaNovosEmprestimosCP: 5,  // 5% de crescimento da dívida CP
+      taxaNovosEmprestimosLP: 5,  // 5% de crescimento da dívida LP
+      taxaJurosEmprestimo: 12,    // 12% a.a. sobre dívida total (CDI + spread típico)
     });
   }
 

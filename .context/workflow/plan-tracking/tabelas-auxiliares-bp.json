@@ -1,0 +1,79 @@
+{
+  "decisions": [
+    {
+      "title": "Layout da Tabela Investimento: Alternativa B (Waterfall)",
+      "description": "Adotado o layout Waterfall (conciliação de saldos) para a tabela Investimento: Saldo Inicial → Movimentações do Período → Saldo Final. Premissas inline no bloco de movimentações. Padrão clássico de conciliação contábil, prioriza clareza e auditoria visual.",
+      "phase": "P",
+      "alternatives": [
+        "Alternativa A — Fluxo Linear Top-Down (estilo DRE): mais compacto e consistente com DRETable, mas fluxo cíclico pode confundir",
+        "Alternativa C — Premissas no Topo (estilo Excel): separação inputs/outputs clara, mas premissas distantes das contas e diverge do padrão DRETable"
+      ],
+      "status": "accepted",
+      "id": "dec-1771373168430",
+      "decidedAt": "2026-02-18T00:06:08.430Z"
+    },
+    {
+      "title": "Layout da Tabela Empréstimos: Alternativa B (Blocos Paralelos)",
+      "description": "Adotado o layout de Blocos Paralelos para a tabela Empréstimos e Financiamentos: premissa compartilhada no topo, seguida de mini-waterfalls independentes para CP e LP, com Dívida Total e Despesas Financeiras no final. Respeita separação lógica CP/LP e escala para taxas diferenciadas no futuro.",
+      "phase": "P",
+      "alternatives": [
+        "Alternativa A — Waterfall Unificado: CP e LP intercalados nas mesmas seções, máxima consistência com tab Investimento mas CP/LP misturados",
+        "Alternativa C — Plana Compacta (estilo DRE): mais compacta (8 linhas) mas saldo inicial implícito e premissa só visível sob CP"
+      ],
+      "status": "accepted",
+      "id": "dec-1771373607253",
+      "decidedAt": "2026-02-18T00:13:27.253Z"
+    },
+    {
+      "title": "Layout da Tabela Capital de Giro: Alternativa 3 (Toggle por Bloco)",
+      "description": "Adotado o layout com premissas inline controladas por toggle no header do bloco (AC e PC). 3 níveis de controle: global, por bloco (1 clique = todas as premissas do grupo), individual. Base de cálculo indicada no label de cada premissa. 17 linhas colapsado, 25 expandido.",
+      "phase": "P",
+      "alternatives": [
+        "Alternativa 1 — Premissa Inline (Padrão DRE): consistência total com DRETable mas 8 toggles individuais = fluxo disperso",
+        "Alternativa 2 — Premissas Agrupadas no Topo: edição concentrada mas 28 linhas fixas e premissa distante do valor que afeta"
+      ],
+      "status": "accepted",
+      "id": "dec-1771374071759",
+      "decidedAt": "2026-02-18T00:21:11.760Z"
+    },
+    {
+      "title": "Separar taxaNovosEmprestimos em CP e LP + criar taxaJurosEmprestimo",
+      "description": "Investigação confirmou que `taxaNovosEmprestimosFinanciamentos` é compartilhada CP/LP. Será substituída por `taxaNovosEmprestimosCP` e `taxaNovosEmprestimosLP`. Adicionalmente, criada `taxaJurosEmprestimo` (% a.a.) para calcular despesas financeiras = dívidaTotal × taxa, servindo também como proxy para Kd no WACC.",
+      "phase": "P",
+      "alternatives": [
+        "Manter taxa única compartilhada: mais simples mas não permite diferenciação CP/LP",
+        "Usar spreadDivida do PRD original como Kd: mais fiel ao PRD mas desconectado do custo real dos empréstimos no BP"
+      ],
+      "status": "accepted",
+      "id": "dec-1771375239471",
+      "decidedAt": "2026-02-18T00:40:39.472Z"
+    },
+    {
+      "title": "Implementar integração DRE↔BP para despesas financeiras",
+      "description": "Despesas financeiras na DRE são sempre 0 (hardcoded). Nova Phase 2 adicionada ao plano para: (1) calcular despesasFinanceiras = dívidaTotal × taxaJurosEmprestimo, (2) integrar DRE↔BP no fluxo iterativo, (3) atualizar recalculateModel e fullValuation. Sem circularidade porque FCFF usa EBIT (antes de desp. financeiras).",
+      "phase": "P",
+      "alternatives": [
+        "Manter despesas financeiras como input manual do usuário: mais simples mas inconsistente com empréstimos projetados",
+        "Calcular WACC por ano com E e D variáveis: correto pelo PRD mas escopo maior, pode ser fase futura"
+      ],
+      "status": "accepted",
+      "id": "dec-1771375245424",
+      "decidedAt": "2026-02-18T00:40:45.426Z"
+    }
+  ],
+  "phases": {
+    "phase-1": {
+      "status": "completed",
+      "updatedAt": "2026-02-18T12:51:58.654Z"
+    },
+    "phase-2": {
+      "status": "completed",
+      "updatedAt": "2026-02-18T15:05:09.411Z"
+    },
+    "phase-3": {
+      "status": "completed",
+      "updatedAt": "2026-02-18T16:24:09.461Z"
+    }
+  },
+  "progress": 75
+}
