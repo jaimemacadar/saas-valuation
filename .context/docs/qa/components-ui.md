@@ -2,7 +2,7 @@
 slug: components-ui
 category: architecture
 generatedAt: 2026-02-14
-updatedAt: 2026-02-15
+updatedAt: 2026-02-18
 relevantFiles:
   - ../../../src/components/app-sidebar.tsx
   - ../../../src/components/nav-main.tsx
@@ -12,6 +12,9 @@ relevantFiles:
   - ../../../src/components/ui/financial-input.tsx
   - ../../../src/components/charts/DREChartsSection.tsx
   - ../../../src/components/charts/FCFFChartsSection.tsx
+  - ../../../src/components/tables/WorkingCapitalTable.tsx
+  - ../../../src/components/tables/LoansTable.tsx
+  - ../../../src/components/tables/DRETable.tsx
 ---
 
 # Componentes de Interface do Usuário
@@ -1219,6 +1222,8 @@ Tabela completa de DRE (Demonstração de Resultado do Exercício) com suporte a
 ### Características
 
 - ✅ **Premissas inline editáveis** - Inputs embutidos entre linhas calculadas
+- ✅ **Toggle global de premissas** - Botão "Exibir/Ocultar premissas" no topo da tabela
+- ✅ **Toggle individual por conta** - Chevron em cada linha `value` para abrir só sua premissa
 - ✅ **Auto-save com debounce** - Persistência automática após 800ms de inatividade
 - ✅ **Navegação por teclado** - Sistema bidimensional com Tab/Enter
 - ✅ **Indicador visual de saving** - Ícone de loading durante persistência
@@ -1226,6 +1231,7 @@ Tabela completa de DRE (Demonstração de Resultado do Exercício) com suporte a
 - ✅ **Cálculos em tempo real** - Recalcula DRE ao editar premissas
 - ✅ **Copiar e Tendência** - Funcionalidades de UX no primeiro ano
 - ✅ **Tooltips explicativos** - Ícone Info com base de cálculo de cada premissa
+- ✅ **Linhas annotation** - Fórmulas e notas complementares com fundo diferenciado
 - ✅ **Responsive rendering** - Usa react-table para performance
 
 ### Props
@@ -1297,7 +1303,7 @@ Legenda:
 ```typescript
 type DRERowData = {
   label: string;                         // Nome da linha
-  type: 'header' | 'value' | 'subtotal' | 'total' | 'premise';
+  type: 'header' | 'value' | 'subtotal' | 'total' | 'premise' | 'annotation';
   field: string;                         // Campo chave
   values: Record<string, number | null>; // Valores por ano
   isMargin?: boolean;                    // É uma margem (%)
@@ -1312,6 +1318,7 @@ type DRERowData = {
 - `subtotal` - Subtotal (ex: "Lucro Bruto")
 - `total` - Total (ex: "EBITDA")
 - `premise` - **Linha de premissa editável** (ex: "Crescimento (%)")
+- `annotation` - **Linha informativa** com fórmula ou nota complementar (sem inputs, fundo âmbar)
 
 ### Sistema de Auto-Save
 
@@ -1971,6 +1978,137 @@ src/components/charts/
   ├── CostCompositionChart.tsx   // Gráfico individual
   ├── EBITDAChart.tsx            // Gráfico individual
   └── FCFFChart.tsx              // Gráfico individual
+```
+
+---
+
+## 🏦 WorkingCapitalTable
+
+**Arquivo:** `src/components/tables/WorkingCapitalTable.tsx`
+
+### Descrição
+
+Tabela de **Capital de Giro** (Working Capital) com premissas de prazo médio inline editáveis. Exibe Ativo Circulante e Passivo Circulante (excl. empréstimos) com os cálculos derivados de Capital de Giro e NCG (Necessidade de Capital de Giro).
+
+### Características
+
+- ✅ **Toggle global** - Botão "Exibir/Ocultar premissas" para mostrar/esconder todos os inputs
+- ✅ **Toggle por grupo** - Chevron no header de "ATIVO CIRCULANTE" / "PASSIVO CIRCULANTE" para expandir o grupo
+- ✅ **Toggle individual** - Chevron em cada linha `value` para expandir apenas sua premissa
+- ✅ **Premissas de prazo médio** - Inputs em dias (não %) para cada conta
+- ✅ **Auto-save com debounce** - Persistência via `useBPProjectionPersist`
+- ✅ **Linha annotation** - Fórmula do Capital de Giro (AC − PC + Emp. CP) como nota
+- ✅ **Valores negativos em vermelho** - Destaque visual para NCG negativa
+- ✅ **Copiar para direita e tendência** - Disponíveis no Ano 1 de cada premissa
+
+### Props
+
+```typescript
+interface WorkingCapitalTableProps {
+  data: BalanceSheetCalculated[];                          // Dados calculados por ano
+  projectionInputs?: BalanceSheetProjectionInputs[];       // Premissas editáveis (opcional)
+  modelId?: string;                                        // ID para auto-save
+  onProjectionChange?: (data: BalanceSheetProjectionInputs[]) => void;
+}
+```
+
+### Premissas Disponíveis
+
+| Campo | Descrição | Base de Cálculo |
+|-------|-----------|-----------------|
+| `prazoCaixaEquivalentes` | Prazo Médio Caixa | Receita Líquida |
+| `prazoAplicacoesFinanceiras` | Prazo Médio Aplic. Financeiras | Receita Líquida |
+| `prazoContasReceber` | Prazo Médio Contas a Receber | Receita Bruta |
+| `prazoEstoques` | Prazo Médio Estoques | CMV |
+| `prazoAtivosBiologicos` | Prazo Médio Ativos Biológicos | Receita Líquida |
+| `prazoFornecedores` | Prazo Médio Fornecedores | CMV |
+| `prazoImpostosAPagar` | Prazo Médio Impostos a Pagar | Imp. Devoluções |
+| `prazoObrigacoesSociais` | Prazo Médio Obrig. Sociais | Desp. Operacionais |
+
+### Sistema de Toggle de Premissas
+
+A visibilidade das linhas de premissa é controlada por três níveis:
+
+```typescript
+const [showAllPremises, setShowAllPremises] = useState(false);        // 1. Toggle global
+const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set()); // 2. Toggle por grupo
+const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set()); // 3. Toggle individual
+
+const isPremiseVisible = (row: AuxRow): boolean => {
+  if (showAllPremises) return true;                              // Global sobrepõe tudo
+  if (row.premiseGroup && expandedGroups.has(row.premiseGroup)) return true; // Grupo expandido
+  if (row.parentKey && expandedAccounts.has(row.parentKey)) return true;     // Conta expandida
+  return false;
+};
+```
+
+### Exemplo de Uso
+
+```tsx
+import { WorkingCapitalTable } from '@/components/tables/WorkingCapitalTable';
+
+function BalanceSheetPage({ modelId }: { modelId: string }) {
+  const [bsData, setBsData] = useState<BalanceSheetCalculated[]>([...]);
+  const [projections, setProjections] = useState<BalanceSheetProjectionInputs[]>([...]);
+
+  return (
+    <WorkingCapitalTable
+      data={bsData}
+      projectionInputs={projections}
+      modelId={modelId}
+      onProjectionChange={(updated) => {
+        setProjections(updated);
+        // Recalcular BS com novas premissas
+      }}
+    />
+  );
+}
+```
+
+---
+
+## 💳 LoansTable
+
+**Arquivo:** `src/components/tables/LoansTable.tsx`
+
+### Descrição
+
+Tabela de **Empréstimos e Dívida** (Loans) do Balanço Patrimonial com premissas de taxa de juros e amortização inline editáveis. Similar à `WorkingCapitalTable`, exibe dívida de curto e longo prazo com toggle de premissas por grupo/seção.
+
+### Características
+
+- ✅ **Toggle global** - Botão "Exibir/Ocultar premissas"
+- ✅ **Toggle por grupo/seção** - Chevron no header de cada grupo de dívida
+- ✅ **Auto-save com debounce** - Persistência via `useBPProjectionPersist`
+- ✅ **Premissas de juros e amortização** - Inputs percentuais para dívida
+- ✅ **Copiar para direita e tendência** - Disponíveis no Ano 1 de cada premissa
+
+### Props
+
+```typescript
+interface LoansTableProps {
+  data: BalanceSheetCalculated[];
+  projectionInputs?: BalanceSheetProjectionInputs[];
+  modelId?: string;
+  onProjectionChange?: (data: BalanceSheetProjectionInputs[]) => void;
+}
+```
+
+### Sistema de Toggle
+
+Usa `expandedGroups` (Set de strings) controlado por `groupKey` no header de cada seção de empréstimo, sem toggle individual por conta (diferente de `WorkingCapitalTable` que também tem `expandedAccounts`).
+
+### Exemplo de Uso
+
+```tsx
+import { LoansTable } from '@/components/tables/LoansTable';
+
+<LoansTable
+  data={bsData}
+  projectionInputs={projections}
+  modelId={modelId}
+  onProjectionChange={handleProjectionChange}
+/>
 ```
 
 ---

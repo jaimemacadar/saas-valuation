@@ -2,9 +2,13 @@
 slug: custom-hooks
 category: development
 generatedAt: 2026-02-16
+updatedAt: 2026-02-18
 relevantFiles:
   - ../../../src/hooks/useDREProjectionPersist.ts
+  - ../../../src/hooks/useBPProjectionPersist.ts
   - ../../../src/components/tables/DRETable.tsx
+  - ../../../src/components/tables/WorkingCapitalTable.tsx
+  - ../../../src/components/tables/LoansTable.tsx
 ---
 
 # Custom Hooks
@@ -503,9 +507,159 @@ export async function updateDREProjections(
 
 ---
 
+## 📦 useBPProjectionPersist
+
+**Arquivo:** `src/hooks/useBPProjectionPersist.ts`
+
+### Descrição
+
+Hook customizado para persistência automática de premissas de projeção do **Balanço Patrimonial** (Balance Sheet) com **debounce**. Análogo ao `useDREProjectionPersist`, porém voltado ao BP e com suporte a toast de erro.
+
+### Diferenças em Relação ao `useDREProjectionPersist`
+
+| Aspecto | `useDREProjectionPersist` | `useBPProjectionPersist` |
+|---------|--------------------------|--------------------------|
+| Tipo de dado | `DREProjectionInputs[]` | `BalanceSheetProjectionInputs[]` |
+| Server action | `updateDREProjections` | `saveBalanceSheetProjection` |
+| Retorno extra | — | `error: string \| null` |
+| Feedback de erro | `console.error` | `toast.error()` (Sonner) |
+| Padrão de debounce | Timeout + dados inline | Timeout + `latestDataRef` |
+
+### Assinatura
+
+```typescript
+function useBPProjectionPersist(options: {
+  modelId: string;       // ID do modelo a ser atualizado
+  debounceMs?: number;   // Delay em ms antes de salvar (padrão: 800)
+}): {
+  isSaving: boolean;                                   // True durante persistência
+  lastSavedAt: Date | null;                            // Timestamp do último save
+  error: string | null;                                // Mensagem de erro (se houver)
+  save: (data: BalanceSheetProjectionInputs[]) => void; // Método imperativo de save
+}
+```
+
+### Tipos
+
+```typescript
+// De @/core/types
+type BalanceSheetProjectionInputs = {
+  year: number;
+  prazoCaixaEquivalentes: number;      // dias — sobre Rec. Líquida
+  prazoAplicacoesFinanceiras: number;  // dias — sobre Rec. Líquida
+  prazoContasReceber: number;          // dias — sobre Rec. Bruta
+  prazoEstoques: number;               // dias — sobre CMV
+  prazoAtivosBiologicos: number;       // dias — sobre Rec. Líquida
+  prazoFornecedores: number;           // dias — sobre CMV
+  prazoImpostosAPagar: number;         // dias — sobre Imp. Devoluções
+  prazoObrigacoesSociais: number;      // dias — sobre Desp. Operacionais
+  // ... outros campos de Empréstimos e Imobilizado
+};
+```
+
+### Padrão `latestDataRef`
+
+O hook usa uma `ref` interna para capturar os dados mais recentes antes que o timeout dispare:
+
+```typescript
+const latestDataRef = useRef<BalanceSheetProjectionInputs[] | null>(null);
+
+const save = useCallback((data: BalanceSheetProjectionInputs[]) => {
+  latestDataRef.current = data;  // ← Captura dados mais recentes
+
+  clearTimeout(debounceTimerRef.current!);
+
+  debounceTimerRef.current = setTimeout(async () => {
+    const dataToSave = latestDataRef.current;  // ← Usa dados capturados
+    if (!dataToSave) return;
+    // ...
+  }, debounceMs);
+}, [modelId, debounceMs]);
+```
+
+**Vantagem sobre `useDREProjectionPersist`**: Garante que sempre serão salvos os dados mais recentes mesmo que `save()` seja chamado múltiplas vezes antes do timeout expirar.
+
+### Feedback de Erro com Toast
+
+```typescript
+try {
+  const result = await saveBalanceSheetProjection(modelId, dataToSave);
+  if (result.success) {
+    setLastSavedAt(new Date());
+  } else {
+    const errorMsg = result.error || 'Erro ao salvar premissas';
+    setError(errorMsg);
+    toast.error(errorMsg);  // ← Notifica via Sonner
+  }
+} catch (err) {
+  const errorMsg = 'Erro inesperado ao salvar premissas';
+  setError(errorMsg);
+  toast.error(errorMsg);
+}
+```
+
+### Exemplo de Uso
+
+```typescript
+import { useBPProjectionPersist } from '@/hooks/useBPProjectionPersist';
+
+function WorkingCapitalTable({ modelId, projectionInputs }) {
+  const [localProjections, setLocalProjections] = useState(projectionInputs);
+  const { isSaving, lastSavedAt, error, save } = useBPProjectionPersist({ modelId });
+
+  const handleChange = (year: number, field: keyof BalanceSheetProjectionInputs, value: number) => {
+    const updated = localProjections.map(p =>
+      p.year === year ? { ...p, [field]: value } : p
+    );
+    setLocalProjections(updated);
+    save(updated);  // debounce 800ms
+  };
+
+  return (
+    <div>
+      {isSaving && <Loader2 className="animate-spin" />}
+      {!isSaving && lastSavedAt && <Check className="text-green-600" />}
+      {error && <span className="text-red-500">{error}</span>}
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+### Integração com Backend
+
+```typescript
+// lib/actions/models.ts
+'use server';
+
+export async function saveBalanceSheetProjection(
+  modelId: string,
+  projections: BalanceSheetProjectionInputs[]
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from('models')
+    .update({ model_data: { ...existingData, bpProjections: projections } })
+    .eq('id', modelId);
+
+  if (error) return { success: false, error: 'Falha ao salvar projeções do BP' };
+  return { success: true };
+}
+```
+
+### Componentes que Utilizam Este Hook
+
+- `WorkingCapitalTable` — premissas de prazos médios do capital de giro
+- `LoansTable` — premissas de empréstimos e dívida
+
+---
+
 ## 📚 Ver Também
 
 - [Architecture Overview](../architecture.md#sistema-de-navegação-e-input-de-dados)
 - [DRETable Component](./components-ui.md#-dretable)
+- [WorkingCapitalTable Component](./components-ui.md#-workingcapitaltable)
+- [LoansTable Component](./components-ui.md#-loanstable)
 - [PremiseInput Component](./components-ui.md#-premiseinput)
 - [Testing Strategy](../testing-strategy.md)
