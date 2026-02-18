@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useRef } from "react";
-import { Loader2, Check, Eye, EyeOff, ChevronRight, ChevronDown } from "lucide-react";
+import { Loader2, Check, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BalanceSheetCalculated, BalanceSheetProjectionInputs } from "@/core/types";
 import { formatCurrency } from "@/lib/utils/formatters";
@@ -493,12 +493,12 @@ export function WorkingCapitalTable({
           >
             {showAllPremises ? (
               <>
-                <EyeOff className="h-3.5 w-3.5" />
+                <ChevronDown className="h-3.5 w-3.5" />
                 Ocultar premissas
               </>
             ) : (
               <>
-                <Eye className="h-3.5 w-3.5" />
+                <ChevronRight className="h-3.5 w-3.5" />
                 Exibir premissas
               </>
             )}
@@ -544,22 +544,20 @@ export function WorkingCapitalTable({
                   >
                     {/* Botão de toggle por grupo no header */}
                     {row.type === "header" && row.groupKey && hasPremises && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 mr-0.5"
+                      <button
+                        className="cursor-pointer flex-shrink-0 text-muted-foreground"
                         onClick={() => toggleGroup(row.groupKey!)}
                         title={expandedGroups.has(row.groupKey) ? "Ocultar premissas" : "Exibir premissas"}
                       >
                         {showAllPremises || expandedGroups.has(row.groupKey) ? (
-                          <EyeOff className="h-3.5 w-3.5" />
+                          <ChevronDown className="h-4 w-4" />
                         ) : (
-                          <Eye className="h-3.5 w-3.5" />
+                          <ChevronRight className="h-4 w-4" />
                         )}
-                      </Button>
+                      </button>
                     )}
                     {/* Chevron para toggle individual */}
-                    {row.hasChildPremise && (
+                    {row.hasChildPremise ? (
                       <span
                         className="text-muted-foreground/60 flex-shrink-0 cursor-pointer"
                         onClick={() => toggleAccount(row.key)}
@@ -570,7 +568,9 @@ export function WorkingCapitalTable({
                           <ChevronRight className="h-3.5 w-3.5" />
                         )}
                       </span>
-                    )}
+                    ) : row.type === "value" && hasPremises ? (
+                      <span className="h-3.5 w-3.5 flex-shrink-0 inline-block" />
+                    ) : null}
                     <span>{row.label}</span>
                   </div>
                 </TableCell>

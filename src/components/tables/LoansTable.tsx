@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useRef } from "react";
-import { Loader2, Check, Eye, EyeOff, ChevronRight, ChevronDown } from "lucide-react";
+import { Loader2, Check, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BalanceSheetCalculated, BalanceSheetProjectionInputs } from "@/core/types";
 import { formatCurrency } from "@/lib/utils/formatters";
@@ -32,9 +32,11 @@ interface AuxRow {
   type: RowType;
   values: Record<number, number | null>;
   tooltip?: string;
-  hasChildPremise?: boolean;
   premiseField?: keyof BalanceSheetProjectionInputs;
-  parentKey?: string;
+  /** Chave do grupo que este header de seção controla */
+  groupKey?: string;
+  /** Grupo ao qual a premissa pertence (para toggle por seção) */
+  premiseGroup?: string;
 }
 
 export function LoansTable({
@@ -46,19 +48,19 @@ export function LoansTable({
   const [localProjections, setLocalProjections] = useState<BalanceSheetProjectionInputs[]>(
     projectionInputs || []
   );
-  const [showPremises, setShowPremises] = useState(false);
-  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
+  const [showAllPremises, setShowAllPremises] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const { isSaving, lastSavedAt, save } = useBPProjectionPersist({ modelId: modelId || "" });
 
   const hasPremises = !!(projectionInputs && projectionInputs.length > 0);
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
-  const toggleAccount = useCallback((key: string) => {
-    setExpandedAccounts((prev) => {
+  const toggleGroup = useCallback((groupKey: string) => {
+    setExpandedGroups((prev) => {
       const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
+      if (next.has(groupKey)) next.delete(groupKey);
+      else next.add(groupKey);
       return next;
     });
   }, []);
@@ -146,7 +148,10 @@ export function LoansTable({
     const sortedYears = data.map((d) => d.year).sort((a, b) => a - b);
     const byYear = Object.fromEntries(data.map((d) => [d.year, d]));
 
-    const getPremise = (field: keyof BalanceSheetProjectionInputs, year: number): number | null => {
+    const getPremise = (
+      field: keyof BalanceSheetProjectionInputs,
+      year: number
+    ): number | null => {
       if (year === 0) return null;
       const p = localProjections.find((lp) => lp.year === year);
       return p ? (p[field] as number) : null;
@@ -158,6 +163,7 @@ export function LoansTable({
         key: "hdr-emprestimos",
         label: "EMPRÉSTIMOS E FINANCIAMENTOS",
         type: "header",
+        groupKey: "emprestimos",
         values: {},
       },
       ...(hasPremises
@@ -166,25 +172,35 @@ export function LoansTable({
               key: "taxaJurosEmprestimo",
               label: "↳ Taxa de Juros (% a.a.)",
               type: "premise" as RowType,
-              parentKey: "hdr-emprestimos",
+              premiseGroup: "emprestimos",
               premiseField: "taxaJurosEmprestimo" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("taxaJurosEmprestimo", y)])),
-              tooltip: "Base para cálculo de Despesas Financeiras e Custo da Dívida (Kd) no WACC",
+              values: Object.fromEntries(
+                sortedYears.map((y) => [y, getPremise("taxaJurosEmprestimo", y)])
+              ),
+              tooltip: "Base para Despesas Financeiras e Kd no WACC",
             },
           ]
         : []),
 
       // ── Bloco CP ──
-      { key: "hdr-cp", label: "Curto Prazo (CP)", type: "header", values: {} },
+      {
+        key: "hdr-cp",
+        label: "Curto Prazo (CP)",
+        type: "header",
+        groupKey: "cp",
+        values: {},
+      },
       ...(hasPremises
         ? [
             {
               key: "taxaNovosEmprestimosCP",
               label: "↳ Taxa Novos Empréstimos CP (%)",
               type: "premise" as RowType,
-              parentKey: "hdr-cp",
+              premiseGroup: "cp",
               premiseField: "taxaNovosEmprestimosCP" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("taxaNovosEmprestimosCP", y)])),
+              values: Object.fromEntries(
+                sortedYears.map((y) => [y, getPremise("taxaNovosEmprestimosCP", y)])
+              ),
             },
           ]
         : []),
@@ -215,21 +231,32 @@ export function LoansTable({
         label: "(=) Empréstimos CP (final)",
         type: "subtotal",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.passivoCirculante.emprestimosFinanciamentosCP ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.passivoCirculante.emprestimosFinanciamentosCP ?? null,
+          ])
         ),
       },
 
       // ── Bloco LP ──
-      { key: "hdr-lp", label: "Longo Prazo (LP)", type: "header", values: {} },
+      {
+        key: "hdr-lp",
+        label: "Longo Prazo (LP)",
+        type: "header",
+        groupKey: "lp",
+        values: {},
+      },
       ...(hasPremises
         ? [
             {
               key: "taxaNovosEmprestimosLP",
               label: "↳ Taxa Novos Empréstimos LP (%)",
               type: "premise" as RowType,
-              parentKey: "hdr-lp",
+              premiseGroup: "lp",
               premiseField: "taxaNovosEmprestimosLP" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("taxaNovosEmprestimosLP", y)])),
+              values: Object.fromEntries(
+                sortedYears.map((y) => [y, getPremise("taxaNovosEmprestimosLP", y)])
+              ),
             },
           ]
         : []),
@@ -260,7 +287,10 @@ export function LoansTable({
         label: "(=) Empréstimos LP (final)",
         type: "subtotal",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.passivoRealizavelLP.emprestimosFinanciamentosLP ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.passivoRealizavelLP.emprestimosFinanciamentosLP ?? null,
+          ])
         ),
       },
 
@@ -280,7 +310,7 @@ export function LoansTable({
       },
       {
         key: "desp-financeiras",
-        label: "Despesas Financeiras (Juros)",
+        label: "└─ Despesas Financeiras (Juros)",
         type: "annotation",
         tooltip: "Dívida Total × Taxa de Juros — alimenta a DRE",
         values: Object.fromEntries(
@@ -293,11 +323,11 @@ export function LoansTable({
   const visibleRows = useMemo(() => {
     return rows.filter((row) => {
       if (row.type !== "premise") return true;
-      if (!row.parentKey) return true;
-      if (showPremises) return true;
-      return expandedAccounts.has(row.parentKey);
+      if (showAllPremises) return true;
+      if (row.premiseGroup && expandedGroups.has(row.premiseGroup)) return true;
+      return false;
     });
-  }, [rows, showPremises, expandedAccounts]);
+  }, [rows, showAllPremises, expandedGroups]);
 
   const sortedYears = data.map((d) => d.year).sort((a, b) => a - b);
 
@@ -324,7 +354,10 @@ export function LoansTable({
               <Check className="mr-2 h-4 w-4 text-green-600" />
               <span>
                 Salvo às{" "}
-                {lastSavedAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                {lastSavedAt.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             </>
           ) : null}
@@ -337,17 +370,17 @@ export function LoansTable({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setShowPremises((prev) => !prev)}
+            onClick={() => setShowAllPremises((prev) => !prev)}
             className="h-7 gap-1.5 text-xs"
           >
-            {showPremises ? (
+            {showAllPremises ? (
               <>
-                <EyeOff className="h-3.5 w-3.5" />
+                <ChevronDown className="h-3.5 w-3.5" />
                 Ocultar premissas
               </>
             ) : (
               <>
-                <Eye className="h-3.5 w-3.5" />
+                <ChevronRight className="h-3.5 w-3.5" />
                 Exibir premissas
               </>
             )}
@@ -383,25 +416,31 @@ export function LoansTable({
                 <TableCell>
                   <div
                     className={cn(
-                      "min-w-[260px] whitespace-nowrap flex items-center gap-1.5",
+                      "min-w-[200px] whitespace-nowrap flex items-center gap-1.5",
                       row.type === "header" && "font-bold text-sm",
                       row.type === "total" && "font-bold",
                       row.type === "subtotal" && "font-semibold",
                       row.type === "premise" && "text-xs text-muted-foreground pl-4",
-                      row.type === "annotation" && "text-xs text-muted-foreground pl-4 italic",
-                      row.hasChildPremise &&
-                        "cursor-pointer select-none hover:text-foreground/80 transition-colors"
+                      row.type === "annotation" && "text-xs text-muted-foreground pl-4 italic"
                     )}
-                    onClick={row.hasChildPremise ? () => toggleAccount(row.key) : undefined}
                   >
-                    {row.hasChildPremise && (
-                      <span className="text-muted-foreground/60 flex-shrink-0">
-                        {showPremises || expandedAccounts.has(row.key) ? (
-                          <ChevronDown className="h-3.5 w-3.5" />
+                    {/* Botão de toggle por seção nos headers */}
+                    {row.type === "header" && row.groupKey && hasPremises && (
+                      <button
+                        className="cursor-pointer flex-shrink-0 text-muted-foreground"
+                        onClick={() => toggleGroup(row.groupKey!)}
+                        title={
+                          showAllPremises || expandedGroups.has(row.groupKey)
+                            ? "Ocultar premissas desta seção"
+                            : "Exibir premissas desta seção"
+                        }
+                      >
+                        {showAllPremises || expandedGroups.has(row.groupKey) ? (
+                          <ChevronDown className="h-4 w-4" />
                         ) : (
-                          <ChevronRight className="h-3.5 w-3.5" />
+                          <ChevronRight className="h-4 w-4" />
                         )}
-                      </span>
+                      </button>
                     )}
                     <span>{row.label}</span>
                   </div>
@@ -457,7 +496,6 @@ export function LoansTable({
                       <div
                         className={cn(
                           "text-right tabular-nums",
-                          row.type === "header" && "font-bold text-sm",
                           row.type === "total" && "font-bold",
                           row.type === "subtotal" && "font-semibold",
                           row.type === "annotation" && "text-xs text-muted-foreground italic",
