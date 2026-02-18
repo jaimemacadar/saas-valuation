@@ -3,12 +3,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  isMockMode,
-  getMockUser,
-  mockStore,
-  mockDelay,
-} from "@/lib/mock";
+import { isMockMode, mockDelay } from "@/lib/mock/config";
+import { getMockUser } from "@/lib/mock/auth";
+import { mockStore } from "@/lib/mock/store";
 import type { DREProjectionInputs, BalanceSheetProjectionInputs, DREBaseInputs, BalanceSheetBaseInputs } from "@/core/types";
 
 // Types

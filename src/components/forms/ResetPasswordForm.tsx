@@ -78,9 +78,9 @@ export function ResetPasswordForm() {
           disabled={isLoading}
           className="mt-1"
         />
-        {errors.password && (
+        {errors.password ? (
           <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-        )}
+        ) : null}
       </div>
 
       {/* Confirmar Senha */}
@@ -94,11 +94,11 @@ export function ResetPasswordForm() {
           disabled={isLoading}
           className="mt-1"
         />
-        {errors.confirmPassword && (
+        {errors.confirmPassword ? (
           <p className="mt-1 text-sm text-red-600">
             {errors.confirmPassword.message}
           </p>
-        )}
+        ) : null}
       </div>
 
       {/* Botão Submit */}

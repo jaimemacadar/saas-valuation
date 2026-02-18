@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
-import { isMockMode, getMockUser } from "@/lib/mock";
+import { isMockMode } from "@/lib/mock/config";
+import { getMockUser } from "@/lib/mock/auth";
 
 /**
  * Helper para garantir que usuário está autenticado

@@ -91,18 +91,18 @@ export function DREBaseForm({ modelId, initialData }: DREBaseFormProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {error && (
+          {error ? (
             <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
-          )}
+          ) : null}
 
-          {success && (
+          {success ? (
             <div className="rounded-lg bg-green-500/10 p-3 text-sm text-green-600 flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4" />
               Dados salvos com sucesso!
             </div>
-          )}
+          ) : null}
 
           {/* Receita */}
           <div className="space-y-4">

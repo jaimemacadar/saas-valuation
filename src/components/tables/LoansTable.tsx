@@ -342,7 +342,7 @@ export function LoansTable({
   return (
     <div className="space-y-2">
       {/* Indicador de salvamento */}
-      {modelId && hasPremises && (
+      {modelId && hasPremises ? (
         <div className="flex items-center justify-end text-sm text-muted-foreground">
           {isSaving ? (
             <>
@@ -362,11 +362,11 @@ export function LoansTable({
             </>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground italic pl-1 self-end">Valores em R$ (Reais)</p>
-        {hasPremises && (
+        {hasPremises ? (
           <Button
             variant="outline"
             size="sm"
@@ -385,7 +385,7 @@ export function LoansTable({
               </>
             )}
           </Button>
-        )}
+        ) : null}
       </div>
 
       <div className="rounded-md border">
@@ -425,7 +425,7 @@ export function LoansTable({
                     )}
                   >
                     {/* Botão de toggle por seção nos headers */}
-                    {row.type === "header" && row.groupKey && hasPremises && (
+                    {row.type === "header" && row.groupKey && hasPremises ? (
                       <button
                         className="cursor-pointer flex-shrink-0 text-muted-foreground"
                         onClick={() => toggleGroup(row.groupKey!)}
@@ -441,7 +441,7 @@ export function LoansTable({
                           <ChevronRight className="h-4 w-4" />
                         )}
                       </button>
-                    )}
+                    ) : null}
                     <span>{row.label}</span>
                   </div>
                 </TableCell>

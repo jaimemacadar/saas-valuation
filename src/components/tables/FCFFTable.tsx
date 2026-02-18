@@ -109,11 +109,11 @@ export function FCFFTable({ data }: FCFFTableProps) {
             >
               {row.original.label}
             </div>
-            {row.original.description && (
+            {row.original.description ? (
               <div className="text-xs text-muted-foreground">
                 {row.original.description}
               </div>
-            )}
+            ) : null}
           </div>
         );
       },

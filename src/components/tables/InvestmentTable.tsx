@@ -324,7 +324,7 @@ export function InvestmentTable({
   return (
     <div className="space-y-2">
       {/* Indicador de salvamento */}
-      {modelId && hasPremises && (
+      {modelId && hasPremises ? (
         <div className="flex items-center justify-end text-sm text-muted-foreground">
           {isSaving ? (
             <>
@@ -341,11 +341,11 @@ export function InvestmentTable({
             </>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground italic pl-1 self-end">Valores em R$ (Reais)</p>
-        {hasPremises && (
+        {hasPremises ? (
           <Button
             variant="outline"
             size="sm"
@@ -364,7 +364,7 @@ export function InvestmentTable({
               </>
             )}
           </Button>
-        )}
+        ) : null}
       </div>
 
       <div className="rounded-md border">
@@ -408,7 +408,7 @@ export function InvestmentTable({
                       row.hasChildPremise ? () => toggleAccount(row.key) : undefined
                     }
                   >
-                    {row.hasChildPremise && (
+                    {row.hasChildPremise ? (
                       <span className="text-muted-foreground/60 flex-shrink-0">
                         {showPremises || expandedAccounts.has(row.key) ? (
                           <ChevronDown className="h-3.5 w-3.5" />
@@ -416,7 +416,7 @@ export function InvestmentTable({
                           <ChevronRight className="h-3.5 w-3.5" />
                         )}
                       </span>
-                    )}
+                    ) : null}
                     <span>{row.label}</span>
                   </div>
                 </TableCell>

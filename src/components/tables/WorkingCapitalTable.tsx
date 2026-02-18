@@ -463,7 +463,7 @@ export function WorkingCapitalTable({
   return (
     <div className="space-y-2">
       {/* Indicador de salvamento */}
-      {modelId && hasPremises && (
+      {modelId && hasPremises ? (
         <div className="flex items-center justify-end text-sm text-muted-foreground">
           {isSaving ? (
             <>
@@ -480,11 +480,11 @@ export function WorkingCapitalTable({
             </>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground italic pl-1 self-end">Valores em R$ (Reais)</p>
-        {hasPremises && (
+        {hasPremises ? (
           <Button
             variant="outline"
             size="sm"
@@ -503,7 +503,7 @@ export function WorkingCapitalTable({
               </>
             )}
           </Button>
-        )}
+        ) : null}
       </div>
 
       <div className="rounded-md border">
@@ -543,7 +543,7 @@ export function WorkingCapitalTable({
                     )}
                   >
                     {/* Botão de toggle por grupo no header */}
-                    {row.type === "header" && row.groupKey && hasPremises && (
+                    {row.type === "header" && row.groupKey && hasPremises ? (
                       <button
                         className="cursor-pointer flex-shrink-0 text-muted-foreground"
                         onClick={() => toggleGroup(row.groupKey!)}
@@ -555,7 +555,7 @@ export function WorkingCapitalTable({
                           <ChevronRight className="h-4 w-4" />
                         )}
                       </button>
-                    )}
+                    ) : null}
                     {/* Chevron para toggle individual */}
                     {row.hasChildPremise ? (
                       <span

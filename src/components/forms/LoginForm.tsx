@@ -12,11 +12,11 @@ export function LoginForm() {
   return (
     <form action={formAction} className="space-y-6">
       {/* Error Message */}
-      {state?.error && (
+      {state?.error ? (
         <div className="rounded-md bg-error-50 p-4 text-sm text-error-700">
           {state.error}
         </div>
-      )}
+      ) : null}
 
       {/* Email Field */}
       <div className="space-y-2">

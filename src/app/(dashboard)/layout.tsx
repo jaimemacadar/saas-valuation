@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { isMockMode, getMockUser } from "@/lib/mock";
+import { isMockMode } from "@/lib/mock/config";
+import { getMockUser } from "@/lib/mock/auth";
 
 export default async function DashboardLayout({
   children,

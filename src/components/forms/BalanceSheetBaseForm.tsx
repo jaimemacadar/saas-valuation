@@ -167,24 +167,24 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {error && (
+          {error ? (
             <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
               {error}
             </div>
-          )}
+          ) : null}
 
-          {success && (
+          {success ? (
             <div className="rounded-lg bg-green-500/10 p-3 text-sm text-green-600 flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4" />
               Dados salvos com sucesso!
             </div>
-          )}
+          ) : null}
 
-          {!balanceado && (
+          {!balanceado ? (
             <div className="rounded-lg bg-yellow-500/10 p-3 text-sm text-yellow-600">
               ⚠️ Ativo Total e Passivo Total não estão balanceados
             </div>
-          )}
+          ) : null}
 
           {/* Layout de duas colunas: Ativo | Passivo + PL */}
           <div className="grid md:grid-cols-2 gap-6">
@@ -372,7 +372,7 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
           </div>
 
           {/* Status do Balanceamento */}
-          {balanceado && (
+          {balanceado ? (
             <div className="rounded-lg border-2 border-green-500/20 bg-green-500/5 p-3 text-center">
               <div className="text-sm text-green-600 font-medium">
                 ✓ Balanço Patrimonial Equilibrado
@@ -381,7 +381,7 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
                 Ativo Total = Passivo Total: {formatCurrency(ativoTotal)}
               </div>
             </div>
-          )}
+          ) : null}
         </CardContent>
 
         <CardFooter>

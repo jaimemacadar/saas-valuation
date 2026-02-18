@@ -12,18 +12,18 @@ export function SignupForm() {
   return (
     <form action={formAction} className="space-y-6">
       {/* Error Message */}
-      {state?.error && (
+      {state?.error ? (
         <div className="rounded-md bg-error-50 p-4 text-sm text-error-700">
           {state.error}
         </div>
-      )}
+      ) : null}
 
       {/* Success Message */}
-      {state?.success && state?.message && (
+      {state?.success && state?.message ? (
         <div className="rounded-md bg-success-50 p-4 text-sm text-success-700">
           {state.message}
         </div>
-      )}
+      ) : null}
 
       {/* Name Field */}
       <div className="space-y-2">

@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useState } from "react";
-import { MOCK_MODE } from "@/lib/mock";
+import { MOCK_MODE } from "@/lib/mock/config";
 
 export function DevModeIndicator() {
   const [isVisible, setIsVisible] = useState(false);

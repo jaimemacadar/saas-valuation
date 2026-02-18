@@ -4,16 +4,15 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { isMockMode, mockDelay } from "@/lib/mock/config";
 import {
-  isMockMode,
   mockSignIn,
   mockSignUp,
   mockSignOut,
   mockResetPassword,
   mockUpdatePassword,
   mockSignInWithOAuth,
-  mockDelay,
-} from "@/lib/mock";
+} from "@/lib/mock/auth";
 
 // Schemas de validação
 const signInSchema = z.object({

@@ -465,7 +465,7 @@ export function DRETable({
               )}
               onClick={hasPremise ? () => toggleAccount(field) : undefined}
             >
-              {hasPremise && (
+              {hasPremise ? (
                 <span className="text-muted-foreground/60 flex-shrink-0">
                   {isExpanded ? (
                     <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200" />
@@ -473,9 +473,9 @@ export function DRETable({
                     <ChevronRight className="h-3.5 w-3.5 transition-transform duration-200" />
                   )}
                 </span>
-              )}
+              ) : null}
               <span>{row.original.label}</span>
-              {tooltipText && (
+              {tooltipText ? (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -486,7 +486,7 @@ export function DRETable({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              )}
+              ) : null}
             </div>
           );
         },
@@ -593,7 +593,7 @@ export function DRETable({
   return (
     <div className="space-y-2">
       {/* Indicador de salvamento */}
-      {modelId && hasPremises && (
+      {modelId && hasPremises ? (
         <div className="flex items-center justify-end text-sm text-muted-foreground">
           {isSaving ? (
             <>
@@ -613,11 +613,11 @@ export function DRETable({
             </>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground italic pl-1 mb-0.4 self-end">Valores em R$ (Reais)</p>
-        {hasPremises && (
+        {hasPremises ? (
           <Button
             variant="outline"
             size="sm"
@@ -636,7 +636,7 @@ export function DRETable({
               </>
             )}
           </Button>
-        )}
+        ) : null}
       </div>
 
       <div className="rounded-md border">

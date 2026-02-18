@@ -19,10 +19,10 @@ export function UserMenu({ userName, userEmail }: UserMenuProps) {
     <div className="flex items-center gap-3">
       {/* User Info */}
       <div className="hidden md:flex flex-col items-end">
-        {userName && (
+        {userName ? (
           <p className="text-sm font-medium text-secondary-900">{userName}</p>
-        )}
-        {userEmail && <p className="text-xs text-secondary-600">{userEmail}</p>}
+        ) : null}
+        {userEmail ? <p className="text-xs text-secondary-600">{userEmail}</p> : null}
       </div>
 
       {/* Profile Button */}

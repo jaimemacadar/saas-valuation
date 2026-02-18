@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
-
+// Redirect handled by next.config.ts → redirects()
+// This component is never rendered in practice.
 export default function DashboardPage() {
-  redirect("/dashboard/models");
+  return null;
 }

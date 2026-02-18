@@ -36,7 +36,10 @@
       "mcp__ai-context__agent",
       "Bash(npx jest:*)",
       "Bash(git stash:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "mcp__ai-context__explore",
+      "Bash(dir:*)",
+      "Bash(powershell -Command:*)"
     ]
   }
 }

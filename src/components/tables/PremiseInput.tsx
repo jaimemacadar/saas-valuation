@@ -161,7 +161,7 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
       />
       <span className="text-xs text-muted-foreground">{unit}</span>
 
-      {showCopyRight && onCopyRight && (
+      {showCopyRight && onCopyRight ? (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -182,9 +182,9 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-      )}
+      ) : null}
 
-      {showTrend && onApplyTrend && (
+      {showTrend && onApplyTrend ? (
         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <TooltipProvider>
             <Tooltip>
@@ -274,7 +274,7 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
             </div>
           </PopoverContent>
         </Popover>
-      )}
+      ) : null}
     </div>
   );
 });

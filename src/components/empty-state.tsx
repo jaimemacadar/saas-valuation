@@ -19,11 +19,11 @@ export function EmptyState({
       <FileQuestion className="h-12 w-12 text-muted-foreground mb-4" />
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       <p className="text-sm text-muted-foreground max-w-md mb-4">{message}</p>
-      {actionLabel && onAction && (
+      {actionLabel && onAction ? (
         <Button onClick={onAction} variant="default">
           {actionLabel}
         </Button>
-      )}
+      ) : null}
     </div>
   );
 }

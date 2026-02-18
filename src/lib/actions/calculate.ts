@@ -4,7 +4,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { isMockMode, getMockUser } from "@/lib/mock";
+import { isMockMode } from "@/lib/mock/config";
+import { getMockUser } from "@/lib/mock/auth";
 import { getModelById } from "./models";
 import { calculateAllDRE } from "@/core/calculations/dre";
 import { calculateAllBalanceSheet } from "@/core/calculations/balanceSheet";
