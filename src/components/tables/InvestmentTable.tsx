@@ -37,6 +37,8 @@ interface AuxRow {
   premiseField?: keyof BalanceSheetProjectionInputs;
   /** Multiplicador para converter valor armazenado em valor de exibição (padrão: 1) */
   premiseScale?: number;
+  /** Unidade exibida após o input (padrão: "%") */
+  premiseUnit?: string;
   parentKey?: string;
 }
 
@@ -173,11 +175,10 @@ export function InvestmentTable({
 
     return [
       // ── Bloco 1: Saldo Inicial ──
-      { key: "hdr-inicio", label: "INVESTIMENTO", type: "header", values: {} },
       {
         key: "imob-bruto-inicio",
         label: "Imobilizado Bruto (início)",
-        type: "value",
+        type: "header",
         values: Object.fromEntries(
           sortedYears.map((y, i) => {
             const prevY = i === 0 ? y : sortedYears[i - 1];
@@ -215,8 +216,6 @@ export function InvestmentTable({
         ),
       },
 
-      // ── Bloco 2: Movimentações ──
-      { key: "hdr-mov", label: "Movimentações do Período", type: "header", values: {} },
       {
         key: "capex",
         label: "(+) CAPEX",
@@ -230,17 +229,18 @@ export function InvestmentTable({
         ? [
             {
               key: "indiceImobilizadoVendas",
-              label: "↳ Índice Imobilizado-Vendas (%)",
+              label: "↳ CAPEX s/ vendas (%)",
               type: "premise" as RowType,
               parentKey: "capex",
               premiseField: "indiceImobilizadoVendas" as keyof BalanceSheetProjectionInputs,
-              premiseScale: 100, // armazenado como decimal 0.05 → exibe 5.00 %
+              premiseScale: 100,
               values: Object.fromEntries(
                 sortedYears.map((y) => [y, getPremiseDisplay("indiceImobilizadoVendas", y, 100)])
               ),
             },
           ]
         : []),
+      // ── Bloco 3: Saldos Finais ──
       {
         key: "depreciacao-periodo",
         label: "(-) Depreciação do Período",
@@ -268,28 +268,6 @@ export function InvestmentTable({
             },
           ]
         : []),
-
-      // ── Bloco 3: Saldos Finais ──
-      { key: "hdr-final", label: "Saldos Finais", type: "header", values: {} },
-      {
-        key: "imob-bruto-final",
-        label: "Imobilizado Bruto (final)",
-        type: "value",
-        values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoRealizavelLP.imobilizadoBruto ?? null])
-        ),
-      },
-      {
-        key: "depr-acum-final",
-        label: "(-) Depr. Acumulada (final)",
-        type: "value",
-        values: Object.fromEntries(
-          sortedYears.map((y) => {
-            const val = byYear[y]?.ativoRealizavelLP.depreciacaoAcumulada;
-            return [y, val != null ? -val : null];
-          })
-        ),
-      },
       {
         key: "imob-liq-final",
         label: "(=) Imobilizado Líquido Final",
@@ -457,6 +435,7 @@ export function InvestmentTable({
                             onNavigateNext={() => focusNext(row.key, y)}
                             onNavigatePrevious={() => focusPrevious(row.key, y)}
                             onNavigateDown={() => focusNextRow(row.key, y)}
+                            {...(row.premiseUnit !== undefined && { unit: row.premiseUnit })}
                           />
                         </div>
                       </TableCell>

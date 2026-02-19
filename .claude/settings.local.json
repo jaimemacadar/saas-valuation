@@ -40,7 +40,8 @@
       "mcp__ai-context__explore",
       "Bash(dir:*)",
       "Bash(powershell -Command:*)",
-      "Bash(git -C \"C:/Dev/3-Projeto Saas Valuation/saas-valuation\" log --oneline -8 --name-status)"
+      "Bash(git -C \"C:/Dev/3-Projeto Saas Valuation/saas-valuation\" log --oneline -8 --name-status)",
+      "Bash(echo:*)"
     ]
   }
 }

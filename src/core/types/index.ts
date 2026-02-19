@@ -346,4 +346,24 @@ export interface FullValuationResult {
   fcff: FCFFCalculated[];
   valuation: ValuationCalculated;
   wacc: WACCCalculation;
+  indicadores?: IndicadoresCalculated[];
+}
+
+// ============================================================
+// Indicadores Financeiros
+// ============================================================
+
+export interface IndicadorCalculated {
+  year: number;
+  id: string;
+  label: string;
+  value: number;
+  format: "multiple" | "percentage" | "currency" | "number";
+  numerator: number;
+  denominator: number;
+}
+
+export interface IndicadoresCalculated {
+  year: number;
+  indicadores: IndicadorCalculated[];
 }

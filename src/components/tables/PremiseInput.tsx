@@ -159,7 +159,7 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
         )}
         aria-label={`Valor em ${unit}`}
       />
-      <span className="text-xs text-muted-foreground">{unit}</span>
+      {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
 
       {showCopyRight && onCopyRight ? (
         <TooltipProvider>

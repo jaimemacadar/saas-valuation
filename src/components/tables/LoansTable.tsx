@@ -1,9 +1,19 @@
 "use client";
 
 import { useState, useMemo, useCallback, useRef } from "react";
-import { Loader2, Check, ChevronRight, ChevronDown } from "lucide-react";
+import {
+  Loader2,
+  Check,
+  ChevronRight,
+  ChevronDown,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BalanceSheetCalculated, BalanceSheetProjectionInputs } from "@/core/types";
+import {
+  BalanceSheetCalculated,
+  BalanceSheetProjectionInputs,
+} from "@/core/types";
 import { formatCurrency } from "@/lib/utils/formatters";
 import {
   Table,
@@ -24,7 +34,13 @@ interface LoansTableProps {
   onProjectionChange?: (data: BalanceSheetProjectionInputs[]) => void;
 }
 
-type RowType = "header" | "value" | "subtotal" | "total" | "premise" | "annotation";
+type RowType =
+  | "header"
+  | "value"
+  | "subtotal"
+  | "total"
+  | "premise"
+  | "annotation";
 
 interface AuxRow {
   key: string;
@@ -45,13 +61,15 @@ export function LoansTable({
   modelId,
   onProjectionChange,
 }: LoansTableProps) {
-  const [localProjections, setLocalProjections] = useState<BalanceSheetProjectionInputs[]>(
-    projectionInputs || []
-  );
+  const [localProjections, setLocalProjections] = useState<
+    BalanceSheetProjectionInputs[]
+  >(projectionInputs || []);
   const [showAllPremises, setShowAllPremises] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
-  const { isSaving, lastSavedAt, save } = useBPProjectionPersist({ modelId: modelId || "" });
+  const { isSaving, lastSavedAt, save } = useBPProjectionPersist({
+    modelId: modelId || "",
+  });
 
   const hasPremises = !!(projectionInputs && projectionInputs.length > 0);
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
@@ -66,17 +84,21 @@ export function LoansTable({
   }, []);
 
   const handlePremiseChange = useCallback(
-    (year: number, field: keyof BalanceSheetProjectionInputs, value: number) => {
+    (
+      year: number,
+      field: keyof BalanceSheetProjectionInputs,
+      value: number,
+    ) => {
       setLocalProjections((prev) => {
         const updated = prev.map((p) =>
-          p.year === year ? { ...p, [field]: value } : p
+          p.year === year ? { ...p, [field]: value } : p,
         );
         onProjectionChange?.(updated);
         if (modelId) save(updated);
         return updated;
       });
     },
-    [modelId, save, onProjectionChange]
+    [modelId, save, onProjectionChange],
   );
 
   const handleCopyRight = useCallback(
@@ -85,32 +107,43 @@ export function LoansTable({
         const year1 = prev.find((p) => p.year === 1);
         if (!year1) return prev;
         const val = year1[field] as number;
-        const updated = prev.map((p) => (p.year > 1 ? { ...p, [field]: val } : p));
+        const updated = prev.map((p) =>
+          p.year > 1 ? { ...p, [field]: val } : p,
+        );
         onProjectionChange?.(updated);
         if (modelId) save(updated);
         return updated;
       });
     },
-    [modelId, save, onProjectionChange]
+    [modelId, save, onProjectionChange],
   );
 
   const handleApplyTrend = useCallback(
-    (field: keyof BalanceSheetProjectionInputs, startVal: number, endVal: number) => {
+    (
+      field: keyof BalanceSheetProjectionInputs,
+      startVal: number,
+      endVal: number,
+    ) => {
       setLocalProjections((prev) => {
-        const projected = prev.filter((p) => p.year > 0).sort((a, b) => a.year - b.year);
+        const projected = prev
+          .filter((p) => p.year > 0)
+          .sort((a, b) => a.year - b.year);
         if (projected.length < 2) return prev;
         const n = projected.length;
         const updated = prev.map((p) => {
           if (p.year === 0) return p;
           const i = projected.findIndex((py) => py.year === p.year);
-          return { ...p, [field]: startVal + (endVal - startVal) * (i / (n - 1)) };
+          return {
+            ...p,
+            [field]: startVal + (endVal - startVal) * (i / (n - 1)),
+          };
         });
         onProjectionChange?.(updated);
         if (modelId) save(updated);
         return updated;
       });
     },
-    [modelId, save, onProjectionChange]
+    [modelId, save, onProjectionChange],
   );
 
   const getRefKey = (field: string, year: number) => `${field}-${year}`;
@@ -122,7 +155,9 @@ export function LoansTable({
   ];
 
   const focusNext = (field: string, currentYear: number) => {
-    const years = data.filter((d) => d.year > 0).sort((a, b) => a.year - b.year);
+    const years = data
+      .filter((d) => d.year > 0)
+      .sort((a, b) => a.year - b.year);
     const idx = years.findIndex((y) => y.year === currentYear);
     if (idx < years.length - 1) {
       inputRefs.current.get(getRefKey(field, years[idx + 1].year))?.focus();
@@ -130,7 +165,9 @@ export function LoansTable({
   };
 
   const focusPrevious = (field: string, currentYear: number) => {
-    const years = data.filter((d) => d.year > 0).sort((a, b) => a.year - b.year);
+    const years = data
+      .filter((d) => d.year > 0)
+      .sort((a, b) => a.year - b.year);
     const idx = years.findIndex((y) => y.year === currentYear);
     if (idx > 0) {
       inputRefs.current.get(getRefKey(field, years[idx - 1].year))?.focus();
@@ -138,7 +175,9 @@ export function LoansTable({
   };
 
   const focusNextRow = (currentField: string, year: number) => {
-    const idx = premiseOrder.indexOf(currentField as keyof BalanceSheetProjectionInputs);
+    const idx = premiseOrder.indexOf(
+      currentField as keyof BalanceSheetProjectionInputs,
+    );
     if (idx >= 0 && idx < premiseOrder.length - 1) {
       inputRefs.current.get(getRefKey(premiseOrder[idx + 1], year))?.focus();
     }
@@ -150,7 +189,7 @@ export function LoansTable({
 
     const getPremise = (
       field: keyof BalanceSheetProjectionInputs,
-      year: number
+      year: number,
     ): number | null => {
       if (year === 0) return null;
       const p = localProjections.find((lp) => lp.year === year);
@@ -173,9 +212,13 @@ export function LoansTable({
               label: "↳ Taxa de Juros (% a.a.)",
               type: "premise" as RowType,
               premiseGroup: "emprestimos",
-              premiseField: "taxaJurosEmprestimo" as keyof BalanceSheetProjectionInputs,
+              premiseField:
+                "taxaJurosEmprestimo" as keyof BalanceSheetProjectionInputs,
               values: Object.fromEntries(
-                sortedYears.map((y) => [y, getPremise("taxaJurosEmprestimo", y)])
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("taxaJurosEmprestimo", y),
+                ]),
               ),
               tooltip: "Base para Despesas Financeiras e Kd no WACC",
             },
@@ -197,9 +240,13 @@ export function LoansTable({
               label: "↳ Taxa Novos Empréstimos CP (%)",
               type: "premise" as RowType,
               premiseGroup: "cp",
-              premiseField: "taxaNovosEmprestimosCP" as keyof BalanceSheetProjectionInputs,
+              premiseField:
+                "taxaNovosEmprestimosCP" as keyof BalanceSheetProjectionInputs,
               values: Object.fromEntries(
-                sortedYears.map((y) => [y, getPremise("taxaNovosEmprestimosCP", y)])
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("taxaNovosEmprestimosCP", y),
+                ]),
               ),
             },
           ]
@@ -211,8 +258,12 @@ export function LoansTable({
         values: Object.fromEntries(
           sortedYears.map((y, i) => {
             const prevY = i === 0 ? y : sortedYears[i - 1];
-            return [y, byYear[prevY]?.passivoCirculante.emprestimosFinanciamentosCP ?? null];
-          })
+            return [
+              y,
+              byYear[prevY]?.passivoCirculante.emprestimosFinanciamentosCP ??
+                null,
+            ];
+          }),
         ),
       },
       {
@@ -222,8 +273,10 @@ export function LoansTable({
         values: Object.fromEntries(
           sortedYears.map((y) => [
             y,
-            y === 0 ? null : byYear[y]?.novosEmprestimosFinanciamentosCP ?? null,
-          ])
+            y === 0
+              ? null
+              : (byYear[y]?.novosEmprestimosFinanciamentosCP ?? null),
+          ]),
         ),
       },
       {
@@ -234,7 +287,7 @@ export function LoansTable({
           sortedYears.map((y) => [
             y,
             byYear[y]?.passivoCirculante.emprestimosFinanciamentosCP ?? null,
-          ])
+          ]),
         ),
       },
 
@@ -253,9 +306,13 @@ export function LoansTable({
               label: "↳ Taxa Novos Empréstimos LP (%)",
               type: "premise" as RowType,
               premiseGroup: "lp",
-              premiseField: "taxaNovosEmprestimosLP" as keyof BalanceSheetProjectionInputs,
+              premiseField:
+                "taxaNovosEmprestimosLP" as keyof BalanceSheetProjectionInputs,
               values: Object.fromEntries(
-                sortedYears.map((y) => [y, getPremise("taxaNovosEmprestimosLP", y)])
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("taxaNovosEmprestimosLP", y),
+                ]),
               ),
             },
           ]
@@ -267,8 +324,12 @@ export function LoansTable({
         values: Object.fromEntries(
           sortedYears.map((y, i) => {
             const prevY = i === 0 ? y : sortedYears[i - 1];
-            return [y, byYear[prevY]?.passivoRealizavelLP.emprestimosFinanciamentosLP ?? null];
-          })
+            return [
+              y,
+              byYear[prevY]?.passivoRealizavelLP.emprestimosFinanciamentosLP ??
+                null,
+            ];
+          }),
         ),
       },
       {
@@ -278,8 +339,10 @@ export function LoansTable({
         values: Object.fromEntries(
           sortedYears.map((y) => [
             y,
-            y === 0 ? null : byYear[y]?.novosEmprestimosFinanciamentosLP ?? null,
-          ])
+            y === 0
+              ? null
+              : (byYear[y]?.novosEmprestimosFinanciamentosLP ?? null),
+          ]),
         ),
       },
       {
@@ -290,7 +353,7 @@ export function LoansTable({
           sortedYears.map((y) => [
             y,
             byYear[y]?.passivoRealizavelLP.emprestimosFinanciamentosLP ?? null,
-          ])
+          ]),
         ),
       },
 
@@ -302,10 +365,12 @@ export function LoansTable({
         tooltip: "CP (final) + LP (final)",
         values: Object.fromEntries(
           sortedYears.map((y) => {
-            const cp = byYear[y]?.passivoCirculante.emprestimosFinanciamentosCP ?? 0;
-            const lp = byYear[y]?.passivoRealizavelLP.emprestimosFinanciamentosLP ?? 0;
+            const cp =
+              byYear[y]?.passivoCirculante.emprestimosFinanciamentosCP ?? 0;
+            const lp =
+              byYear[y]?.passivoRealizavelLP.emprestimosFinanciamentosLP ?? 0;
             return [y, cp + lp];
-          })
+          }),
         ),
       },
       {
@@ -314,7 +379,10 @@ export function LoansTable({
         type: "annotation",
         tooltip: "Dívida Total × Taxa de Juros — alimenta a DRE",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, y === 0 ? null : byYear[y]?.despesasFinanceiras ?? null])
+          sortedYears.map((y) => [
+            y,
+            y === 0 ? null : (byYear[y]?.despesasFinanceiras ?? null),
+          ]),
         ),
       },
     ];
@@ -365,7 +433,9 @@ export function LoansTable({
       ) : null}
 
       <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground italic pl-1 self-end">Valores em R$ (Reais)</p>
+        <p className="text-xs text-muted-foreground italic pl-1 self-end">
+          Valores em R$ (Reais)
+        </p>
         {hasPremises ? (
           <Button
             variant="outline"
@@ -375,12 +445,12 @@ export function LoansTable({
           >
             {showAllPremises ? (
               <>
-                <ChevronDown className="h-3.5 w-3.5" />
+                <EyeOff className="h-3.5 w-3.5" />
                 Ocultar premissas
               </>
             ) : (
               <>
-                <ChevronRight className="h-3.5 w-3.5" />
+                <Eye className="h-3.5 w-3.5" />
                 Exibir premissas
               </>
             )}
@@ -394,7 +464,10 @@ export function LoansTable({
             <TableRow>
               <TableHead className="w-[240px] min-w-[200px] font-semibold" />
               {sortedYears.map((y) => (
-                <TableHead key={y} className="w-[110px] min-w-[100px] text-right font-semibold">
+                <TableHead
+                  key={y}
+                  className="w-[110px] min-w-[100px] text-right font-semibold"
+                >
                   {y === 0 ? "Ano Base" : `Ano ${y}`}
                 </TableHead>
               ))}
@@ -409,7 +482,8 @@ export function LoansTable({
                   row.type === "total" && "bg-muted/50",
                   row.type === "subtotal" && "bg-muted/30",
                   row.type === "premise" && "bg-blue-50/50 dark:bg-blue-950/20",
-                  row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20"
+                  row.type === "annotation" &&
+                    "bg-amber-50/30 dark:bg-amber-950/20",
                 )}
               >
                 {/* Coluna de label */}
@@ -420,8 +494,10 @@ export function LoansTable({
                       row.type === "header" && "font-bold text-sm",
                       row.type === "total" && "font-bold",
                       row.type === "subtotal" && "font-semibold",
-                      row.type === "premise" && "text-xs text-muted-foreground pl-4",
-                      row.type === "annotation" && "text-xs text-muted-foreground pl-4 italic"
+                      row.type === "premise" &&
+                        "text-xs text-muted-foreground pl-4",
+                      row.type === "annotation" &&
+                        "text-xs text-muted-foreground pl-4 italic",
                     )}
                   >
                     {/* Botão de toggle por seção nos headers */}
@@ -454,7 +530,9 @@ export function LoansTable({
                     if (y === 0) {
                       return (
                         <TableCell key={y}>
-                          <div className="text-right text-xs text-muted-foreground">—</div>
+                          <div className="text-right text-xs text-muted-foreground">
+                            —
+                          </div>
                         </TableCell>
                       );
                     }
@@ -468,7 +546,9 @@ export function LoansTable({
                             }
                             disabled={!modelId}
                             showCopyRight={y === 1}
-                            onCopyRight={() => handleCopyRight(row.premiseField!)}
+                            onCopyRight={() =>
+                              handleCopyRight(row.premiseField!)
+                            }
                             showTrend={y === 1}
                             onApplyTrend={(start, end) =>
                               handleApplyTrend(row.premiseField!, start, end)
@@ -498,11 +578,14 @@ export function LoansTable({
                           "text-right tabular-nums",
                           row.type === "total" && "font-bold",
                           row.type === "subtotal" && "font-semibold",
-                          row.type === "annotation" && "text-xs text-muted-foreground italic",
-                          value !== null && value < 0 && "text-red-600"
+                          row.type === "annotation" &&
+                            "text-xs text-muted-foreground italic",
+                          value !== null && value < 0 && "text-red-600",
                         )}
                       >
-                        {value !== null ? formatCurrency(value, { showSymbol: false }) : "—"}
+                        {value !== null
+                          ? formatCurrency(value, { showSymbol: false })
+                          : "—"}
                       </div>
                     </TableCell>
                   );

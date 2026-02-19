@@ -5,8 +5,9 @@ import { BalanceSheetTable } from '@/components/tables/BalanceSheetTable';
 import { InvestmentTable } from '@/components/tables/InvestmentTable';
 import { WorkingCapitalTable } from '@/components/tables/WorkingCapitalTable';
 import { LoansTable } from '@/components/tables/LoansTable';
-import { BalanceSheetCalculated, BalanceSheetProjectionInputs } from '@/core/types';
+import { BalanceSheetCalculated, BalanceSheetProjectionInputs, DRECalculated, IndicadoresCalculated } from '@/core/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { InvestmentChartSection } from '@/components/charts/InvestmentChartSection';
 
 export default async function BalanceSheetPage({
   params,
@@ -23,10 +24,14 @@ export default async function BalanceSheetPage({
   const modelData = result.data.model_data as {
     balanceSheet?: BalanceSheetCalculated[];
     balanceSheetProjection?: BalanceSheetProjectionInputs[];
+    dre?: DRECalculated[];
+    indicadores?: IndicadoresCalculated[];
   };
 
   const balanceSheetData = modelData?.balanceSheet || [];
   const balanceSheetProjection = modelData?.balanceSheetProjection || [];
+  const dreData = modelData?.dre || [];
+  const indicadoresData = modelData?.indicadores || [];
 
   return (
     <>
@@ -64,6 +69,12 @@ export default async function BalanceSheetPage({
               data={balanceSheetData}
               projectionInputs={balanceSheetProjection}
               modelId={id}
+            />
+            <InvestmentChartSection
+              data={balanceSheetData}
+              projectionInputs={balanceSheetProjection}
+              dreData={dreData}
+              indicadoresData={indicadoresData}
             />
           </TabsContent>
 

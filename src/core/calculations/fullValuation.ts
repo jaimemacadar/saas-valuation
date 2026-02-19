@@ -18,6 +18,7 @@ import { calculateAllDRE } from "./dre.js";
 import { calculateAllBalanceSheet } from "./balanceSheet.js";
 import { calculateAllFCFF } from "./fcff.js";
 import { calculateValuation } from "./valuation.js";
+import { calculateAllIndicadores } from "./indicadores.js";
 
 /**
  * Executa valuation completo da empresa
@@ -145,6 +146,16 @@ export function executeFullValuation(
 
     const valuation = valuationResult.data;
 
+    // 6. Calcular Indicadores Financeiros
+    const indicadoresResult = calculateAllIndicadores(dreProjetado, bpProjetado);
+
+    if (!indicadoresResult.success || !indicadoresResult.data) {
+      return {
+        success: false,
+        errors: indicadoresResult.errors || ["Erro ao calcular indicadores"],
+      };
+    }
+
     // Montar resultado completo
     const fullResult: FullValuationResult = {
       dre: dreProjetado,
@@ -152,6 +163,7 @@ export function executeFullValuation(
       fcff: fcffProjetado,
       valuation: valuation,
       wacc: validatedInput.wacc,
+      indicadores: indicadoresResult.data,
     };
 
     return {

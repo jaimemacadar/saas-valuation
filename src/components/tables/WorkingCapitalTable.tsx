@@ -1,9 +1,19 @@
 "use client";
 
 import { useState, useMemo, useCallback, useRef } from "react";
-import { Loader2, Check, ChevronRight, ChevronDown } from "lucide-react";
+import {
+  Loader2,
+  Check,
+  ChevronRight,
+  ChevronDown,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BalanceSheetCalculated, BalanceSheetProjectionInputs } from "@/core/types";
+import {
+  BalanceSheetCalculated,
+  BalanceSheetProjectionInputs,
+} from "@/core/types";
 import { formatCurrency } from "@/lib/utils/formatters";
 import {
   Table,
@@ -24,7 +34,13 @@ interface WorkingCapitalTableProps {
   onProjectionChange?: (data: BalanceSheetProjectionInputs[]) => void;
 }
 
-type RowType = "header" | "value" | "subtotal" | "total" | "premise" | "annotation";
+type RowType =
+  | "header"
+  | "value"
+  | "subtotal"
+  | "total"
+  | "premise"
+  | "annotation";
 
 interface AuxRow {
   key: string;
@@ -47,14 +63,18 @@ export function WorkingCapitalTable({
   modelId,
   onProjectionChange,
 }: WorkingCapitalTableProps) {
-  const [localProjections, setLocalProjections] = useState<BalanceSheetProjectionInputs[]>(
-    projectionInputs || []
-  );
+  const [localProjections, setLocalProjections] = useState<
+    BalanceSheetProjectionInputs[]
+  >(projectionInputs || []);
   const [showAllPremises, setShowAllPremises] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
+  const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(
+    new Set(),
+  );
 
-  const { isSaving, lastSavedAt, save } = useBPProjectionPersist({ modelId: modelId || "" });
+  const { isSaving, lastSavedAt, save } = useBPProjectionPersist({
+    modelId: modelId || "",
+  });
 
   const hasPremises = !!(projectionInputs && projectionInputs.length > 0);
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
@@ -78,17 +98,21 @@ export function WorkingCapitalTable({
   }, []);
 
   const handlePremiseChange = useCallback(
-    (year: number, field: keyof BalanceSheetProjectionInputs, value: number) => {
+    (
+      year: number,
+      field: keyof BalanceSheetProjectionInputs,
+      value: number,
+    ) => {
       setLocalProjections((prev) => {
         const updated = prev.map((p) =>
-          p.year === year ? { ...p, [field]: value } : p
+          p.year === year ? { ...p, [field]: value } : p,
         );
         onProjectionChange?.(updated);
         if (modelId) save(updated);
         return updated;
       });
     },
-    [modelId, save, onProjectionChange]
+    [modelId, save, onProjectionChange],
   );
 
   const handleCopyRight = useCallback(
@@ -97,32 +121,43 @@ export function WorkingCapitalTable({
         const year1 = prev.find((p) => p.year === 1);
         if (!year1) return prev;
         const val = year1[field] as number;
-        const updated = prev.map((p) => (p.year > 1 ? { ...p, [field]: val } : p));
+        const updated = prev.map((p) =>
+          p.year > 1 ? { ...p, [field]: val } : p,
+        );
         onProjectionChange?.(updated);
         if (modelId) save(updated);
         return updated;
       });
     },
-    [modelId, save, onProjectionChange]
+    [modelId, save, onProjectionChange],
   );
 
   const handleApplyTrend = useCallback(
-    (field: keyof BalanceSheetProjectionInputs, startVal: number, endVal: number) => {
+    (
+      field: keyof BalanceSheetProjectionInputs,
+      startVal: number,
+      endVal: number,
+    ) => {
       setLocalProjections((prev) => {
-        const projected = prev.filter((p) => p.year > 0).sort((a, b) => a.year - b.year);
+        const projected = prev
+          .filter((p) => p.year > 0)
+          .sort((a, b) => a.year - b.year);
         if (projected.length < 2) return prev;
         const n = projected.length;
         const updated = prev.map((p) => {
           if (p.year === 0) return p;
           const i = projected.findIndex((py) => py.year === p.year);
-          return { ...p, [field]: startVal + (endVal - startVal) * (i / (n - 1)) };
+          return {
+            ...p,
+            [field]: startVal + (endVal - startVal) * (i / (n - 1)),
+          };
         });
         onProjectionChange?.(updated);
         if (modelId) save(updated);
         return updated;
       });
     },
-    [modelId, save, onProjectionChange]
+    [modelId, save, onProjectionChange],
   );
 
   const getRefKey = (field: string, year: number) => `${field}-${year}`;
@@ -139,7 +174,9 @@ export function WorkingCapitalTable({
   ];
 
   const focusNext = (field: string, currentYear: number) => {
-    const years = data.filter((d) => d.year > 0).sort((a, b) => a.year - b.year);
+    const years = data
+      .filter((d) => d.year > 0)
+      .sort((a, b) => a.year - b.year);
     const idx = years.findIndex((y) => y.year === currentYear);
     if (idx < years.length - 1) {
       inputRefs.current.get(getRefKey(field, years[idx + 1].year))?.focus();
@@ -147,7 +184,9 @@ export function WorkingCapitalTable({
   };
 
   const focusPrevious = (field: string, currentYear: number) => {
-    const years = data.filter((d) => d.year > 0).sort((a, b) => a.year - b.year);
+    const years = data
+      .filter((d) => d.year > 0)
+      .sort((a, b) => a.year - b.year);
     const idx = years.findIndex((y) => y.year === currentYear);
     if (idx > 0) {
       inputRefs.current.get(getRefKey(field, years[idx - 1].year))?.focus();
@@ -155,7 +194,9 @@ export function WorkingCapitalTable({
   };
 
   const focusNextRow = (currentField: string, year: number) => {
-    const idx = premiseOrder.indexOf(currentField as keyof BalanceSheetProjectionInputs);
+    const idx = premiseOrder.indexOf(
+      currentField as keyof BalanceSheetProjectionInputs,
+    );
     if (idx >= 0 && idx < premiseOrder.length - 1) {
       inputRefs.current.get(getRefKey(premiseOrder[idx + 1], year))?.focus();
     }
@@ -165,7 +206,10 @@ export function WorkingCapitalTable({
     const sortedYears = data.map((d) => d.year).sort((a, b) => a - b);
     const byYear = Object.fromEntries(data.map((d) => [d.year, d]));
 
-    const getPremise = (field: keyof BalanceSheetProjectionInputs, year: number): number | null => {
+    const getPremise = (
+      field: keyof BalanceSheetProjectionInputs,
+      year: number,
+    ): number | null => {
       if (year === 0) return null;
       const p = localProjections.find((lp) => lp.year === year);
       return p ? (p[field] as number) : null;
@@ -186,7 +230,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.caixaEquivalentes ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.ativoCirculante.caixaEquivalentes ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -197,8 +244,14 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "caixa",
               premiseGroup: "ativoCirculante" as const,
-              premiseField: "prazoCaixaEquivalentes" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoCaixaEquivalentes", y)])),
+              premiseField:
+                "prazoCaixaEquivalentes" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoCaixaEquivalentes", y),
+                ]),
+              ),
             },
           ]
         : []),
@@ -208,7 +261,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.aplicacoesFinanceiras ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.ativoCirculante.aplicacoesFinanceiras ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -219,8 +275,14 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "aplicacoes",
               premiseGroup: "ativoCirculante" as const,
-              premiseField: "prazoAplicacoesFinanceiras" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoAplicacoesFinanceiras", y)])),
+              premiseField:
+                "prazoAplicacoesFinanceiras" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoAplicacoesFinanceiras", y),
+                ]),
+              ),
             },
           ]
         : []),
@@ -230,7 +292,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.contasReceber ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.ativoCirculante.contasReceber ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -241,8 +306,14 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "contasReceber",
               premiseGroup: "ativoCirculante" as const,
-              premiseField: "prazoContasReceber" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoContasReceber", y)])),
+              premiseField:
+                "prazoContasReceber" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoContasReceber", y),
+                ]),
+              ),
             },
           ]
         : []),
@@ -252,7 +323,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.estoques ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.ativoCirculante.estoques ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -263,8 +337,11 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "estoques",
               premiseGroup: "ativoCirculante" as const,
-              premiseField: "prazoEstoques" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoEstoques", y)])),
+              premiseField:
+                "prazoEstoques" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [y, getPremise("prazoEstoques", y)]),
+              ),
             },
           ]
         : []),
@@ -274,7 +351,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.ativosBiologicos ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.ativoCirculante.ativosBiologicos ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -285,8 +365,14 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "ativosBio",
               premiseGroup: "ativoCirculante" as const,
-              premiseField: "prazoAtivosBiologicos" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoAtivosBiologicos", y)])),
+              premiseField:
+                "prazoAtivosBiologicos" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoAtivosBiologicos", y),
+                ]),
+              ),
             },
           ]
         : []),
@@ -295,7 +381,10 @@ export function WorkingCapitalTable({
         label: "Outros Créditos",
         type: "value",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.outrosCreditos ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.ativoCirculante.outrosCreditos ?? null,
+          ]),
         ),
       },
       {
@@ -303,7 +392,7 @@ export function WorkingCapitalTable({
         label: "Total Ativo Circulante",
         type: "subtotal",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.total ?? null])
+          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.total ?? null]),
         ),
       },
 
@@ -321,7 +410,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.passivoCirculante.fornecedores ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.passivoCirculante.fornecedores ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -332,8 +424,11 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "fornecedores",
               premiseGroup: "passivoCirculante" as const,
-              premiseField: "prazoFornecedores" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoFornecedores", y)])),
+              premiseField:
+                "prazoFornecedores" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [y, getPremise("prazoFornecedores", y)]),
+              ),
             },
           ]
         : []),
@@ -343,7 +438,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.passivoCirculante.impostosAPagar ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.passivoCirculante.impostosAPagar ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -354,8 +452,14 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "impostos",
               premiseGroup: "passivoCirculante" as const,
-              premiseField: "prazoImpostosAPagar" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoImpostosAPagar", y)])),
+              premiseField:
+                "prazoImpostosAPagar" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoImpostosAPagar", y),
+                ]),
+              ),
             },
           ]
         : []),
@@ -365,7 +469,10 @@ export function WorkingCapitalTable({
         type: "value",
         hasChildPremise: hasPremises,
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.passivoCirculante.obrigacoesSociaisETrabalhistas ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.passivoCirculante.obrigacoesSociaisETrabalhistas ?? null,
+          ]),
         ),
       },
       ...(hasPremises
@@ -376,8 +483,14 @@ export function WorkingCapitalTable({
               type: "premise" as RowType,
               parentKey: "obrigacoes",
               premiseGroup: "passivoCirculante" as const,
-              premiseField: "prazoObrigacoesSociais" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(sortedYears.map((y) => [y, getPremise("prazoObrigacoesSociais", y)])),
+              premiseField:
+                "prazoObrigacoesSociais" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoObrigacoesSociais", y),
+                ]),
+              ),
             },
           ]
         : []),
@@ -386,7 +499,10 @@ export function WorkingCapitalTable({
         label: "Outras Obrigações",
         type: "value",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.passivoCirculante.outrasObrigacoes ?? null])
+          sortedYears.map((y) => [
+            y,
+            byYear[y]?.passivoCirculante.outrasObrigacoes ?? null,
+          ]),
         ),
       },
       {
@@ -399,9 +515,12 @@ export function WorkingCapitalTable({
             if (!pc) return [y, null];
             return [
               y,
-              pc.fornecedores + pc.impostosAPagar + pc.obrigacoesSociaisETrabalhistas + pc.outrasObrigacoes,
+              pc.fornecedores +
+                pc.impostosAPagar +
+                pc.obrigacoesSociaisETrabalhistas +
+                pc.outrasObrigacoes,
             ];
-          })
+          }),
         ),
       },
 
@@ -412,7 +531,7 @@ export function WorkingCapitalTable({
         type: "total",
         tooltip: "AC − PC (excl. Empréstimos CP) + Emp. CP",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.capitalGiro ?? null])
+          sortedYears.map((y) => [y, byYear[y]?.capitalGiro ?? null]),
         ),
       },
       {
@@ -427,7 +546,7 @@ export function WorkingCapitalTable({
         type: "total",
         tooltip: "Variação da Necessidade de Capital de Giro entre períodos",
         values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ncg ?? null])
+          sortedYears.map((y) => [y, byYear[y]?.ncg ?? null]),
         ),
       },
     ];
@@ -440,7 +559,7 @@ export function WorkingCapitalTable({
       if (row.parentKey && expandedAccounts.has(row.parentKey)) return true;
       return false;
     },
-    [showAllPremises, expandedGroups, expandedAccounts]
+    [showAllPremises, expandedGroups, expandedAccounts],
   );
 
   const visibleRows = useMemo(() => {
@@ -475,7 +594,10 @@ export function WorkingCapitalTable({
               <Check className="mr-2 h-4 w-4 text-green-600" />
               <span>
                 Salvo às{" "}
-                {lastSavedAt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                {lastSavedAt.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             </>
           ) : null}
@@ -483,7 +605,9 @@ export function WorkingCapitalTable({
       ) : null}
 
       <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground italic pl-1 self-end">Valores em R$ (Reais)</p>
+        <p className="text-xs text-muted-foreground italic pl-1 self-end">
+          Valores em R$ (Reais)
+        </p>
         {hasPremises ? (
           <Button
             variant="outline"
@@ -493,12 +617,12 @@ export function WorkingCapitalTable({
           >
             {showAllPremises ? (
               <>
-                <ChevronDown className="h-3.5 w-3.5" />
+                <EyeOff className="h-3.5 w-3.5" />
                 Ocultar premissas
               </>
             ) : (
               <>
-                <ChevronRight className="h-3.5 w-3.5" />
+                <Eye className="h-3.5 w-3.5" />
                 Exibir premissas
               </>
             )}
@@ -512,7 +636,10 @@ export function WorkingCapitalTable({
             <TableRow>
               <TableHead className="w-[220px] min-w-[200px] font-semibold" />
               {sortedYears.map((y) => (
-                <TableHead key={y} className="w-[110px] min-w-[100px] text-right font-semibold">
+                <TableHead
+                  key={y}
+                  className="w-[110px] min-w-[100px] text-right font-semibold"
+                >
                   {y === 0 ? "Ano Base" : `Ano ${y}`}
                 </TableHead>
               ))}
@@ -527,7 +654,8 @@ export function WorkingCapitalTable({
                   row.type === "total" && "bg-muted/50",
                   row.type === "subtotal" && "bg-muted/30",
                   row.type === "premise" && "bg-blue-50/50 dark:bg-blue-950/20",
-                  row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20"
+                  row.type === "annotation" &&
+                    "bg-amber-50/30 dark:bg-amber-950/20",
                 )}
               >
                 {/* Coluna de label */}
@@ -538,8 +666,10 @@ export function WorkingCapitalTable({
                       row.type === "header" && "font-bold text-sm",
                       row.type === "total" && "font-bold",
                       row.type === "subtotal" && "font-semibold",
-                      row.type === "premise" && "text-xs text-muted-foreground pl-4",
-                      row.type === "annotation" && "text-xs text-muted-foreground pl-4 italic"
+                      row.type === "premise" &&
+                        "text-xs text-muted-foreground pl-4",
+                      row.type === "annotation" &&
+                        "text-xs text-muted-foreground pl-4 italic",
                     )}
                   >
                     {/* Botão de toggle por grupo no header */}
@@ -547,7 +677,11 @@ export function WorkingCapitalTable({
                       <button
                         className="cursor-pointer flex-shrink-0 text-muted-foreground"
                         onClick={() => toggleGroup(row.groupKey!)}
-                        title={expandedGroups.has(row.groupKey) ? "Ocultar premissas" : "Exibir premissas"}
+                        title={
+                          expandedGroups.has(row.groupKey)
+                            ? "Ocultar premissas"
+                            : "Exibir premissas"
+                        }
                       >
                         {showAllPremises || expandedGroups.has(row.groupKey) ? (
                           <ChevronDown className="h-4 w-4" />
@@ -583,7 +717,9 @@ export function WorkingCapitalTable({
                     if (y === 0) {
                       return (
                         <TableCell key={y}>
-                          <div className="text-right text-xs text-muted-foreground">—</div>
+                          <div className="text-right text-xs text-muted-foreground">
+                            —
+                          </div>
                         </TableCell>
                       );
                     }
@@ -601,7 +737,9 @@ export function WorkingCapitalTable({
                             max={9999}
                             decimals={0}
                             showCopyRight={y === 1}
-                            onCopyRight={() => handleCopyRight(row.premiseField!)}
+                            onCopyRight={() =>
+                              handleCopyRight(row.premiseField!)
+                            }
                             showTrend={y === 1}
                             onApplyTrend={(start, end) =>
                               handleApplyTrend(row.premiseField!, start, end)
@@ -632,11 +770,14 @@ export function WorkingCapitalTable({
                           row.type === "header" && "font-bold text-sm",
                           row.type === "total" && "font-bold",
                           row.type === "subtotal" && "font-semibold",
-                          row.type === "annotation" && "text-xs text-muted-foreground italic",
-                          value !== null && value < 0 && "text-red-600"
+                          row.type === "annotation" &&
+                            "text-xs text-muted-foreground italic",
+                          value !== null && value < 0 && "text-red-600",
                         )}
                       >
-                        {value !== null ? formatCurrency(value, { showSymbol: false }) : "—"}
+                        {value !== null
+                          ? formatCurrency(value, { showSymbol: false })
+                          : "—"}
                       </div>
                     </TableCell>
                   );

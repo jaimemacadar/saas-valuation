@@ -54,6 +54,10 @@ export {
   executeFullValuation,
   executeQuickValuation,
 } from "./calculations/fullValuation.js";
+export {
+  calculateIndicadores,
+  calculateAllIndicadores,
+} from "./calculations/indicadores.js";
 
 // Export sensitivity types
 export type {

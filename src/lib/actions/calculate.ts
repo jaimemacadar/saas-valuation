@@ -10,6 +10,7 @@ import { getModelById } from "./models";
 import { calculateAllDRE } from "@/core/calculations/dre";
 import { calculateAllBalanceSheet } from "@/core/calculations/balanceSheet";
 import { calculateAllFCFF } from "@/core/calculations/fcff";
+import { calculateAllIndicadores } from "@/core/calculations/indicadores";
 import { generateDefaultProjections } from "@/lib/utils/projection-defaults";
 import type {
   DREBaseInputs,
@@ -19,6 +20,7 @@ import type {
   DRECalculated,
   BalanceSheetCalculated,
   FCFFCalculated,
+  IndicadoresCalculated,
 } from "@/core/types";
 
 interface ActionResult {
@@ -28,6 +30,7 @@ interface ActionResult {
     dre?: DRECalculated[];
     balanceSheet?: BalanceSheetCalculated[];
     fcff?: FCFFCalculated[];
+    indicadores?: IndicadoresCalculated[];
   };
 }
 
@@ -216,6 +219,14 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       };
     }
 
+    // Calcular Indicadores Financeiros
+    const indicadoresResult = calculateAllIndicadores(dreResult.data, balanceSheetResult.data);
+    if (!indicadoresResult.success || !indicadoresResult.data) {
+      return {
+        error: "Erro ao calcular indicadores financeiros",
+      };
+    }
+
     // Verificar se as premissas foram estendidas
     const premissasForamEstendidas =
       dreProjection.length !== (currentModelData.dreProjection as any[])?.length ||
@@ -234,12 +245,14 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       dre: dreResult.data,
       balanceSheet: balanceSheetResult.data,
       fcff: fcffResult.data,
+      indicadores: indicadoresResult.data,
     };
 
     console.log('[recalculateModel] Salvando dados:', {
       dreCount: dreResult.data.length,
       balanceSheetCount: balanceSheetResult.data.length,
       fcffCount: fcffResult.data.length,
+      indicadoresCount: indicadoresResult.data.length,
     });
 
     // Atualizar no banco de dados
@@ -271,6 +284,7 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
         dre: dreResult.data,
         balanceSheet: balanceSheetResult.data,
         fcff: fcffResult.data,
+        indicadores: indicadoresResult.data,
       },
     };
   } catch (error) {
