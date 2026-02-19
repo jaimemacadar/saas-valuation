@@ -8,6 +8,7 @@ import { LoansTable } from '@/components/tables/LoansTable';
 import { BalanceSheetCalculated, BalanceSheetProjectionInputs, DRECalculated, IndicadoresCalculated } from '@/core/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InvestmentChartSection } from '@/components/charts/InvestmentChartSection';
+import { WorkingCapitalChartSection } from '@/components/charts/WorkingCapitalChartSection';
 
 export default async function BalanceSheetPage({
   params,
@@ -83,6 +84,11 @@ export default async function BalanceSheetPage({
               data={balanceSheetData}
               projectionInputs={balanceSheetProjection}
               modelId={id}
+            />
+            <WorkingCapitalChartSection
+              data={balanceSheetData}
+              projectionInputs={balanceSheetProjection}
+              dreData={dreData}
             />
           </TabsContent>
 

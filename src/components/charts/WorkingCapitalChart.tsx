@@ -17,16 +17,14 @@ import {
   BalanceSheetCalculated,
   BalanceSheetProjectionInputs,
   DRECalculated,
-  IndicadoresCalculated,
 } from "@/core/types";
 import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 
-// Chart configuration constants for maintainability and consistency
 const CHART_CONFIG = {
   colors: {
-    imobilizado: "#003049", // Green for fixed assets
-    vendas: "#669bbc", // Blue for sales
-    vendasImobilizado: "#adb5bd", // Red for Vendas/Imobilizado indicator e63946
+    capitalGiro: "#003049",
+    ncg: "#669bbc",
+    vendasNcg: "#adb5bd",
   },
   line: {
     strokeWidth: 2,
@@ -35,23 +33,21 @@ const CHART_CONFIG = {
   },
 } as const;
 
-// Line props configuration for the indicator line
 const INDICATOR_LINE_PROPS = {
-  yAxisId: "right",
+  yAxisId: "right" as const,
   type: "monotone" as const,
-  dataKey: "vendasImobilizado",
-  name: "Vendas / Imobilizado (x)",
-  stroke: CHART_CONFIG.colors.vendasImobilizado,
+  dataKey: "vendasCapitalGiro",
+  name: "Vendas / Capital de Giro (x)",
+  stroke: CHART_CONFIG.colors.vendasNcg,
   strokeWidth: CHART_CONFIG.line.strokeWidth,
   dot: {
     r: CHART_CONFIG.line.dotRadius,
-    fill: CHART_CONFIG.colors.vendasImobilizado,
+    fill: CHART_CONFIG.colors.vendasNcg,
   },
   activeDot: { r: CHART_CONFIG.line.activeDotRadius },
   connectNulls: false,
 };
 
-// Tooltip props interface
 interface TooltipPayloadEntry {
   name: string;
   value: number | null;
@@ -65,7 +61,6 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-// Custom tooltip component defined outside render to prevent recreation
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
@@ -73,7 +68,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         <p className="font-semibold mb-2">{label}</p>
         {payload.map((entry, index) => {
           if (entry.value === null || entry.value === undefined) return null;
-          const isMultiple = entry.dataKey === "vendasImobilizado";
+          const isMultiple = entry.dataKey === "vendasCapitalGiro";
           return (
             <p key={index} style={{ color: entry.color }} className="text-sm">
               {entry.name}:{" "}
@@ -89,111 +84,89 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   return null;
 }
 
-interface InvestmentChartProps {
+interface WorkingCapitalChartProps {
   data: BalanceSheetCalculated[];
   projectionInputs?: BalanceSheetProjectionInputs[];
   dreData?: DRECalculated[];
-  indicadoresData?: IndicadoresCalculated[];
 }
 
-export function InvestmentChart({
+export function WorkingCapitalChart({
   data,
-  projectionInputs,
   dreData,
-  indicadoresData,
-}: InvestmentChartProps) {
-  const [showVendas, setShowVendas] = useState(false);
+}: WorkingCapitalChartProps) {
+  const [showNcg, setShowNcg] = useState(false);
 
   if (!data || data.length === 0) {
     return (
       <div className="rounded-lg border p-8 text-center text-muted-foreground">
-        Nenhum dado disponível para o gráfico
+        Nenhum dado disponivel para o grafico
       </div>
     );
   }
 
-  // Montar mapa de receita bruta (vendas) por ano a partir da DRE
   const dreByYear = Object.fromEntries(
     (dreData ?? []).map((d) => [d.year, d.receitaBruta]),
   );
 
-  // Montar mapa do indicador Vendas/Imobilizado por ano a partir dos indicadores calculados
-  const vendasImobilizadoByYear = Object.fromEntries(
-    (indicadoresData ?? []).flatMap((ic) =>
-      ic.indicadores
-        .filter((ind) => ind.id === "vendas-imobilizado")
-        .map((ind) => [ic.year, ind.value]),
-    ),
-  );
-
-  // Obter indicador Vendas/Imobilizado do Ano Base (year === 0)
-  const vendasImobilizadoAnoBase = vendasImobilizadoByYear[0] ?? null;
-
-  // Filtrar apenas anos projetados (year > 0), seguindo padrão dos outros gráficos
   const chartData = data
     .filter((d) => d.year > 0)
     .sort((a, b) => a.year - b.year)
     .map((d) => {
-      const imobilizadoLiquidoFinal = d.ativoRealizavelLP.imobilizado;
+      const capitalGiro = d.capitalGiro;
+      const ncg = d.ncg;
       const vendas = dreByYear[d.year] ?? null;
-      const vendasImobilizado = vendasImobilizadoByYear[d.year] ?? null;
+      const vendasCapitalGiro = capitalGiro !== 0 && capitalGiro !== null && vendas !== null
+        ? vendas / Math.abs(capitalGiro)
+        : null;
 
       return {
         ano: `Ano ${d.year}`,
-        imobilizadoLiquidoFinal,
-        vendas,
-        vendasImobilizado,
+        capitalGiro,
+        ncg,
+        vendasCapitalGiro,
       };
     });
 
-  const barDataKey = showVendas ? "vendas" : "imobilizadoLiquidoFinal";
-  const barName = showVendas
-    ? "Vendas (Receita Bruta)"
-    : "Imobilizado Líquido Final";
-  const barColor = showVendas
-    ? CHART_CONFIG.colors.vendas
-    : CHART_CONFIG.colors.imobilizado;
+  const barDataKey = showNcg ? "ncg" : "capitalGiro";
+  const barName = showNcg
+    ? "NCG (Variacao)"
+    : "Capital de Giro";
+  const barColor = showNcg
+    ? CHART_CONFIG.colors.ncg
+    : CHART_CONFIG.colors.capitalGiro;
 
   return (
     <div className="space-y-4">
-      {/* Cabecalho com switch */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold">Evolucao do Imobilizado</h3>
+          <h3 className="text-lg font-semibold">Evolucao do Capital de Giro</h3>
           <p className="text-sm text-muted-foreground">
-            Imobilizado Liquido Final e Índice Vendas/Imobilizado por ano
-            projetado
-            {vendasImobilizadoAnoBase !== null && (
-              <span className="ml-2 font-medium text-foreground">
-                (Ano Base: {vendasImobilizadoAnoBase.toFixed(2)}x)
-              </span>
-            )}
+            Capital de Giro e indicador Vendas/Capital de Giro por ano projetado
           </p>
         </div>
 
-        {/* Switch manual usando button + estado — nao depende do componente Switch do shadcn */}
         <div className="flex items-center gap-2 shrink-0">
           <span className="text-xs text-muted-foreground">
-            Imobilizado Liq.
+            Capital de Giro
           </span>
           <button
             type="button"
             role="switch"
-            aria-checked={showVendas}
-            onClick={() => setShowVendas((prev) => !prev)}
+            aria-checked={showNcg}
+            onClick={() => setShowNcg((prev) => !prev)}
             className={[
               "relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              showVendas ? "bg-primary" : "bg-input",
+              showNcg ? "bg-primary" : "bg-input",
             ].join(" ")}
           >
             <span
               className={[
                 "inline-block h-4 w-4 rounded-full bg-background shadow transition-transform",
-                showVendas ? "translate-x-4" : "translate-x-0.5",
+                showNcg ? "translate-x-4" : "translate-x-0.5",
               ].join(" ")}
             />
           </button>
-          <span className="text-xs text-muted-foreground">Vendas</span>
+          <span className="text-xs text-muted-foreground">NCG (Var.)</span>
         </div>
       </div>
 
@@ -208,14 +181,12 @@ export function InvestmentChart({
             className="text-xs"
             tick={{ fill: "hsl(var(--foreground))" }}
           />
-          {/* Eixo esquerdo: valores monetarios (barras) */}
           <YAxis
             yAxisId="left"
             className="text-xs"
             tick={{ fill: "hsl(var(--foreground))" }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
-          {/* Eixo direito: multiplo Vendas/Imobilizado (linha) */}
           <YAxis
             yAxisId="right"
             orientation="right"
@@ -241,13 +212,13 @@ export function InvestmentChart({
           </Bar>
           <Line {...INDICATOR_LINE_PROPS}>
             <LabelList
-              dataKey="vendasImobilizado"
+              dataKey="vendasCapitalGiro"
               position="top"
               formatter={(value) =>
                 value != null ? `${Number(value).toFixed(2)}x` : ""
               }
               style={{
-                fill: CHART_CONFIG.colors.vendasImobilizado,
+                fill: CHART_CONFIG.colors.vendasNcg,
                 fontSize: 15,
                 fontWeight: 500,
               }}
