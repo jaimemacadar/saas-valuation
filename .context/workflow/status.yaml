@@ -1,61 +1,38 @@
 project:
-  name: "design-system"
+  name: "dark-mode"
   scale: MEDIUM
-  started: "2026-02-20T01:20:04.517Z"
+  started: "2026-02-20T18:00:25.349Z"
   current_phase: V
 
 phases:
   P:
     status: filled
-    started_at: "2026-02-20T01:20:04.517Z"
-    completed_at: "2026-02-20T01:22:58.495Z"
+    started_at: "2026-02-20T18:00:25.349Z"
+    completed_at: "2026-02-20T18:02:45.213Z"
   R:
     status: filled
-    started_at: "2026-02-20T01:22:58.499Z"
-    completed_at: "2026-02-20T01:23:05.351Z"
+    started_at: "2026-02-20T18:02:45.215Z"
+    completed_at: "2026-02-20T18:02:48.203Z"
   E:
     status: filled
-    started_at: "2026-02-20T01:23:05.354Z"
-    completed_at: "2026-02-20T01:26:47.950Z"
+    started_at: "2026-02-20T18:02:48.204Z"
+    completed_at: "2026-02-20T18:03:55.181Z"
   V:
-    status: completed
-    started_at: "2026-02-20T01:26:47.952Z"
-    completed_at: "2026-02-20T01:46:33.314Z"
-    outputs:
-      - path: ".context/docs/architecture.md — atualizado com Design System e GraficoCombinado"
-        status: filled
-      - path: ".context/docs/project-overview.md — atualizado com styleguide e nova estrutura"
-        status: filled
+    status: in_progress
+    started_at: "2026-02-20T18:03:55.183Z"
   C:
     status: skipped
     reason: "Not required for scale MEDIUM"
 
-agents:
-  frontend-specialist:
-    status: completed
-    completed_at: "2026-02-20T01:26:45.479Z"
-    outputs: ["src/app/globals.css", "src/app/styleguide/navigation.ts", "src/app/styleguide/layout.tsx", "src/app/styleguide/page.tsx", "tailwind.config.ts"]
-  documentation-writer:
-    status: completed
-    started_at: "2026-02-20T01:26:45.482Z"
-    completed_at: "2026-02-20T01:46:29.958Z"
-    outputs: [".context/docs/architecture.md", ".context/docs/project-overview.md", ".context/plans/design-system.md"]
-  solo-dev:
-    status: in_progress
-    started_at: "2026-02-20T01:46:29.963Z"
-
 execution:
   history:
-    - timestamp: "2026-02-20T01:46:33.314Z"
+    - timestamp: "2026-02-20T18:03:55.183Z"
       phase: V
-      action: completed
-  last_activity: "2026-02-20T01:46:33.314Z"
-  resume_context: "Fase V (Validação) concluída"
+      action: started
+  last_activity: "2026-02-20T18:03:55.183Z"
+  resume_context: "Fase V (Validação) em progresso"
 
 approval:
   plan_created: true
-  plan_approved: true
-  approved_by: "solo-dev"
-  approved_at: "2026-02-20T01:23:02.732Z"
-  approval_notes: "Plano aprovado pelo usuário. Avançar para execução."
+  plan_approved: false
 

@@ -37,7 +37,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="rounded-lg border bg-background p-3 shadow-md">
+        <div className="rounded-lg border bg-card p-3 shadow-md">
           <p className="font-semibold mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} style={{ color: entry.color }} className="text-sm">

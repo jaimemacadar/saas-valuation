@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "design-system",
+      "path": "plans/design-system.md",
+      "title": "Design System Foundation - Setup Completo com shadcn/ui",
+      "summary": "Criar um Design System completo para a aplicação SaaS Valuation, extraindo design tokens do frontend existente, reconfigurando globals.css com escalas de cor completas, e criando um styleguide navegável em `/app/styleguide`.",
+      "linkedAt": "2026-02-20T01:20:07.448Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "design-system"
+}

@@ -332,7 +332,7 @@ export function BalanceSheetProjectionTable({
   });
 
   const renderTable = <T,>(table: ReturnType<typeof useReactTable<T>>) => (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-card">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

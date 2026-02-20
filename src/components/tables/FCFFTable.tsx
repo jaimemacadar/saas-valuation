@@ -159,7 +159,7 @@ export function FCFFTable({ data }: FCFFTableProps) {
     <div className="space-y-4">
       {/* Indicadores rápidos */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg border bg-card p-4">
           <div className="text-sm text-muted-foreground">FCFF Total</div>
           <div
             className={cn(
@@ -170,13 +170,13 @@ export function FCFFTable({ data }: FCFFTableProps) {
             {formatCurrency(totalFCFF)}
           </div>
         </div>
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg border bg-card p-4">
           <div className="text-sm text-muted-foreground">Anos Positivos</div>
           <div className="text-2xl font-bold mt-1 text-green-600">
             {positiveFCFFCount}
           </div>
         </div>
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg border bg-card p-4">
           <div className="text-sm text-muted-foreground">Anos Negativos</div>
           <div className="text-2xl font-bold mt-1 text-red-600">
             {negativeFCFFCount}
@@ -185,7 +185,7 @@ export function FCFFTable({ data }: FCFFTableProps) {
       </div>
 
       {/* Tabela */}
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

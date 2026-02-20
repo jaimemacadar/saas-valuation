@@ -96,7 +96,7 @@ function CustomTooltip({
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-lg border bg-background p-3 shadow-md">
+    <div className="rounded-lg border bg-card p-3 shadow-md">
       <p className="font-semibold mb-2">{label}</p>
       {payload.map((entry, index) => {
         if (entry.value === null || entry.value === undefined) return null;
@@ -187,7 +187,7 @@ export function GraficoCombinado({
             >
               <span
                 className={[
-                  "inline-block h-4 w-4 rounded-full bg-background shadow transition-transform",
+                  "inline-block h-4 w-4 rounded-full bg-card shadow transition-transform",
                   showSecundaria ? "translate-x-4" : "translate-x-0.5",
                 ].join(" ")}
               />

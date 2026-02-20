@@ -1,14 +1,14 @@
 {
   "active": [
     {
-      "slug": "design-system",
-      "path": "plans/design-system.md",
-      "title": "Design System Foundation - Setup Completo com shadcn/ui",
-      "summary": "Criar um Design System completo para a aplicação SaaS Valuation, extraindo design tokens do frontend existente, reconfigurando globals.css com escalas de cor completas, e criando um styleguide navegável em `/app/styleguide`.",
-      "linkedAt": "2026-02-20T01:20:07.448Z",
+      "slug": "dark-mode",
+      "path": "plans/dark-mode.md",
+      "title": "Dark Mode / Light Mode Toggle",
+      "summary": "Implementar funcionalidade de dark mode e light mode para toda a aplicacao, com botao de toggle no cabecalho superior a direita.",
+      "linkedAt": "2026-02-20T18:02:42.442Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "design-system"
+  "primary": "dark-mode"
 }

@@ -10,7 +10,7 @@ export default function Sidebar() {
   if (!sidebarOpen) return null;
 
   return (
-    <aside className="w-64 border-r bg-gray-50 dark:bg-gray-900">
+    <aside className="w-64 border-r border-border bg-sidebar">
       <div className="flex h-full flex-col p-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">Navegação</h2>

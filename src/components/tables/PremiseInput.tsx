@@ -151,7 +151,7 @@ export const PremiseInput = forwardRef<HTMLInputElement, PremiseInputProps>(func
         className={cn(
           'w-20 h-7 px-2 text-xs text-right',
           'border border-input rounded-md',
-          'bg-background',
+          'bg-card',
           'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
           'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted',
           'transition-colors',

@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface BreadcrumbItem {
   label: string;
@@ -48,6 +49,9 @@ export function PageHeader({ breadcrumbs }: PageHeaderProps) {
           })}
         </BreadcrumbList>
       </Breadcrumb>
+      <div className="ml-auto">
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

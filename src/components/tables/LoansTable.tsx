@@ -475,7 +475,7 @@ export function LoansTable({
         ) : null}
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>

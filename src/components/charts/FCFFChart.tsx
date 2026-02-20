@@ -46,7 +46,7 @@ export function FCFFChart({ data }: FCFFChartProps) {
     if (active && payload && payload.length) {
       const value = payload[0].value;
       return (
-        <div className="rounded-lg border bg-background p-3 shadow-md">
+        <div className="rounded-lg border bg-card p-3 shadow-md">
           <p className="font-semibold mb-2">{label}</p>
           <p
             style={{
@@ -112,7 +112,7 @@ export function FCFFChart({ data }: FCFFChartProps) {
 
       {/* Estatísticas resumidas */}
       <div className="grid grid-cols-2 gap-4 mt-4">
-        <div className="rounded-lg border p-3">
+        <div className="rounded-lg border bg-card p-3">
           <div className="text-xs text-muted-foreground">FCFF Médio</div>
           <div className="text-lg font-semibold mt-1">
             {formatCurrency(
@@ -120,7 +120,7 @@ export function FCFFChart({ data }: FCFFChartProps) {
             )}
           </div>
         </div>
-        <div className="rounded-lg border p-3">
+        <div className="rounded-lg border bg-card p-3">
           <div className="text-xs text-muted-foreground">FCFF Acumulado</div>
           <div className="text-lg font-semibold mt-1">
             {formatCurrency(data.reduce((sum, d) => sum + d.fcff, 0))}

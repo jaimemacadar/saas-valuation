@@ -22,7 +22,7 @@ import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 const CHART_CONFIG = {
   colors: {
     emprestimosCP: "var(--alt-500)", // Vermelho vivo (~#C00021)
-    emprestimosLP: "var(--alt-800)", // Vermelho escuro (âncora exata #800016)
+    emprestimosLP: "var(--alt)", // Vermelho escuro (âncora exata #800016)
     emprestimosEbitda: "var(--neutral-400)", // Cinza neutro para linha indicadora
   },
   line: {
@@ -48,7 +48,7 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-lg border bg-background p-3 shadow-md">
+      <div className="rounded-lg border bg-card p-3 shadow-md">
         <p className="font-semibold mb-2">{label}</p>
         {payload.map((entry, index) => {
           if (entry.value === null || entry.value === undefined) return null;

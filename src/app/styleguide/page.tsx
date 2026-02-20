@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Moon, Sun, AlertCircle, CheckCircle2, Info, AlertTriangle } from "lucide-react";
+import { AlertCircle, CheckCircle2, Info, AlertTriangle } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 /* ─── helpers ─── */
 
@@ -77,16 +77,6 @@ function Section({
 /* ─── page ─── */
 
 export default function StyleguidePage() {
-  const [isDark, setIsDark] = useState(false);
-
-  const toggleDark = () => {
-    setIsDark((prev) => {
-      const next = !prev;
-      document.documentElement.classList.toggle("dark", next);
-      return next;
-    });
-  };
-
   const colorSteps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 
   return (
@@ -99,14 +89,14 @@ export default function StyleguidePage() {
             Paleta de cores, tipografia, espaçamento e componentes da plataforma SaaS Valuation.
           </p>
         </div>
-        <Button variant="outline" size="icon" onClick={toggleDark}>
-          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-        </Button>
+        <ThemeToggle />
       </div>
 
       {/* ─── 1. Color Palette ─── */}
       <Section title="Paleta de Cores">
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        {/* Primary palette */}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Primary</p>
+        <div className="grid grid-cols-3 gap-4 mb-6">
           <ColorSwatch label="Background" variable="--background" />
           <ColorSwatch label="Foreground" variable="--foreground" />
           <ColorSwatch label="Card" variable="--card" />
@@ -118,9 +108,17 @@ export default function StyleguidePage() {
           <ColorSwatch label="Border" variable="--border" />
         </div>
 
-        {/* Primary Scale */}
+        {/* Alternative palette */}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Alternativa</p>
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <ColorSwatch label="Alt" variable="--alt" />
+          <ColorSwatch label="Secondary Alt" variable="--secondary-alt" />
+          <ColorSwatch label="Muted Alt" variable="--muted-alt" />
+        </div>
+
+        {/* Scales */}
         <div className="flex flex-col gap-6">
-          <ScaleRow name="Escala Primary (Indigo)" prefix="primary" steps={colorSteps} />
+          <ScaleRow name="Escala Primary (Navy Blue)" prefix="primary" steps={colorSteps} />
           <ScaleRow name="Escala Alternativa (Red)" prefix="alt" steps={colorSteps} />
           <ScaleRow name="Escala Neutral (Grey)" prefix="neutral" steps={colorSteps} />
         </div>
@@ -339,7 +337,8 @@ const terminalValue = fcff[n] * (1 + g) / (wacc - g);`}
       <Section title="Design Summary">
         <div className="grid grid-cols-2 gap-4">
           {[
-            { label: "Primary color", value: "Navy Blue — oklch(0.45 0.097 238) — #003049" },
+            { label: "Primary color (light)", value: "Navy Blue — oklch(0.45 0.097 238) — #003049" },
+            { label: "Primary color (dark)", value: "primary-800 — oklch(0.55 0.117 238)" },
             { label: "Font", value: "Inter (Google Fonts)" },
             { label: "Style", value: "Modern minimal — profissional financeiro" },
             { label: "Border radius", value: "0.625rem (10px) — Rounded" },

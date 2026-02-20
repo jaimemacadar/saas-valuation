@@ -39,7 +39,7 @@ export function CostCompositionChart({ data }: CostCompositionChartProps) {
     if (active && payload && payload.length) {
       const total = payload.reduce((sum: number, entry: any) => sum + entry.value, 0);
       return (
-        <div className="rounded-lg border bg-background p-3 shadow-md">
+        <div className="rounded-lg border bg-card p-3 shadow-md">
           <p className="font-semibold mb-2">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} style={{ color: entry.color }} className="text-sm">

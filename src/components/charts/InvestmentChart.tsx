@@ -69,7 +69,7 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-lg border bg-background p-3 shadow-md">
+      <div className="rounded-lg border bg-card p-3 shadow-md">
         <p className="font-semibold mb-2">{label}</p>
         {payload.map((entry, index) => {
           if (entry.value === null || entry.value === undefined) return null;
@@ -188,7 +188,7 @@ export function InvestmentChart({
           >
             <span
               className={[
-                "inline-block h-4 w-4 rounded-full bg-background shadow transition-transform",
+                "inline-block h-4 w-4 rounded-full bg-card shadow transition-transform",
                 showVendas ? "translate-x-4" : "translate-x-0.5",
               ].join(" ")}
             />
@@ -236,7 +236,11 @@ export function InvestmentChart({
               dataKey={barDataKey}
               position="center"
               formatter={(value) => formatCompactNumber(Number(value))}
-              style={{ fill: "var(--primary-foreground)", fontSize: 15, fontWeight: 600 }}
+              style={{
+                fill: "var(--primary-foreground)",
+                fontSize: 15,
+                fontWeight: 600,
+              }}
             />
           </Bar>
           <Line {...INDICATOR_LINE_PROPS}>

@@ -272,7 +272,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
 
       <p className="text-xs text-muted-foreground">Valores em R$ (Reais)</p>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

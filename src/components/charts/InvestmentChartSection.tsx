@@ -33,7 +33,7 @@ export function InvestmentChartSection({
   indicadoresData,
 }: InvestmentChartSectionProps) {
   return (
-    <div className="rounded-lg border p-4">
+    <div className="rounded-lg border bg-card p-4">
       <InvestmentChart
         data={data}
         projectionInputs={projectionInputs}

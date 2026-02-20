@@ -30,7 +30,7 @@ export function WorkingCapitalChartSection({
   dreData,
 }: WorkingCapitalChartSectionProps) {
   return (
-    <div className="rounded-lg border p-4">
+    <div className="rounded-lg border bg-card p-4">
       <WorkingCapitalChart
         data={data}
         projectionInputs={projectionInputs}

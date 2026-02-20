@@ -20,9 +20,9 @@ export function UserMenu({ userName, userEmail }: UserMenuProps) {
       {/* User Info */}
       <div className="hidden md:flex flex-col items-end">
         {userName ? (
-          <p className="text-sm font-medium text-secondary-900">{userName}</p>
+          <p className="text-sm font-medium text-foreground">{userName}</p>
         ) : null}
-        {userEmail ? <p className="text-xs text-secondary-600">{userEmail}</p> : null}
+        {userEmail ? <p className="text-xs text-muted-foreground">{userEmail}</p> : null}
       </div>
 
       {/* Profile Button */}

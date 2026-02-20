@@ -78,18 +78,18 @@ Escala completa de 50 a 900, definida em oklch. A cor de referencia `#003049` an
 
 | Token | Light Mode | Dark Mode | Uso |
 |-------|-----------|-----------|-----|
-| `--primary-50` | `oklch(0.97 0.014 238)` | `oklch(0.21 0.050 238)` | Backgrounds sutis |
-| `--primary-100` | `oklch(0.93 0.035 238)` | `oklch(0.27 0.063 238)` | Borders leves |
-| `--primary-200` | `oklch(0.87 0.065 238)` | `oklch(0.33 0.075 238)` | Hover states |
-| `--primary-300` | `oklch(0.78 0.098 238)` | `oklch(0.42 0.094 238)` | Accents |
-| `--primary-400` | `oklch(0.67 0.132 238)` | `oklch(0.55 0.117 238)` | Focus rings |
-| `--primary-500` | `oklch(0.55 0.117 238)` | `oklch(0.65 0.140 238)` | Texto secundario |
-| `--primary-600` | `oklch(0.45 0.097 238)` | `oklch(0.75 0.130 238)` | **Brand color** (light) |
-| `--primary-700` | `oklch(0.37 0.080 238)` | `oklch(0.82 0.095 238)` | Hover em brand |
-| `--primary-800` | `oklch(0.294 0.066 238)` | `oklch(0.89 0.055 238)` | **#003049** — Accent foreground |
-| `--primary-900` | `oklch(0.21 0.050 238)` | `oklch(0.95 0.025 238)` | Texto em backgrounds claros |
+| `--primary-50` | `oklch(0.97 0.014 238)` | `oklch(0.130 0.106 238)` | Backgrounds sutis |
+| `--primary-100` | `oklch(0.93 0.035 238)` | `oklch(0.167 0.134 238)` | Borders leves |
+| `--primary-200` | `oklch(0.87 0.065 238)` | `oklch(0.204 0.160 238)` | Hover states |
+| `--primary-300` | `oklch(0.78 0.098 238)` | `oklch(0.260 0.200 238)` | Accents |
+| `--primary-400` | `oklch(0.67 0.132 238)` | `oklch(0.340 0.249 238)` | Focus rings |
+| `--primary-500` | `oklch(0.55 0.117 238)` | `oklch(0.402 0.298 238)` | Texto secundario |
+| `--primary-600` | `oklch(0.45 0.097 238)` | `oklch(0.464 0.277 238)` | **Brand color** (light) |
+| `--primary-700` | `oklch(0.37 0.080 238)` | `oklch(0.507 0.202 238)` | Hover em brand |
+| `--primary-800` | `oklch(0.294 0.066 238)` | `oklch(0.55 0.117 238)` | **#003049** — Accent foreground |
+| `--primary-900` | `oklch(0.21 0.050 238)` | `oklch(0.587 0.053 238)` | Texto em backgrounds claros |
 
-> Em dark mode, a escala se inverte: 50 e o mais escuro, 900 e o mais claro.
+> Em dark mode, a escala proporcional e ancorada em `primary-800 = oklch(0.55 0.117 238)` (fator L: ×0.618, fator C: ×2.127 em relacao a escala anterior).
 
 ### Escala Neutral (Grey, chroma 0)
 
@@ -124,6 +124,21 @@ Escala completa de 50 a 900, definida em oklch. A cor de referencia `#800016` an
 | `--alt-900` | `oklch(0.27 0.100 24)` | `oklch(0.95 0.025 24)` | |
 
 > Em dark mode, a escala se inverte: 50 e o mais escuro, 900 e o mais claro. Classes Tailwind: `bg-alt-500`, `text-alt-800`, etc.
+
+### Paleta Alternativa (Tokens Semanticos)
+
+Tokens semanticos de alto nivel para a cor alternativa, espelhando a estrutura da paleta Primary. Definidos em `globals.css` nos blocos `:root` e `.dark`.
+
+| Token | Light Mode | Dark Mode | Tailwind Class | Descricao |
+|-------|-----------|-----------|----------------|-----------|
+| `--alt` | `var(--alt-600)` | `var(--alt-500)` | `bg-alt` | Cor principal alternativa (brand alt) |
+| `--alt-foreground` | `oklch(0.985 0 0)` | `oklch(0.985 0 0)` | `text-alt-foreground` | Texto sobre fundo alt |
+| `--secondary-alt` | `var(--secondary)` | `var(--secondary)` | `bg-secondary-alt` | Fundo neutro que acompanha alt |
+| `--secondary-alt-foreground` | `var(--secondary-foreground)` | `var(--secondary-foreground)` | `text-secondary-alt-foreground` | Texto em secondary-alt |
+| `--muted-alt` | `var(--muted)` | `var(--muted)` | `bg-muted-alt` | Fundo muted que acompanha alt |
+| `--muted-alt-foreground` | `var(--muted-foreground)` | `var(--muted-foreground)` | `text-muted-alt-foreground` | Texto em muted-alt |
+
+> `--secondary-alt` e `--muted-alt` referenciam os mesmos valores neutros de `--secondary` e `--muted`, estabelecendo a paleta de suporte que acompanha a cor alternativa — o mesmo padrao da paleta Primary.
 
 ### Tokens Base (Semanticos de Interface)
 
@@ -382,16 +397,19 @@ export const navigation: NavSection[] = [
 
 8 secoes interativas:
 
-1. **Paleta de Cores** — Swatches com nomes de variavel CSS
+1. **Paleta de Cores** — Duas sub-paletas com labels:
+   - **Primary** — 9 swatches: Background, Foreground, Card, Primary, Secondary, Muted, Accent, Destructive, Border
+   - **Alternativa** — 3 swatches: Alt, Secondary Alt, Muted Alt
+   - Escalas completas 50-900: Primary (Navy Blue), Alternativa (Red), Neutral (Grey)
 2. **Cores Semanticas** — Success, Warning, Info, Destructive com alerts demo
 3. **Cores de Graficos** — Chart 1-5
 4. **Tipografia** — Headings H1-H4, body, muted, mono, formula WACC
 5. **Border Radius** — Exemplos visuais de sm a full
 6. **Sombras** — Exemplos de shadow-sm a shadow-xl
 7. **Componentes** — Button (7 variantes), Badge (7 variantes), Card (3 exemplos), RadioGroup
-8. **Design Summary** — Resumo do sistema visual
+8. **Design Summary** — Resumo do sistema visual incluindo `Primary color (light)` e `Primary color (dark)`
 
-Inclui **toggle de dark mode** (botao Sun/Moon) para preview em tempo real.
+Inclui **toggle de dark mode** (`ThemeToggle` — integrado ao `next-themes`) para preview em tempo real.
 
 ### Pagina de Componente (`/styleguide/components/grafico-combinado`)
 
