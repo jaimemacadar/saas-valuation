@@ -1,0 +1,44 @@
+{
+  "phases": {
+    "phase-1": {
+      "status": "completed",
+      "updatedAt": "2026-02-20T01:26:54.387Z"
+    },
+    "phase-2": {
+      "status": "completed",
+      "updatedAt": "2026-02-20T01:26:56.625Z"
+    },
+    "phase-3": {
+      "status": "completed",
+      "updatedAt": "2026-02-20T01:26:58.972Z"
+    }
+  },
+  "progress": 75,
+  "decisions": [
+    {
+      "title": "Cor primária: Azul-Índigo (hue 264 oklch)",
+      "description": "Escolhido azul-índigo (oklch hue 264) como cor primária da marca, compatível com a cor já usada no sidebar dark mode. Transmite profissionalismo e confiança para aplicação financeira.",
+      "phase": "E",
+      "alternatives": [
+        "Manter neutral/black como primária",
+        "Usar verde financeiro (hue 145)",
+        "Usar azul navy (hue 240)"
+      ],
+      "status": "accepted",
+      "id": "dec-1771550823776",
+      "decidedAt": "2026-02-20T01:27:03.776Z"
+    },
+    {
+      "title": "Remoção do mapeamento hsl do tailwind.config.ts",
+      "description": "Removido o mapeamento de cores hsl(var(--...)) do tailwind.config.ts pois conflitava com o sistema oklch do globals.css no Tailwind v4. O @theme inline no globals.css já faz esse mapeamento corretamente.",
+      "phase": "E",
+      "alternatives": [
+        "Manter ambos os sistemas em paralelo",
+        "Migrar globals.css para hsl"
+      ],
+      "status": "accepted",
+      "id": "dec-1771550828378",
+      "decidedAt": "2026-02-20T01:27:08.378Z"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ name: project-overview
 description: High-level overview of the project, its purpose, and key components
 category: overview
 generated: 2026-01-27
-updated: 2026-02-15
+updated: 2026-02-20
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -38,7 +38,9 @@ See [`codebase-map.json`](./codebase-map.json) for the complete list of exports,
 ## File Structure & Code Organization
 
 - `src/app/` — UI, routing, and pages
+  - `styleguide/` — Design System visual (tokens, componentes, dark mode toggle)
 - `src/components/` — UI components and layout
+  - `charts/GraficoCombinado.tsx` — Componente genérico de gráfico composto
 - `src/core/` — Domain logic and calculations
 - `src/lib/` — Utilities and integrations
 - `src/types/` — Shared type definitions
@@ -70,7 +72,11 @@ See [`codebase-map.json`](./codebase-map.json) for the complete list of exports,
   - Gráficos de Receita, Composição de Custos e EBITDA
   - Carregamento dinâmico de componentes de visualização
   - Cálculos em tempo real ao editar premissas
-- **Balanço Patrimonial** - tabs por ano
+- **Balanço Patrimonial** - tabs por ano com visualização em tabela e gráficos
+  - **Investimentos** (`InvestmentChartSection`) — Gráfico de Capex e Imobilizado Líquido
+  - **Capital de Giro** (`WorkingCapitalChartSection`) — Gráfico de Caixa, Contas a Receber, Estoque e Fornecedores
+  - **Empréstimos** (`LoansChartSection`) — Gráfico de dívida CP/LP com indicador Empréstimos/EBITDA
+  - **Indicadores** — Registry extensível: Vendas/Imobilizado, Empréstimos/EBITDA (via `calculateIndicadores`)
 - **FCFF (Free Cash Flow to Firm)** - projeções com visualização em tabela e gráficos
   - Gráfico de evolução do fluxo de caixa livre
 - Cálculos automáticos de campos dependentes

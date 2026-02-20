@@ -1,14 +1,14 @@
 {
   "active": [
     {
-      "slug": "tabelas-auxiliares-bp",
-      "path": "plans/tabelas-auxiliares-bp.md",
-      "title": "Tabelas Auxiliares do Balanço Patrimonial",
-      "summary": "Criar tabelas auxiliares (Investimento, Capital de Giro, Empréstimos e Financiamentos) para ajuste de premissas de projeção do Balanço Patrimonial, com funcionalidades similares à DRETable, acessíveis via tabs na página do BP.",
-      "linkedAt": "2026-02-17T23:49:42.781Z",
+      "slug": "design-system",
+      "path": "plans/design-system.md",
+      "title": "Design System Foundation - Setup Completo com shadcn/ui",
+      "summary": "Criar um Design System completo para a aplicação SaaS Valuation, extraindo design tokens do frontend existente, reconfigurando globals.css com escalas de cor completas, e criando um styleguide navegável em `/app/styleguide`.",
+      "linkedAt": "2026-02-20T01:20:07.448Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "tabelas-auxiliares-bp"
+  "primary": "design-system"
 }
