@@ -78,19 +78,19 @@ export function EBITDAChart({ data }: EBITDAChartProps) {
           <XAxis
             dataKey="ano"
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
           />
           <YAxis
             yAxisId="left"
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
             tickFormatter={(value) => `${value.toFixed(0)}%`}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -104,9 +104,9 @@ export function EBITDAChart({ data }: EBITDAChartProps) {
             type="monotone"
             dataKey="margemEbitda"
             name="Margem EBITDA (%)"
-            fill="hsl(var(--primary))"
+            fill="var(--primary)"
             fillOpacity={0.2}
-            stroke="hsl(var(--primary))"
+            stroke="var(--primary)"
             strokeWidth={0}
           />
           <Line
@@ -114,7 +114,7 @@ export function EBITDAChart({ data }: EBITDAChartProps) {
             type="monotone"
             dataKey="ebitda"
             name="EBITDA"
-            stroke="hsl(142.1 76.2% 36.3%)"
+            stroke="var(--chart-2)"
             strokeWidth={2}
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}

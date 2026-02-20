@@ -22,9 +22,9 @@ import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 
 const CHART_CONFIG = {
   colors: {
-    capitalGiro: "#003049",
-    ncg: "#669bbc",
-    vendasNcg: "#adb5bd",
+    capitalGiro: "var(--primary-800)", // Navy blue (âncora exata da escala)
+    ncg: "var(--primary-400)", // Azul médio
+    vendasNcg: "var(--neutral-400)", // Cinza neutro para linha indicadora
   },
   line: {
     strokeWidth: 2,
@@ -179,19 +179,19 @@ export function WorkingCapitalChart({
           <XAxis
             dataKey="ano"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
           />
           <YAxis
             yAxisId="left"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
             tickFormatter={(value) => `${value.toFixed(1)}x`}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -207,7 +207,7 @@ export function WorkingCapitalChart({
               dataKey={barDataKey}
               position="center"
               formatter={(value) => formatCompactNumber(Number(value))}
-              style={{ fill: "#ffffff", fontSize: 15, fontWeight: 600 }}
+              style={{ fill: "var(--primary-foreground)", fontSize: 15, fontWeight: 600 }}
             />
           </Bar>
           <Line {...INDICATOR_LINE_PROPS}>

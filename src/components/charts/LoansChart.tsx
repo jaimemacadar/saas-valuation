@@ -21,9 +21,9 @@ import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 
 const CHART_CONFIG = {
   colors: {
-    emprestimosCP: "#c1121f",
-    emprestimosLP: "#780000", //#d62828
-    emprestimosEbitda: "#adb5bd", // Green for the ratio line
+    emprestimosCP: "var(--alt-500)", // Vermelho vivo (~#C00021)
+    emprestimosLP: "var(--alt-800)", // Vermelho escuro (âncora exata #800016)
+    emprestimosEbitda: "var(--neutral-400)", // Cinza neutro para linha indicadora
   },
   line: {
     strokeWidth: 2,
@@ -126,19 +126,19 @@ export function LoansChart({ data, indicadoresData }: LoansChartProps) {
           <XAxis
             dataKey="ano"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
           />
           <YAxis
             yAxisId="left"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
           <YAxis
             yAxisId="right"
             orientation="right"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
             tickFormatter={(value) => `${value.toFixed(1)}x`}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -155,7 +155,7 @@ export function LoansChart({ data, indicadoresData }: LoansChartProps) {
               dataKey="emprestimosLP"
               position="center"
               formatter={(value) => formatCompactNumber(Number(value))}
-              style={{ fill: "#ffffff", fontSize: 12, fontWeight: 600 }}
+              style={{ fill: "var(--primary-foreground)", fontSize: 12, fontWeight: 600 }}
             />
           </Bar>
           <Bar
@@ -170,7 +170,7 @@ export function LoansChart({ data, indicadoresData }: LoansChartProps) {
               dataKey="emprestimosCP"
               position="center"
               formatter={(value) => formatCompactNumber(Number(value))}
-              style={{ fill: "#ffffff", fontSize: 12, fontWeight: 600 }}
+              style={{ fill: "var(--primary-foreground)", fontSize: 12, fontWeight: 600 }}
             />
           </Bar>
           <Line

@@ -37,8 +37,8 @@ export function FCFFChart({ data }: FCFFChartProps) {
   // Cores condicionais para barras
   const getBarColor = (value: number) => {
     return value >= 0
-      ? 'hsl(142.1 76.2% 36.3%)' // Verde
-      : 'hsl(var(--destructive))'; // Vermelho
+      ? 'var(--chart-2)' // Verde
+      : 'var(--destructive)'; // Vermelho
   };
 
   // Custom tooltip
@@ -83,11 +83,11 @@ export function FCFFChart({ data }: FCFFChartProps) {
           <XAxis
             dataKey="ano"
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
           />
           <YAxis
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -98,7 +98,7 @@ export function FCFFChart({ data }: FCFFChartProps) {
           />
           <ReferenceLine
             y={0}
-            stroke="hsl(var(--foreground))"
+            stroke="var(--foreground)"
             strokeDasharray="3 3"
             strokeWidth={1}
           />

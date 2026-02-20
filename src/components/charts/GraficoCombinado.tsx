@@ -253,7 +253,7 @@ export function GraficoCombinado({
               formatter={(value: unknown) =>
                 formatCompactNumber(Number(value))
               }
-              style={{ fill: "#ffffff", fontSize: 13, fontWeight: 600 }}
+              style={{ fill: "var(--primary-foreground)", fontSize: 13, fontWeight: 600 }}
             />
           </Bar>
 

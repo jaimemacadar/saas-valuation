@@ -73,11 +73,11 @@ export function CostCompositionChart({ data }: CostCompositionChartProps) {
           <XAxis
             dataKey="ano"
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
           />
           <YAxis
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -90,19 +90,19 @@ export function CostCompositionChart({ data }: CostCompositionChartProps) {
             dataKey="cmv"
             name="CMV"
             stackId="a"
-            fill="hsl(var(--destructive))"
+            fill="var(--destructive)"
           />
           <Bar
             dataKey="despesasOperacionais"
             name="Despesas Operacionais"
             stackId="a"
-            fill="hsl(24.6 95% 53.1%)"
+            fill="var(--chart-3)"
           />
           <Bar
             dataKey="impostos"
             name="IR/CSLL"
             stackId="a"
-            fill="hsl(47.9 95.8% 53.1%)"
+            fill="var(--chart-4)"
           />
         </BarChart>
       </ResponsiveContainer>

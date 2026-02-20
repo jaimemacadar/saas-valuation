@@ -89,7 +89,7 @@ const codeMargem = `<GraficoCombinado
   barPrimaria={{
     dataKey: "ebitda",
     name: "EBITDA",
-    color: "oklch(0.488 0.243 264)",
+    color: "var(--chart-1)",
   }}
   barSecundaria={{
     dataKey: "receita",
@@ -248,7 +248,7 @@ export default function GraficoCombinadoPage() {
               barPrimaria={{
                 dataKey: "ebitda",
                 name: "EBITDA",
-                color: "oklch(0.488 0.243 264)",
+                color: "var(--chart-1)",
               }}
               barSecundaria={{
                 dataKey: "receita",

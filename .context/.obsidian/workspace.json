@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "plans/design-system.md",
+                "file": "docs/design-system.md",
                 "mode": "preview",
                 "source": false
               },
@@ -183,6 +183,7 @@
   },
   "active": "5d4144e365fbb5d7",
   "lastOpenFiles": [
+    "plans/design-system.md",
     "docs/project-overview.md.tmp.23320.1771551980420",
     "plans/design-system",
     "workflow/plan-tracking/design-system.json",
@@ -197,7 +198,6 @@
     "workflow/archive/plans-2026-02-17T23-47-14-325Z/plan-tracking/dre-toggle-premises.json",
     "workflow/archive/plans-2026-02-17T23-47-14-325Z/plan-tracking",
     "workflow/archive/plans-2026-02-17T23-47-14-325Z/plans.json",
-    "workflow/archive/plans-2026-02-17T23-47-14-325Z",
     "docs/project-overview.md",
     "plans/dre-toggle-premises.md",
     "agents/architect-specialist.md",

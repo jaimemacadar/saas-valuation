@@ -5,6 +5,7 @@ Bem-vindo à base de conhecimento do repositório. Comece com a visão geral do 
 ## Guias Principais
 - [Visão Geral do Projeto](./project-overview.md)
 - [Notas de Arquitetura](./architecture.md)
+- [Design System](./design-system.md)
 - [Fluxo de Desenvolvimento](./development-workflow.md)
 - [Estratégia de Testes](./testing-strategy.md)
 - [Glossário & Conceitos de Domínio](./glossary.md)
@@ -43,4 +44,5 @@ Bem-vindo à base de conhecimento do repositório. Comece com a visão geral do 
 | Estratégia de Testes | `testing-strategy.md` | Configs de teste, gates de CI, suítes conhecidas instáveis |
 | Glossário & Conceitos de Domínio | `glossary.md` | Terminologia de negócio, personas de usuário, regras de domínio |
 | Notas de Segurança & Conformidade | `security.md` | Modelo de auth, gestão de secrets, requisitos de conformidade |
+| Design System | `design-system.md` | Tokens de cor, tipografia, componentes, styleguide, dark mode |
 | Guia de Ferramentas & Produtividade | `tooling.md` | Scripts CLI, configs IDE, workflows de automação |

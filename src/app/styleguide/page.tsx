@@ -121,6 +121,7 @@ export default function StyleguidePage() {
         {/* Primary Scale */}
         <div className="flex flex-col gap-6">
           <ScaleRow name="Escala Primary (Indigo)" prefix="primary" steps={colorSteps} />
+          <ScaleRow name="Escala Alternativa (Red)" prefix="alt" steps={colorSteps} />
           <ScaleRow name="Escala Neutral (Grey)" prefix="neutral" steps={colorSteps} />
         </div>
       </Section>
@@ -338,7 +339,7 @@ const terminalValue = fcff[n] * (1 + g) / (wacc - g);`}
       <Section title="Design Summary">
         <div className="grid grid-cols-2 gap-4">
           {[
-            { label: "Primary color", value: "Indigo — oklch(0.488 0.243 264)" },
+            { label: "Primary color", value: "Navy Blue — oklch(0.45 0.097 238) — #003049" },
             { label: "Font", value: "Inter (Google Fonts)" },
             { label: "Style", value: "Modern minimal — profissional financeiro" },
             { label: "Border radius", value: "0.625rem (10px) — Rounded" },

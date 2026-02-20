@@ -68,11 +68,11 @@ export function RevenueChart({ data }: RevenueChartProps) {
           <XAxis
             dataKey="ano"
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
           />
           <YAxis
             className="text-xs"
-            tick={{ fill: 'hsl(var(--foreground))' }}
+            tick={{ fill: 'var(--foreground)' }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -85,7 +85,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
             type="monotone"
             dataKey="receitaLiquida"
             name="Receita Líquida"
-            stroke="hsl(var(--primary))"
+            stroke="var(--primary)"
             strokeWidth={2}
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}
@@ -94,7 +94,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
             type="monotone"
             dataKey="lucroLiquido"
             name="Lucro Líquido"
-            stroke="hsl(142.1 76.2% 36.3%)"
+            stroke="var(--chart-2)"
             strokeWidth={2}
             dot={{ r: 4 }}
             activeDot={{ r: 6 }}

@@ -24,9 +24,9 @@ import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 // Chart configuration constants for maintainability and consistency
 const CHART_CONFIG = {
   colors: {
-    imobilizado: "#003049", // Green for fixed assets
-    vendas: "#669bbc", // Blue for sales
-    vendasImobilizado: "#adb5bd", // Red for Vendas/Imobilizado indicator e63946
+    imobilizado: "var(--primary-800)", // Navy blue (âncora exata da escala)
+    vendas: "var(--primary-400)", // Azul médio
+    vendasImobilizado: "var(--neutral-400)", // Cinza neutro para linha indicadora
   },
   line: {
     strokeWidth: 2,
@@ -206,13 +206,13 @@ export function InvestmentChart({
           <XAxis
             dataKey="ano"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
           />
           {/* Eixo esquerdo: valores monetarios (barras) */}
           <YAxis
             yAxisId="left"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
           {/* Eixo direito: multiplo Vendas/Imobilizado (linha) */}
@@ -220,7 +220,7 @@ export function InvestmentChart({
             yAxisId="right"
             orientation="right"
             className="text-xs"
-            tick={{ fill: "hsl(var(--foreground))" }}
+            tick={{ fill: "var(--foreground)" }}
             tickFormatter={(value) => `${value.toFixed(1)}x`}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -236,7 +236,7 @@ export function InvestmentChart({
               dataKey={barDataKey}
               position="center"
               formatter={(value) => formatCompactNumber(Number(value))}
-              style={{ fill: "#ffffff", fontSize: 15, fontWeight: 600 }}
+              style={{ fill: "var(--primary-foreground)", fontSize: 15, fontWeight: 600 }}
             />
           </Bar>
           <Line {...INDICATOR_LINE_PROPS}>
