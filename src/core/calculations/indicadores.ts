@@ -48,6 +48,30 @@ function calcVendasImobilizado(
   };
 }
 
+function calcEmprestimosEbitda(
+  dre: DRECalculated,
+  bp: BalanceSheetCalculated,
+): IndicadorCalculated {
+  const cp = new Decimal(bp.passivoCirculante.emprestimosFinanciamentosCP);
+  const lp = new Decimal(bp.passivoRealizavelLP.emprestimosFinanciamentosLP);
+  const numerator = cp.plus(lp);
+  const denominator = new Decimal(dre.ebitda);
+
+  const value = denominator.isZero()
+    ? new Decimal(0)
+    : numerator.div(denominator);
+
+  return {
+    year: dre.year,
+    id: "emprestimos-ebitda",
+    label: "Empréstimos / EBITDA",
+    value: value.toNumber(),
+    format: "multiple",
+    numerator: numerator.toNumber(),
+    denominator: denominator.toNumber(),
+  };
+}
+
 // ============================================================
 // Registry de indicadores
 // ============================================================
@@ -59,6 +83,7 @@ type IndicadorFn = (
 
 const INDICATOR_REGISTRY: IndicadorFn[] = [
   calcVendasImobilizado,
+  calcEmprestimosEbitda,
 ];
 
 // ============================================================

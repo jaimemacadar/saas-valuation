@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import {
   BalanceSheetCalculated,
   BalanceSheetProjectionInputs,
+  IndicadoresCalculated,
 } from "@/core/types";
 import { formatCurrency } from "@/lib/utils/formatters";
 import {
@@ -32,6 +33,7 @@ interface LoansTableProps {
   projectionInputs?: BalanceSheetProjectionInputs[];
   modelId?: string;
   onProjectionChange?: (data: BalanceSheetProjectionInputs[]) => void;
+  indicadoresData?: IndicadoresCalculated[];
 }
 
 type RowType =
@@ -49,9 +51,7 @@ interface AuxRow {
   values: Record<number, number | null>;
   tooltip?: string;
   premiseField?: keyof BalanceSheetProjectionInputs;
-  /** Chave do grupo que este header de seção controla */
   groupKey?: string;
-  /** Grupo ao qual a premissa pertence (para toggle por seção) */
   premiseGroup?: string;
 }
 
@@ -60,6 +60,7 @@ export function LoansTable({
   projectionInputs,
   modelId,
   onProjectionChange,
+  indicadoresData,
 }: LoansTableProps) {
   const [localProjections, setLocalProjections] = useState<
     BalanceSheetProjectionInputs[]
@@ -385,8 +386,24 @@ export function LoansTable({
           ]),
         ),
       },
+
+      // ── Indicadores ──
+      {
+        key: "emprestimos-ebitda",
+        label: "Empréstimos / EBITDA (x)",
+        type: "annotation",
+        tooltip: "Dívida Total ÷ EBITDA — alavancagem da dívida",
+        values: Object.fromEntries(
+          sortedYears.map((y) => {
+            const indicador = indicadoresData
+              ?.find((ind) => ind.year === y)
+              ?.indicadores.find((i) => i.id === "emprestimos-ebitda");
+            return [y, indicador?.value ?? null];
+          }),
+        ),
+      },
     ];
-  }, [data, localProjections, hasPremises]);
+  }, [data, localProjections, hasPremises, indicadoresData]);
 
   const visibleRows = useMemo(() => {
     return rows.filter((row) => {
@@ -583,9 +600,11 @@ export function LoansTable({
                           value !== null && value < 0 && "text-red-600",
                         )}
                       >
-                        {value !== null
-                          ? formatCurrency(value, { showSymbol: false })
-                          : "—"}
+                        {row.key === "emprestimos-ebitda" && value !== null
+                          ? `${value.toFixed(2)}x`
+                          : value !== null
+                            ? formatCurrency(value, { showSymbol: false })
+                            : "—"}
                       </div>
                     </TableCell>
                   );
