@@ -34,6 +34,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
+      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu className="gap-2">
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
