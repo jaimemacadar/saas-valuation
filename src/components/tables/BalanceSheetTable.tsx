@@ -22,6 +22,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ChevronRight, ChevronDown, CheckCircle2, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface BalanceSheetTableProps {
   data: BalanceSheetCalculated[];
@@ -37,6 +39,7 @@ type BalanceSheetRowData = {
 
 export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
   const [expanded, setExpanded] = useState<ExpandedState>(true);
+  const [showDecimals, setShowDecimals] = useState(false);
 
   if (!data || data.length === 0) {
     return (
@@ -173,6 +176,8 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
     [data],
   );
 
+  const fractionDigits = showDecimals ? 2 : 0;
+
   const columns: ColumnDef<BalanceSheetRowData>[] = useMemo(
     () => [
       {
@@ -229,17 +234,23 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                 rowType === "subtotal" && "font-semibold",
                 rowType === "total" &&
                   "font-bold border-t-2 border-t-foreground",
+                rowType === "item" && "text-muted-foreground",
               )}
             >
               {value !== null
-                ? formatCurrency(value, { showSymbol: false })
+                ? formatCurrency(value, {
+                    showSymbol: false,
+                    minimumFractionDigits: fractionDigits,
+                    maximumFractionDigits: fractionDigits,
+                  })
                 : "-"}
             </div>
           );
         },
       })),
     ],
-    [data],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, fractionDigits],
   );
 
   const table = useReactTable({
@@ -270,52 +281,86 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
         )}
       </div>
 
-      <p className="text-xs text-muted-foreground">Valores em R$ (Reais)</p>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-muted-foreground italic pl-1 self-end">
+            Valores em R$ (Reais)
+          </p>
+          <div className="flex items-center gap-2">
+            <Label
+              htmlFor="decimals-toggle"
+              className="text-xs text-muted-foreground cursor-pointer"
+            >
+              Decimais
+            </Label>
+            <Switch
+              id="decimals-toggle"
+              checked={showDecimals}
+              onCheckedChange={setShowDecimals}
+            />
+          </div>
+        </div>
 
-      <div className="rounded-md border bg-card">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      header.id === "label" && "w-[250px] min-w-[200px]",
-                      header.id !== "label" &&
-                        "w-[110px] min-w-[100px] text-right",
-                      "font-semibold",
-                    )}
+        <div className="rounded-md border bg-card overflow-x-auto">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        header.id === "label" &&
+                          "w-[250px] min-w-[200px] sticky left-0 z-10 bg-card",
+                        header.id !== "label" &&
+                          "w-[110px] min-w-[100px] text-right",
+                        "font-semibold",
+                      )}
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.map((row) => {
+                const isMuted =
+                  row.original.type === "section" ||
+                  row.original.type === "total";
+                return (
+                  <TableRow
+                    key={row.id}
+                    className={cn(isMuted && "bg-muted-alt")}
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          cell.column.id === "label" && "sticky left-0 z-10",
+                          cell.column.id === "label" &&
+                            isMuted &&
+                            "bg-muted-alt",
+                          cell.column.id === "label" && !isMuted && "bg-card",
                         )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className={cn(
-                  row.original.type === "section" && "bg-muted/50",
-                  row.original.type === "total" && "bg-muted/50",
-                )}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

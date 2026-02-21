@@ -78,33 +78,35 @@ Escala completa de 50 a 900, definida em oklch. A cor de referencia `#003049` an
 
 | Token | Light Mode | Dark Mode | Uso |
 |-------|-----------|-----------|-----|
-| `--primary-50` | `oklch(0.97 0.014 238)` | `oklch(0.130 0.106 238)` | Backgrounds sutis |
-| `--primary-100` | `oklch(0.93 0.035 238)` | `oklch(0.167 0.134 238)` | Borders leves |
-| `--primary-200` | `oklch(0.87 0.065 238)` | `oklch(0.204 0.160 238)` | Hover states |
-| `--primary-300` | `oklch(0.78 0.098 238)` | `oklch(0.260 0.200 238)` | Accents |
-| `--primary-400` | `oklch(0.67 0.132 238)` | `oklch(0.340 0.249 238)` | Focus rings |
-| `--primary-500` | `oklch(0.55 0.117 238)` | `oklch(0.402 0.298 238)` | Texto secundario |
-| `--primary-600` | `oklch(0.45 0.097 238)` | `oklch(0.464 0.277 238)` | **Brand color** (light) |
-| `--primary-700` | `oklch(0.37 0.080 238)` | `oklch(0.507 0.202 238)` | Hover em brand |
-| `--primary-800` | `oklch(0.294 0.066 238)` | `oklch(0.55 0.117 238)` | **#003049** — Accent foreground |
-| `--primary-900` | `oklch(0.21 0.050 238)` | `oklch(0.587 0.053 238)` | Texto em backgrounds claros |
+| `--primary-50` | `oklch(0.97 0.014 238)` | `oklch(0.95 0.03 238)` | Backgrounds sutis |
+| `--primary-100` | `oklch(0.93 0.035 238)` | `oklch(0.90 0.05 238)` | Borders leves |
+| `--primary-200` | `oklch(0.87 0.065 238)` | `oklch(0.85 0.08 238)` | Hover states |
+| `--primary-300` | `oklch(0.78 0.098 238)` | `oklch(0.80 0.10 238)` | Accents |
+| `--primary-400` | `oklch(0.67 0.132 238)` | `oklch(0.75 0.12 238)` | Focus rings |
+| `--primary-500` | `oklch(0.55 0.117 238)` | `oklch(0.70 0.13 238)` | Texto secundario |
+| `--primary-600` | `oklch(0.45 0.097 238)` | `oklch(0.65 0.13 238)` | **Brand color** (light) |
+| `--primary-700` | `oklch(0.37 0.080 238)` | `oklch(0.60 0.12 238)` | Hover em brand |
+| `--primary-800` | `oklch(0.294 0.066 238)` | `oklch(0.55 0.117 238)` | **#003049** — âncora dark |
+| `--primary-900` | `oklch(0.21 0.050 238)` | `oklch(0.45 0.097 238)` | Texto em backgrounds claros |
 
-> Em dark mode, a escala proporcional e ancorada em `primary-800 = oklch(0.55 0.117 238)` (fator L: ×0.618, fator C: ×2.127 em relacao a escala anterior).
+> Em dark mode, a escala e ancorada em `primary-800 = oklch(0.55 0.117 238)` (= primary-500 light). Os demais steps sao distribuidos com ΔL=0.05 por step (de primary-50 L=0.95 ate primary-800 L=0.55) e chroma em arco suave que peaks em primary-500/600 (C=0.13), garantindo diferenciacao perceptual em toda a escala.
 
 ### Escala Neutral (Grey, chroma 0)
 
 | Token | Light Mode | Dark Mode |
 |-------|-----------|-----------|
-| `--neutral-50` | `oklch(0.985 0 0)` | `oklch(0.17 0 0)` |
-| `--neutral-100` | `oklch(0.97 0 0)` | `oklch(0.21 0 0)` |
-| `--neutral-200` | `oklch(0.93 0 0)` | `oklch(0.27 0 0)` |
-| `--neutral-300` | `oklch(0.87 0 0)` | `oklch(0.35 0 0)` |
-| `--neutral-400` | `oklch(0.78 0 0)` | `oklch(0.45 0 0)` |
-| `--neutral-500` | `oklch(0.64 0 0)` | `oklch(0.55 0 0)` |
-| `--neutral-600` | `oklch(0.50 0 0)` | `oklch(0.65 0 0)` |
-| `--neutral-700` | `oklch(0.38 0 0)` | `oklch(0.75 0 0)` |
-| `--neutral-800` | `oklch(0.27 0 0)` | `oklch(0.85 0 0)` |
-| `--neutral-900` | `oklch(0.17 0 0)` | `oklch(0.93 0 0)` |
+| `--neutral-50` | `oklch(0.985 0 0)` | `oklch(0.97 0 0)` |
+| `--neutral-100` | `oklch(0.97 0 0)` | `oklch(0.93 0 0)` |
+| `--neutral-200` | `oklch(0.93 0 0)` | `oklch(0.89 0 0)` |
+| `--neutral-300` | `oklch(0.87 0 0)` | `oklch(0.85 0 0)` |
+| `--neutral-400` | `oklch(0.78 0 0)` | `oklch(0.80 0 0)` |
+| `--neutral-500` | `oklch(0.64 0 0)` | `oklch(0.76 0 0)` |
+| `--neutral-600` | `oklch(0.50 0 0)` | `oklch(0.72 0 0)` |
+| `--neutral-700` | `oklch(0.38 0 0)` | `oklch(0.68 0 0)` |
+| `--neutral-800` | `oklch(0.27 0 0)` | `oklch(0.64 0 0)` |
+| `--neutral-900` | `oklch(0.17 0 0)` | `oklch(0.50 0 0)` |
+
+> Em dark mode, a escala e ancorada em `neutral-800 = oklch(0.64 0 0)` (= neutral-500 light). Os demais steps sao distribuidos com ΔL≈0.04 por step (de neutral-50 L=0.97 ate neutral-800 L=0.64), com C=0 em toda a escala, garantindo diferenciacao perceptual uniforme entre todos os graus de cinza.
 
 ### Escala Alternativa (Red, hue 24 — ref `#800016`)
 
@@ -112,31 +114,31 @@ Escala completa de 50 a 900, definida em oklch. A cor de referencia `#800016` an
 
 | Token | Light Mode | Dark Mode | Nota |
 |-------|-----------|-----------|------|
-| `--alt-50` | `oklch(0.97 0.013 24)` | `oklch(0.27 0.100 24)` | Backgrounds sutis |
-| `--alt-100` | `oklch(0.93 0.033 24)` | `oklch(0.32 0.125 24)` | Borders leves |
-| `--alt-200` | `oklch(0.87 0.067 24)` | `oklch(0.378 0.153 24)` | Hover states |
-| `--alt-300` | `oklch(0.78 0.125 24)` | `oklch(0.45 0.180 24)` | Accents |
-| `--alt-400` | `oklch(0.63 0.250 24)` | `oklch(0.55 0.210 24)` | ~#FF002B |
-| `--alt-500` | `oklch(0.51 0.206 24)` | `oklch(0.65 0.215 24)` | ~#C00021 |
-| `--alt-600` | `oklch(0.45 0.180 24)` | `oklch(0.75 0.148 24)` | ~#A0001C |
-| `--alt-700` | `oklch(0.42 0.165 24)` | `oklch(0.82 0.100 24)` | |
-| `--alt-800` | `oklch(0.378 0.153 24)` | `oklch(0.89 0.055 24)` | **#800016** ref |
-| `--alt-900` | `oklch(0.27 0.100 24)` | `oklch(0.95 0.025 24)` | |
+| `--alt-50` | `oklch(0.97 0.013 24)` | `oklch(0.95 0.04 24)` | Backgrounds sutis |
+| `--alt-100` | `oklch(0.93 0.033 24)` | `oklch(0.90 0.07 24)` | Borders leves |
+| `--alt-200` | `oklch(0.87 0.067 24)` | `oklch(0.84 0.11 24)` | Hover states |
+| `--alt-300` | `oklch(0.78 0.125 24)` | `oklch(0.78 0.15 24)` | Accents |
+| `--alt-400` | `oklch(0.63 0.250 24)` | `oklch(0.73 0.19 24)` | ~#FF002B |
+| `--alt-500` | `oklch(0.51 0.206 24)` | `oklch(0.67 0.21 24)` | ~#C00021 |
+| `--alt-600` | `oklch(0.45 0.180 24)` | `oklch(0.62 0.22 24)` | ~#A0001C |
+| `--alt-700` | `oklch(0.42 0.165 24)` | `oklch(0.57 0.22 24)` | |
+| `--alt-800` | `oklch(0.378 0.153 24)` | `oklch(0.51 0.206 24)` | **#800016** ref — âncora dark |
+| `--alt-900` | `oklch(0.27 0.100 24)` | `oklch(0.45 0.18 24)` | |
 
-> Em dark mode, a escala se inverte: 50 e o mais escuro, 900 e o mais claro. Classes Tailwind: `bg-alt-500`, `text-alt-800`, etc.
+> Em dark mode, a escala e ancorada em `alt-800 = oklch(0.51 0.206 24)` (= alt-500 light). Os demais steps sao distribuidos com ΔL≈0.055 por step (de alt-50 L=0.95 ate alt-800 L=0.51) e chroma em arco suave que peaks em alt-600/700 (C=0.22), garantindo diferenciacao perceptual em toda a escala. Classes Tailwind: `bg-alt-500`, `text-alt-800`, etc.
 
 ### Paleta Alternativa (Tokens Semanticos)
 
 Tokens semanticos de alto nivel para a cor alternativa, espelhando a estrutura da paleta Primary. Definidos em `globals.css` nos blocos `:root` e `.dark`.
 
-| Token | Light Mode | Dark Mode | Tailwind Class | Descricao |
-|-------|-----------|-----------|----------------|-----------|
-| `--alt` | `var(--alt-600)` | `var(--alt-500)` | `bg-alt` | Cor principal alternativa (brand alt) |
-| `--alt-foreground` | `oklch(0.985 0 0)` | `oklch(0.985 0 0)` | `text-alt-foreground` | Texto sobre fundo alt |
-| `--secondary-alt` | `var(--secondary)` | `var(--secondary)` | `bg-secondary-alt` | Fundo neutro que acompanha alt |
-| `--secondary-alt-foreground` | `var(--secondary-foreground)` | `var(--secondary-foreground)` | `text-secondary-alt-foreground` | Texto em secondary-alt |
-| `--muted-alt` | `var(--muted)` | `var(--muted)` | `bg-muted-alt` | Fundo muted que acompanha alt |
-| `--muted-alt-foreground` | `var(--muted-foreground)` | `var(--muted-foreground)` | `text-muted-alt-foreground` | Texto em muted-alt |
+| Token                        | Light Mode                    | Dark Mode                     | Tailwind Class                  | Descricao                             |
+| ---------------------------- | ----------------------------- | ----------------------------- | ------------------------------- | ------------------------------------- |
+| `--alt`                      | `var(--alt-600)`              | `var(--alt-500)`              | `bg-alt`                        | Cor principal alternativa (brand alt) |
+| `--alt-foreground`           | `oklch(0.985 0 0)`            | `oklch(0.985 0 0)`            | `text-alt-foreground`           | Texto sobre fundo alt                 |
+| `--secondary-alt`            | `var(--secondary)`            | `var(--secondary)`            | `bg-secondary-alt`              | Fundo neutro que acompanha alt        |
+| `--secondary-alt-foreground` | `var(--secondary-foreground)` | `var(--secondary-foreground)` | `text-secondary-alt-foreground` | Texto em secondary-alt                |
+| `--muted-alt`                | `var(--muted)`                | `oklch(0.24 0 0)`             | `bg-muted-alt`                  | Fundo muted que acompanha alt         |
+| `--muted-alt-foreground`     | `var(--muted-foreground)`     | `var(--muted-foreground)`     | `text-muted-alt-foreground`     | Texto em muted-alt                    |
 
 > `--secondary-alt` e `--muted-alt` referenciam os mesmos valores neutros de `--secondary` e `--muted`, estabelecendo a paleta de suporte que acompanha a cor alternativa — o mesmo padrao da paleta Primary.
 
@@ -266,12 +268,20 @@ import { ThemeProvider } from "next-themes";
 </ThemeProvider>
 ```
 
-### Estrategia de Inversao
+### Estrategia de Escalas em Dark Mode
 
-- **Escalas de cor (primary, neutral):** Os steps 50-900 se invertem (50 vira escuro, 900 vira claro)
+As escalas de cor mantêm **ordem crescente** em dark mode (50 = mais claro, 900 = mais escuro), igual ao light mode. Cada escala e ancorada no step 800 e distribuida com ΔL uniforme para garantir diferenciacao perceptual em todos os steps:
+
+| Escala | Âncora (dark-800) | Origem da âncora | Range dark (50→800) | ΔL/step |
+|--------|-------------------|------------------|---------------------|---------|
+| Primary (hue 238) | `oklch(0.55 0.117 238)` | = primary-500 light | L 0.95 → 0.55 | 0.05 |
+| Neutral (C=0) | `oklch(0.64 0 0)` | = neutral-500 light | L 0.97 → 0.64 | ≈0.04 |
+| Alt (hue 24) | `oklch(0.51 0.206 24)` | = alt-500 light | L 0.95 → 0.51 | ≈0.055 |
+
+- **Chroma (escalas cromáticas):** segue arco suave — sobe gradualmente dos steps claros, atinge peak em torno de 600/700, e reduz levemente em 900
 - **Tokens base:** `--background` e `--foreground` trocam de valor
 - **Cards:** Fundo levemente mais claro que background (`oklch(0.205 0 0)`)
-- **Borders:** Usam transparencia (`oklch(1 0 0 / 10%)`) para adaptabilidade
+- **Borders:** Usam transparência (`oklch(1 0 0 / 10%)`) para adaptabilidade
 - **Cores semanticas:** Tons mais brilhantes em dark para manter legibilidade
 - **Cores de graficos:** Ajustadas para melhor contraste em fundo escuro
 
@@ -563,10 +573,11 @@ Isso permite que classes como `bg-primary`, `text-success`, `border-border` func
 - Permite que o Tailwind v4 resolva tokens nativamente
 - Mantem `tailwind.config.ts` limpo (apenas fontFamily)
 
-### Inversao de Escalas em Dark Mode
+### Distribuicao Uniforme de Escalas em Dark Mode
 
-- Steps 50-900 se invertem para que `primary-50` sempre seja "o tom mais sutil" no contexto atual
-- Simplifica o uso: nao e necessario pensar em qual step usar para light vs dark
+- Steps 50-900 mantêm **ordem crescente** em dark mode (50 = mais claro, 900 = mais escuro), igual ao light mode
+- Cada escala e ancorada no step 800 com ΔL uniforme entre os demais steps, garantindo diferenciacao perceptual em toda a faixa
+- Simplifica o uso: `primary-50` e sempre "o tom mais sutil", independente do tema ativo
 
 ## Acessibilidade
 

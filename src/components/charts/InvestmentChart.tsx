@@ -25,7 +25,7 @@ import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 const CHART_CONFIG = {
   colors: {
     imobilizado: "var(--primary-800)", // Navy blue (âncora exata da escala)
-    vendas: "var(--primary-400)", // Azul médio
+    vendas: "var(--primary-500)", // Azul médio
     vendasImobilizado: "var(--neutral-400)", // Cinza neutro para linha indicadora
   },
   line: {

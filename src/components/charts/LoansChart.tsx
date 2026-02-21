@@ -22,7 +22,7 @@ import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 const CHART_CONFIG = {
   colors: {
     emprestimosCP: "var(--alt-500)", // Vermelho vivo (~#C00021)
-    emprestimosLP: "var(--alt)", // Vermelho escuro (âncora exata #800016)
+    emprestimosLP: "var(--alt-800)", // Vermelho escuro (âncora exata #800016)
     emprestimosEbitda: "var(--neutral-400)", // Cinza neutro para linha indicadora
   },
   line: {

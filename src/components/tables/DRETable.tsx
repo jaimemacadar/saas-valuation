@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-table";
 import { Loader2, Check, Info, ChevronRight, ChevronDown, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { DRECalculated, DREProjectionInputs } from "@/core/types";
 import { formatCurrency, formatPercentage } from "@/lib/utils/formatters";
 import {
@@ -65,6 +67,7 @@ export function DRETable({
 
   // Estado de visibilidade das premissas
   const [showAllPremises, setShowAllPremises] = useState(false);
+  const [showDecimals, setShowDecimals] = useState(false);
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(
     new Set(),
   );
@@ -434,6 +437,8 @@ export function DRETable({
     });
   }, [rows, showAllPremises, expandedAccounts]);
 
+  const fractionDigits = showDecimals ? 2 : 0;
+
   // Memoiza columns para evitar novas referências a cada render
   const columns: ColumnDef<DRERowData>[] = useMemo(
     () => [
@@ -566,14 +571,18 @@ export function DRETable({
               {value !== null
                 ? isMargin
                   ? formatPercentage(value)
-                  : formatCurrency(value, { showSymbol: false })
+                  : formatCurrency(value, {
+                      showSymbol: false,
+                      minimumFractionDigits: fractionDigits,
+                      maximumFractionDigits: fractionDigits,
+                    })
                 : "-"}
             </div>
           );
         },
       })),
     ],
-    [data, handlePremiseChange, modelId, showAllPremises, expandedAccounts, toggleAccount],
+    [data, handlePremiseChange, modelId, showAllPremises, expandedAccounts, toggleAccount, fractionDigits],
   );
 
   const table = useReactTable({
@@ -617,26 +626,38 @@ export function DRETable({
 
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground italic pl-1 mb-0.4 self-end">Valores em R$ (Reais)</p>
-        {hasPremises ? (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAllPremises((prev) => !prev)}
-            className="h-7 gap-1.5 text-xs"
-          >
-            {showAllPremises ? (
-              <>
-                <EyeOff className="h-3.5 w-3.5" />
-                Ocultar premissas
-              </>
-            ) : (
-              <>
-                <Eye className="h-3.5 w-3.5" />
-                Exibir premissas
-              </>
-            )}
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="decimals-toggle-dre" className="text-xs text-muted-foreground cursor-pointer">
+              Decimais
+            </Label>
+            <Switch
+              id="decimals-toggle-dre"
+              checked={showDecimals}
+              onCheckedChange={setShowDecimals}
+            />
+          </div>
+          {hasPremises ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAllPremises((prev) => !prev)}
+              className="h-7 gap-1.5 text-xs"
+            >
+              {showAllPremises ? (
+                <>
+                  <EyeOff className="h-3.5 w-3.5" />
+                  Ocultar premissas
+                </>
+              ) : (
+                <>
+                  <Eye className="h-3.5 w-3.5" />
+                  Exibir premissas
+                </>
+              )}
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <div className="rounded-md border bg-card">

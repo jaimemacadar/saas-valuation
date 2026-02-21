@@ -338,7 +338,7 @@ const terminalValue = fcff[n] * (1 + g) / (wacc - g);`}
         <div className="grid grid-cols-2 gap-4">
           {[
             { label: "Primary color (light)", value: "Navy Blue — oklch(0.45 0.097 238) — #003049" },
-            { label: "Primary color (dark)", value: "primary-800 — oklch(0.55 0.117 238)" },
+            { label: "Primary color (dark)", value: "primary-500 — oklch(0.87 0.065 238)" },
             { label: "Font", value: "Inter (Google Fonts)" },
             { label: "Style", value: "Modern minimal — profissional financeiro" },
             { label: "Border radius", value: "0.625rem (10px) — Rounded" },

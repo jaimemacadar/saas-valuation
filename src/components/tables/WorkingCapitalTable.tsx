@@ -10,6 +10,8 @@ import {
   EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   BalanceSheetCalculated,
   BalanceSheetProjectionInputs,
@@ -71,6 +73,7 @@ export function WorkingCapitalTable({
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(
     new Set(),
   );
+  const [showDecimals, setShowDecimals] = useState(false);
 
   const { isSaving, lastSavedAt, save } = useBPProjectionPersist({
     modelId: modelId || "",
@@ -608,26 +611,38 @@ export function WorkingCapitalTable({
         <p className="text-xs text-muted-foreground italic pl-1 self-end">
           Valores em R$ (Reais)
         </p>
-        {hasPremises ? (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowAllPremises((prev) => !prev)}
-            className="h-7 gap-1.5 text-xs"
-          >
-            {showAllPremises ? (
-              <>
-                <EyeOff className="h-3.5 w-3.5" />
-                Ocultar premissas
-              </>
-            ) : (
-              <>
-                <Eye className="h-3.5 w-3.5" />
-                Exibir premissas
-              </>
-            )}
-          </Button>
-        ) : null}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="decimals-toggle-wc" className="text-xs text-muted-foreground cursor-pointer">
+              Decimais
+            </Label>
+            <Switch
+              id="decimals-toggle-wc"
+              checked={showDecimals}
+              onCheckedChange={setShowDecimals}
+            />
+          </div>
+          {hasPremises ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAllPremises((prev) => !prev)}
+              className="h-7 gap-1.5 text-xs"
+            >
+              {showAllPremises ? (
+                <>
+                  <EyeOff className="h-3.5 w-3.5" />
+                  Ocultar premissas
+                </>
+              ) : (
+                <>
+                  <Eye className="h-3.5 w-3.5" />
+                  Exibir premissas
+                </>
+              )}
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <div className="rounded-md border bg-card">
@@ -666,6 +681,7 @@ export function WorkingCapitalTable({
                       row.type === "header" && "font-bold text-sm",
                       row.type === "total" && "font-bold",
                       row.type === "subtotal" && "font-semibold",
+                      row.type === "value" && "text-muted-foreground",
                       row.type === "premise" &&
                         "text-xs text-muted-foreground pl-4",
                       row.type === "annotation" &&
@@ -776,7 +792,11 @@ export function WorkingCapitalTable({
                         )}
                       >
                         {value !== null
-                          ? formatCurrency(value, { showSymbol: false })
+                          ? formatCurrency(value, {
+                              showSymbol: false,
+                              minimumFractionDigits: showDecimals ? 2 : 0,
+                              maximumFractionDigits: showDecimals ? 2 : 0,
+                            })
                           : "—"}
                       </div>
                     </TableCell>

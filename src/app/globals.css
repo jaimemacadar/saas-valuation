@@ -238,41 +238,41 @@
 }
 
 .dark {
-  /* === PRIMARY SCALE (Dark — hue 238, âncora 800 = oklch(0.55 0.117 238)) === */
-  --primary-50: oklch(0.13 0.106 238);
-  --primary-100: oklch(0.167 0.134 238);
-  --primary-200: oklch(0.204 0.16 238);
-  --primary-300: oklch(0.26 0.2 238);
-  --primary-400: oklch(0.34 0.249 238);
-  --primary-500: oklch(0.402 0.298 238);
-  --primary-600: oklch(0.464 0.277 238);
-  --primary-700: oklch(0.507 0.202 238);
-  --primary-800: oklch(0.55 0.117 238);
-  --primary-900: oklch(0.587 0.053 238);
+  /* === PRIMARY SCALE (Dark — hue 238, âncora primary-800, ΔL≈0.05/step, chroma em arco) === */
+  --primary-50: oklch(0.95 0.03 238);
+  --primary-100: oklch(0.9 0.05 238);
+  --primary-200: oklch(0.85 0.08 238);
+  --primary-300: oklch(0.8 0.1 238);
+  --primary-400: oklch(0.75 0.12 238);
+  --primary-500: oklch(0.7 0.13 238);
+  --primary-600: oklch(0.65 0.13 238);
+  --primary-700: oklch(0.6 0.12 238);
+  --primary-800: oklch(0.55 0.117 238); /* âncora — = primary-500 light */
+  --primary-900: oklch(0.45 0.097 238); /* = primary-600 light */
 
-  /* === NEUTRAL SCALE (Dark) === */
-  --neutral-50: oklch(0.17 0 0);
-  --neutral-100: oklch(0.21 0 0);
-  --neutral-200: oklch(0.37 0 0);
-  --neutral-300: oklch(0.45 0 0);
-  --neutral-400: oklch(0.55 0 0);
-  --neutral-500: oklch(0.65 0 0);
-  --neutral-600: oklch(0.75 0 0);
-  --neutral-700: oklch(0.85 0 0);
-  --neutral-800: oklch(0.95 0 0);
-  --neutral-900: oklch(1.03 0 0);
+  /* === NEUTRAL SCALE (Dark — âncora neutral-800, ΔL≈0.04/step) === */
+  --neutral-50: oklch(0.97 0 0);
+  --neutral-100: oklch(0.93 0 0);
+  --neutral-200: oklch(0.89 0 0);
+  --neutral-300: oklch(0.85 0 0);
+  --neutral-400: oklch(0.8 0 0);
+  --neutral-500: oklch(0.76 0 0);
+  --neutral-600: oklch(0.72 0 0);
+  --neutral-700: oklch(0.68 0 0);
+  --neutral-800: oklch(0.64 0 0); /* âncora — = neutral-500 light */
+  --neutral-900: oklch(0.5 0 0); /* = neutral-600 light */
 
-  /* === ALTERNATIVE SCALE (Dark — same hue 24) === */
-  --alt-50: oklch(0.27 0.1 24);
-  --alt-100: oklch(0.32 0.125 24);
-  --alt-200: oklch(0.378 0.153 24);
-  --alt-300: oklch(0.45 0.18 24);
-  --alt-400: oklch(0.55 0.21 24);
-  --alt-500: oklch(0.65 0.215 24);
-  --alt-600: oklch(0.75 0.148 24);
-  --alt-700: oklch(0.82 0.1 24);
-  --alt-800: oklch(0.89 0.055 24);
-  --alt-900: oklch(0.95 0.025 24);
+  /* === ALTERNATIVE SCALE (Dark — hue 24, âncora alt-800, ΔL≈0.055/step, chroma em arco) === */
+  --alt-50: oklch(0.95 0.04 24);
+  --alt-100: oklch(0.9 0.07 24);
+  --alt-200: oklch(0.84 0.11 24);
+  --alt-300: oklch(0.78 0.15 24);
+  --alt-400: oklch(0.73 0.19 24);
+  --alt-500: oklch(0.67 0.21 24);
+  --alt-600: oklch(0.62 0.22 24);
+  --alt-700: oklch(0.57 0.22 24);
+  --alt-800: oklch(0.51 0.206 24); /* âncora — = alt-500 light */
+  --alt-900: oklch(0.45 0.18 24); /* = alt-600 light */
 
   /* === BASE === */
   --background: oklch(0.145 0 0);
@@ -299,11 +299,11 @@
   --muted-foreground: oklch(0.708 0 0);
 
   /* === ALTERNATIVE SEMANTIC === */
-  --alt: var(--alt-300);
+  --alt: var(--alt-500);
   --alt-foreground: oklch(0.985 0 0);
   --secondary-alt: var(--secondary);
   --secondary-alt-foreground: var(--secondary-foreground);
-  --muted-alt: var(--muted);
+  --muted-alt: oklch(0.24 0 0);
   --muted-alt-foreground: var(--muted-foreground);
 
   /* === ACCENT === */

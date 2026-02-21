@@ -23,7 +23,7 @@ import { formatCurrency, formatCompactNumber } from "@/lib/utils/formatters";
 const CHART_CONFIG = {
   colors: {
     capitalGiro: "var(--primary-800)", // Navy blue (âncora exata da escala)
-    ncg: "var(--primary-400)", // Azul médio
+    ncg: "var(--primary-500)", // Azul médio
     vendasNcg: "var(--neutral-400)", // Cinza neutro para linha indicadora
   },
   line: {
