@@ -185,7 +185,7 @@ export function FCFFTable({ data }: FCFFTableProps) {
       </div>
 
       {/* Tabela */}
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -194,7 +194,7 @@ export function FCFFTable({ data }: FCFFTableProps) {
                   <TableHead
                     key={header.id}
                     className={cn(
-                      header.id === 'label' && 'w-[220px] min-w-[200px]',
+                      header.id === 'label' && 'w-[220px] min-w-[200px] sticky left-0 z-10 bg-card',
                       header.id !== 'label' && 'w-[110px] min-w-[100px] text-right',
                       'font-semibold'
                     )}
@@ -220,7 +220,15 @@ export function FCFFTable({ data }: FCFFTableProps) {
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      cell.column.id === 'label' && 'sticky left-0 z-10',
+                      cell.column.id === 'label' && row.original.type === 'total' && 'bg-muted/50',
+                      cell.column.id === 'label' && row.original.type === 'subtotal' && 'bg-muted/30',
+                      cell.column.id === 'label' && row.original.type === 'value' && 'bg-card',
+                    )}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

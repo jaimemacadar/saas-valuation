@@ -89,6 +89,12 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
 
+  /* === TABLE PREMISE ROW === */
+  --color-premise-bg: var(--premise-bg);
+
+  /* === TABLE ANNOTATION ROW === */
+  --color-annotation-bg: var(--annotation-bg);
+
   /* === PRIMARY SCALE === */
   --color-primary-50: var(--primary-50);
   --color-primary-100: var(--primary-100);
@@ -235,6 +241,12 @@
   --warning-foreground: oklch(0.17 0 0);
   --info: oklch(0.55 0.18 220);
   --info-foreground: oklch(0.985 0 0);
+
+  /* === TABLE PREMISE ROW (opaque — safe for sticky columns) === */
+  --premise-bg: oklch(0.97 0.01 250);
+
+  /* === TABLE ANNOTATION ROW (opaque — safe for sticky columns) === */
+  --annotation-bg: oklch(0.97 0.02 75);
 }
 
 .dark {
@@ -343,6 +355,12 @@
   --warning-foreground: oklch(0.17 0 0);
   --info: oklch(0.62 0.18 220);
   --info-foreground: oklch(0.985 0 0);
+
+  /* === TABLE PREMISE ROW (opaque — safe for sticky columns) === */
+  --premise-bg: oklch(0.224 0.0449 254.9);
+
+  /* === TABLE ANNOTATION ROW (opaque — safe for sticky columns) === */
+  --annotation-bg: oklch(0.22 0.007 47);
 }
 
 @layer base {

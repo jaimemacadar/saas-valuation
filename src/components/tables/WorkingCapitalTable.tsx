@@ -225,7 +225,9 @@ export function WorkingCapitalTable({
         label: "ATIVO CIRCULANTE",
         type: "header",
         groupKey: "ativoCirculante",
-        values: {},
+        values: Object.fromEntries(
+          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.total ?? null]),
+        ),
       },
       {
         key: "caixa",
@@ -274,7 +276,7 @@ export function WorkingCapitalTable({
         ? [
             {
               key: "prazoAplicacoesFinanceiras",
-              label: "↳ Prazo Médio (dias) — Rec. Líquida",
+              label: "↳ Prazo Médio (dias) — Rec. Líq.",
               type: "premise" as RowType,
               parentKey: "aplicacoes",
               premiseGroup: "ativoCirculante" as const,
@@ -364,7 +366,7 @@ export function WorkingCapitalTable({
         ? [
             {
               key: "prazoAtivosBiologicos",
-              label: "↳ Prazo Médio (dias) — Rec. Líquida",
+              label: "↳ Prazo Médio (dias) — Rec. Líq.",
               type: "premise" as RowType,
               parentKey: "ativosBio",
               premiseGroup: "ativoCirculante" as const,
@@ -390,22 +392,25 @@ export function WorkingCapitalTable({
           ]),
         ),
       },
-      {
-        key: "total-ac",
-        label: "Total Ativo Circulante",
-        type: "subtotal",
-        values: Object.fromEntries(
-          sortedYears.map((y) => [y, byYear[y]?.ativoCirculante.total ?? null]),
-        ),
-      },
-
       // ── PASSIVO CIRCULANTE ──
       {
         key: "hdr-pc",
         label: "PASSIVO CIRCULANTE",
         type: "header",
         groupKey: "passivoCirculante",
-        values: {},
+        values: Object.fromEntries(
+          sortedYears.map((y) => {
+            const pc = byYear[y]?.passivoCirculante;
+            if (!pc) return [y, null];
+            return [
+              y,
+              pc.fornecedores +
+                pc.impostosAPagar +
+                pc.obrigacoesSociaisETrabalhistas +
+                pc.outrasObrigacoes,
+            ];
+          }),
+        ),
       },
       {
         key: "fornecedores",
@@ -451,7 +456,7 @@ export function WorkingCapitalTable({
         ? [
             {
               key: "prazoImpostosAPagar",
-              label: "↳ Prazo Médio (dias) — Imp. Devoluções",
+              label: "↳ Prazo Médio (dias) — Imp. Devol.",
               type: "premise" as RowType,
               parentKey: "impostos",
               premiseGroup: "passivoCirculante" as const,
@@ -482,7 +487,7 @@ export function WorkingCapitalTable({
         ? [
             {
               key: "prazoObrigacoesSociais",
-              label: "↳ Prazo Médio (dias) — Desp. Operacionais",
+              label: "↳ Prazo Médio (dias) — Desp. Oper.",
               type: "premise" as RowType,
               parentKey: "obrigacoes",
               premiseGroup: "passivoCirculante" as const,
@@ -508,25 +513,6 @@ export function WorkingCapitalTable({
           ]),
         ),
       },
-      {
-        key: "total-pc",
-        label: "Total Passivo Circ. (s/ Empréstimos)",
-        type: "subtotal",
-        values: Object.fromEntries(
-          sortedYears.map((y) => {
-            const pc = byYear[y]?.passivoCirculante;
-            if (!pc) return [y, null];
-            return [
-              y,
-              pc.fornecedores +
-                pc.impostosAPagar +
-                pc.obrigacoesSociaisETrabalhistas +
-                pc.outrasObrigacoes,
-            ];
-          }),
-        ),
-      },
-
       // ── Resultados ──
       {
         key: "capitalGiro",
@@ -645,11 +631,11 @@ export function WorkingCapitalTable({
         </div>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[220px] min-w-[200px] font-semibold" />
+              <TableHead className="w-[230px] min-w-[200px] font-semibold sticky left-0 z-10 bg-card" />
               {sortedYears.map((y) => (
                 <TableHead
                   key={y}
@@ -661,20 +647,34 @@ export function WorkingCapitalTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {visibleRows.map((row) => (
+            {visibleRows.map((row) => {
+              const isMutedAlt = ["hdr-ac", "hdr-pc", "capitalGiro", "ncg"].includes(row.key);
+              return (
               <TableRow
                 key={row.key}
                 className={cn(
                   row.type === "header" && "bg-muted/60 border-t-2",
                   row.type === "total" && "bg-muted/50",
                   row.type === "subtotal" && "bg-muted/30",
-                  row.type === "premise" && "bg-blue-50/50 dark:bg-blue-950/20",
+                  row.type === "premise" && "bg-premise-bg",
                   row.type === "annotation" &&
-                    "bg-amber-50/30 dark:bg-amber-950/20",
+                    "bg-amber-50/30 dark:bg-annotation-bg",
+                  isMutedAlt && "bg-muted-alt",
                 )}
               >
                 {/* Coluna de label */}
-                <TableCell>
+                <TableCell
+                  className={cn(
+                    "sticky left-0 z-10",
+                    row.type === "header" && "bg-muted/60",
+                    row.type === "total" && "bg-muted/50",
+                    row.type === "subtotal" && "bg-muted/30",
+                    row.type === "premise" && "bg-premise-bg",
+                    //row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/10",
+                    row.type === "value" && "bg-card",
+                    isMutedAlt && "bg-muted-alt",
+                  )}
+                >
                   <div
                     className={cn(
                       "min-w-[240px] whitespace-nowrap flex items-center gap-1.5",
@@ -803,7 +803,8 @@ export function WorkingCapitalTable({
                   );
                 })}
               </TableRow>
-            ))}
+              );
+            })}
           </TableBody>
         </Table>
       </div>

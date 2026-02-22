@@ -660,7 +660,7 @@ export function DRETable({
         </div>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -669,7 +669,7 @@ export function DRETable({
                   <TableHead
                     key={header.id}
                     className={cn(
-                      header.id === "label" && "w-[220px] min-w-[200px]",
+                      header.id === "label" && "w-[220px] min-w-[200px] sticky left-0 z-10 bg-card",
                       header.id !== "label" &&
                         "w-[110px] min-w-[100px] text-right",
                       "font-semibold",
@@ -694,13 +694,23 @@ export function DRETable({
                   row.original.type === "total" && "bg-muted/50",
                   row.original.type === "subtotal" && "bg-muted/30",
                   row.original.type === "premise" &&
-                    "bg-blue-50/50 dark:bg-blue-950/20",
+                    "bg-premise-bg",
                   row.original.type === "annotation" &&
                     "bg-amber-50/30 dark:bg-amber-950/20",
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      cell.column.id === "label" && "sticky left-0 z-10",
+                      cell.column.id === "label" && row.original.type === "total" && "bg-muted/50",
+                      cell.column.id === "label" && row.original.type === "subtotal" && "bg-muted/30",
+                      cell.column.id === "label" && row.original.type === "premise" && "bg-premise-bg",
+                      cell.column.id === "label" && row.original.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20",
+                      cell.column.id === "label" && row.original.type === "value" && "bg-card",
+                    )}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

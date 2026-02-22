@@ -248,8 +248,8 @@ describe('DRETable', () => {
         />
       );
 
-      // Verifica que linhas de premissa têm a classe bg-blue-50/50
-      const premiseRows = container.querySelectorAll('tr.bg-blue-50\\/50');
+      // Verifica que linhas de premissa têm a classe bg-premise-bg
+      const premiseRows = container.querySelectorAll('tr.bg-premise-bg');
       expect(premiseRows.length).toBeGreaterThan(0);
     });
   });

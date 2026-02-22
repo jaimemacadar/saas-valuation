@@ -458,7 +458,10 @@ export function LoansTable({
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <Label htmlFor="decimals-toggle-loans" className="text-xs text-muted-foreground cursor-pointer">
+            <Label
+              htmlFor="decimals-toggle-loans"
+              className="text-xs text-muted-foreground cursor-pointer"
+            >
               Decimais
             </Label>
             <Switch
@@ -490,11 +493,11 @@ export function LoansTable({
         </div>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[240px] min-w-[200px] font-semibold" />
+              <TableHead className="w-[240px] min-w-[200px] font-semibold sticky left-0 z-10 bg-card" />
               {sortedYears.map((y) => (
                 <TableHead
                   key={y}
@@ -510,16 +513,25 @@ export function LoansTable({
               <TableRow
                 key={row.key}
                 className={cn(
-                  row.type === "header" && "bg-muted/60 border-t-2",
-                  row.type === "total" && "bg-muted/50",
-                  row.type === "subtotal" && "bg-muted/30",
-                  row.type === "premise" && "bg-blue-50/50 dark:bg-blue-950/20",
-                  row.type === "annotation" &&
-                    "bg-amber-50/30 dark:bg-amber-950/20",
+                  row.type === "header" && "bg-muted-alt border-t-1",
+                  row.type === "total" && "bg-muted-alt",
+                  row.type === "subtotal" && "bg-muted-alt",
+                  row.type === "premise" && "bg-premise-bg",
+                  row.type === "annotation" && "bg-annotation-bg",
                 )}
               >
                 {/* Coluna de label */}
-                <TableCell>
+                <TableCell
+                  className={cn(
+                    "sticky left-0 z-10",
+                    row.type === "header" && "bg-muted-alt",
+                    row.type === "total" && "bg-muted-alt",
+                    row.type === "subtotal" && "bg-muted-alt",
+                    row.type === "premise" && "bg-premise-bg",
+                    row.type === "annotation" && "bg-annotation-bg",
+                    row.type === "value" && "bg-card",
+                  )}
+                >
                   <div
                     className={cn(
                       "min-w-[200px] whitespace-nowrap flex items-center gap-1.5",

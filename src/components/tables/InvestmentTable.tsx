@@ -360,11 +360,11 @@ export function InvestmentTable({
         </div>
       </div>
 
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[220px] min-w-[200px] font-semibold" />
+              <TableHead className="w-[220px] min-w-[200px] font-semibold sticky left-0 z-10 bg-card" />
               {sortedYears.map((y) => (
                 <TableHead key={y} className="w-[110px] min-w-[100px] text-right font-semibold">
                   {y === 0 ? "Ano Base" : `Ano ${y}`}
@@ -377,15 +377,25 @@ export function InvestmentTable({
               <TableRow
                 key={row.key}
                 className={cn(
-                  row.type === "header" && "bg-muted/60 border-t-2",
-                  row.type === "total" && "bg-muted/50",
-                  row.type === "subtotal" && "bg-muted/30",
-                  row.type === "premise" && "bg-blue-50/50 dark:bg-blue-950/20",
+                  row.type === "header" && "bg-muted-alt border-t-2",
+                  row.type === "total" && "bg-muted-alt",
+                  row.type === "subtotal" && "bg-muted-alt",
+                  row.type === "premise" && "bg-premise-bg",
                   row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20"
                 )}
               >
                 {/* Coluna de label */}
-                <TableCell>
+                <TableCell
+                  className={cn(
+                    "sticky left-0 z-10",
+                    row.type === "header" && "bg-muted-alt",
+                    row.type === "total" && "bg-muted-alt",
+                    row.type === "subtotal" && "bg-muted-alt",
+                    row.type === "premise" && "bg-premise-bg",
+                    row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20",
+                    row.type === "value" && "bg-card",
+                  )}
+                >
                   <div
                     className={cn(
                       "min-w-[240px] whitespace-nowrap flex items-center gap-1.5",
