@@ -377,6 +377,7 @@ export function InvestmentTable({
               <TableRow
                 key={row.key}
                 className={cn(
+                  "group",
                   row.type === "header" && "bg-muted-alt border-t-2",
                   row.type === "total" && "bg-muted-alt",
                   row.type === "subtotal" && "bg-muted-alt",
@@ -387,13 +388,13 @@ export function InvestmentTable({
                 {/* Coluna de label */}
                 <TableCell
                   className={cn(
-                    "sticky left-0 z-10",
-                    row.type === "header" && "bg-muted-alt",
-                    row.type === "total" && "bg-muted-alt",
-                    row.type === "subtotal" && "bg-muted-alt",
-                    row.type === "premise" && "bg-premise-bg",
-                    row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20",
-                    row.type === "value" && "bg-card",
+                    "sticky left-0 z-10 transition-colors",
+                    row.type === "header" && "bg-muted-alt group-hover:bg-muted-alt",
+                    row.type === "total" && "bg-muted-alt group-hover:bg-muted-alt",
+                    row.type === "subtotal" && "bg-muted-alt group-hover:bg-muted-alt",
+                    row.type === "premise" && "bg-premise-bg group-hover:bg-muted-alt",
+                    row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20 group-hover:bg-muted-alt",
+                    row.type === "value" && "bg-card group-hover:bg-muted-alt",
                   )}
                 >
                   <div

@@ -653,6 +653,7 @@ export function WorkingCapitalTable({
               <TableRow
                 key={row.key}
                 className={cn(
+                  "group",
                   row.type === "header" && "bg-muted/60 border-t-2",
                   row.type === "total" && "bg-muted/50",
                   row.type === "subtotal" && "bg-muted/30",
@@ -665,14 +666,14 @@ export function WorkingCapitalTable({
                 {/* Coluna de label */}
                 <TableCell
                   className={cn(
-                    "sticky left-0 z-10",
-                    row.type === "header" && "bg-muted/60",
-                    row.type === "total" && "bg-muted/50",
-                    row.type === "subtotal" && "bg-muted/30",
-                    row.type === "premise" && "bg-premise-bg",
+                    "sticky left-0 z-10 transition-colors",
+                    row.type === "header" && "bg-muted/60 group-hover:bg-muted-alt",
+                    row.type === "total" && "bg-muted/50 group-hover:bg-muted-alt",
+                    row.type === "subtotal" && "bg-muted/30 group-hover:bg-muted-alt",
+                    row.type === "premise" && "bg-premise-bg group-hover:bg-muted-alt",
                     //row.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/10",
-                    row.type === "value" && "bg-card",
-                    isMutedAlt && "bg-muted-alt",
+                    row.type === "value" && "bg-card group-hover:bg-muted-alt",
+                    isMutedAlt && "bg-muted-alt group-hover:bg-muted-alt",
                   )}
                 >
                   <div
@@ -686,7 +687,13 @@ export function WorkingCapitalTable({
                         "text-xs text-muted-foreground pl-4",
                       row.type === "annotation" &&
                         "text-xs text-muted-foreground pl-4 italic",
+                      row.hasChildPremise && "cursor-pointer",
                     )}
+                    onClick={
+                      row.hasChildPremise
+                        ? () => toggleAccount(row.key)
+                        : undefined
+                    }
                   >
                     {/* Botão de toggle por grupo no header */}
                     {row.type === "header" && row.groupKey && hasPremises ? (

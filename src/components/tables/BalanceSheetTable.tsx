@@ -336,17 +336,15 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                 return (
                   <TableRow
                     key={row.id}
-                    className={cn(isMuted && "bg-muted-alt")}
+                    className={cn("group", isMuted && "bg-muted-alt")}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
                         className={cn(
-                          cell.column.id === "label" && "sticky left-0 z-10",
-                          cell.column.id === "label" &&
-                            isMuted &&
-                            "bg-muted-alt",
-                          cell.column.id === "label" && !isMuted && "bg-card",
+                          cell.column.id === "label" && "sticky left-0 z-10 transition-colors",
+                          cell.column.id === "label" && isMuted && "bg-muted-alt group-hover:bg-muted-alt",
+                          cell.column.id === "label" && !isMuted && "bg-card group-hover:bg-muted-alt",
                         )}
                       >
                         {flexRender(

@@ -234,8 +234,36 @@ export function LoansTable({
         key: "hdr-cp",
         label: "Curto Prazo (CP)",
         type: "header",
-        groupKey: "cp",
         values: {},
+      },
+      {
+        key: "emp-cp-inicio",
+        label: "Empréstimos CP (início)",
+        type: "value",
+        values: Object.fromEntries(
+          sortedYears.map((y, i) => {
+            const prevY = i === 0 ? y : sortedYears[i - 1];
+            return [
+              y,
+              byYear[prevY]?.passivoCirculante.emprestimosFinanciamentosCP ??
+                null,
+            ];
+          }),
+        ),
+      },
+      {
+        key: "novos-cp",
+        label: "(+) Novos Empréstimos CP",
+        type: "value",
+        groupKey: "cp",
+        values: Object.fromEntries(
+          sortedYears.map((y) => [
+            y,
+            y === 0
+              ? null
+              : (byYear[y]?.novosEmprestimosFinanciamentosCP ?? null),
+          ]),
+        ),
       },
       ...(hasPremises
         ? [
@@ -256,34 +284,6 @@ export function LoansTable({
           ]
         : []),
       {
-        key: "emp-cp-inicio",
-        label: "Empréstimos CP (início)",
-        type: "value",
-        values: Object.fromEntries(
-          sortedYears.map((y, i) => {
-            const prevY = i === 0 ? y : sortedYears[i - 1];
-            return [
-              y,
-              byYear[prevY]?.passivoCirculante.emprestimosFinanciamentosCP ??
-                null,
-            ];
-          }),
-        ),
-      },
-      {
-        key: "novos-cp",
-        label: "(+) Novos Empréstimos CP",
-        type: "value",
-        values: Object.fromEntries(
-          sortedYears.map((y) => [
-            y,
-            y === 0
-              ? null
-              : (byYear[y]?.novosEmprestimosFinanciamentosCP ?? null),
-          ]),
-        ),
-      },
-      {
         key: "emp-cp-final",
         label: "(=) Empréstimos CP (final)",
         type: "subtotal",
@@ -300,27 +300,8 @@ export function LoansTable({
         key: "hdr-lp",
         label: "Longo Prazo (LP)",
         type: "header",
-        groupKey: "lp",
         values: {},
       },
-      ...(hasPremises
-        ? [
-            {
-              key: "taxaNovosEmprestimosLP",
-              label: "↳ Taxa Novos Empréstimos LP (%)",
-              type: "premise" as RowType,
-              premiseGroup: "lp",
-              premiseField:
-                "taxaNovosEmprestimosLP" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(
-                sortedYears.map((y) => [
-                  y,
-                  getPremise("taxaNovosEmprestimosLP", y),
-                ]),
-              ),
-            },
-          ]
-        : []),
       {
         key: "emp-lp-inicio",
         label: "Empréstimos LP (início)",
@@ -340,6 +321,7 @@ export function LoansTable({
         key: "novos-lp",
         label: "(+) Novos Empréstimos LP",
         type: "value",
+        groupKey: "lp",
         values: Object.fromEntries(
           sortedYears.map((y) => [
             y,
@@ -349,6 +331,24 @@ export function LoansTable({
           ]),
         ),
       },
+      ...(hasPremises
+        ? [
+            {
+              key: "taxaNovosEmprestimosLP",
+              label: "↳ Taxa Novos Empréstimos LP (%)",
+              type: "premise" as RowType,
+              premiseGroup: "lp",
+              premiseField:
+                "taxaNovosEmprestimosLP" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("taxaNovosEmprestimosLP", y),
+                ]),
+              ),
+            },
+          ]
+        : []),
       {
         key: "emp-lp-final",
         label: "(=) Empréstimos LP (final)",
@@ -513,6 +513,7 @@ export function LoansTable({
               <TableRow
                 key={row.key}
                 className={cn(
+                  "group",
                   row.type === "header" && "bg-muted-alt border-t-1",
                   row.type === "total" && "bg-muted-alt",
                   row.type === "subtotal" && "bg-muted-alt",
@@ -523,13 +524,13 @@ export function LoansTable({
                 {/* Coluna de label */}
                 <TableCell
                   className={cn(
-                    "sticky left-0 z-10",
-                    row.type === "header" && "bg-muted-alt",
-                    row.type === "total" && "bg-muted-alt",
-                    row.type === "subtotal" && "bg-muted-alt",
-                    row.type === "premise" && "bg-premise-bg",
-                    row.type === "annotation" && "bg-annotation-bg",
-                    row.type === "value" && "bg-card",
+                    "sticky left-0 z-10 transition-colors",
+                    row.type === "header" && "bg-muted-alt group-hover:bg-muted-alt",
+                    row.type === "total" && "bg-muted-alt group-hover:bg-muted-alt",
+                    row.type === "subtotal" && "bg-muted-alt group-hover:bg-muted-alt",
+                    row.type === "premise" && "bg-premise-bg group-hover:bg-muted-alt",
+                    row.type === "annotation" && "bg-annotation-bg group-hover:bg-muted-alt",
+                    row.type === "value" && "bg-card group-hover:bg-muted-alt",
                   )}
                 >
                   <div
@@ -543,10 +544,16 @@ export function LoansTable({
                         "text-xs text-muted-foreground pl-4",
                       row.type === "annotation" &&
                         "text-xs text-muted-foreground pl-4 italic",
+                      row.groupKey && hasPremises && "cursor-pointer",
                     )}
+                    onClick={
+                      row.groupKey && hasPremises
+                        ? () => toggleGroup(row.groupKey!)
+                        : undefined
+                    }
                   >
                     {/* Botão de toggle por seção nos headers */}
-                    {row.type === "header" && row.groupKey && hasPremises ? (
+                    {row.groupKey && hasPremises ? (
                       <button
                         className="cursor-pointer flex-shrink-0 text-muted-foreground"
                         onClick={() => toggleGroup(row.groupKey!)}
@@ -610,6 +617,10 @@ export function LoansTable({
                         </div>
                       </TableCell>
                     );
+                  }
+
+                  if (row.type === "header") {
+                    return <TableCell key={y} />;
                   }
 
                   if (row.type === "annotation" && value === null) {

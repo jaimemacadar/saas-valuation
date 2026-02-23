@@ -691,24 +691,25 @@ export function DRETable({
               <TableRow
                 key={row.id}
                 className={cn(
-                  row.original.type === "total" && "bg-muted/50",
-                  row.original.type === "subtotal" && "bg-muted/30",
+                  "group",
+                  row.original.type === "total" && "bg-muted-alt",
+                  row.original.type === "subtotal" && "bg-muted-alt",
                   row.original.type === "premise" &&
                     "bg-premise-bg",
                   row.original.type === "annotation" &&
-                    "bg-amber-50/30 dark:bg-amber-950/20",
+                    "bg-amber-50/30 dark:bg-annotation-bg",
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
                     className={cn(
-                      cell.column.id === "label" && "sticky left-0 z-10",
-                      cell.column.id === "label" && row.original.type === "total" && "bg-muted/50",
-                      cell.column.id === "label" && row.original.type === "subtotal" && "bg-muted/30",
-                      cell.column.id === "label" && row.original.type === "premise" && "bg-premise-bg",
-                      cell.column.id === "label" && row.original.type === "annotation" && "bg-amber-50/30 dark:bg-amber-950/20",
-                      cell.column.id === "label" && row.original.type === "value" && "bg-card",
+                      cell.column.id === "label" && "sticky left-0 z-10 transition-colors",
+                      cell.column.id === "label" && row.original.type === "total" && "bg-muted-alt group-hover:bg-muted-alt",
+                      cell.column.id === "label" && row.original.type === "subtotal" && "bg-muted-alt group-hover:bg-muted-alt",
+                      cell.column.id === "label" && row.original.type === "premise" && "bg-premise-bg group-hover:bg-muted-alt",
+                      cell.column.id === "label" && row.original.type === "annotation" && "bg-amber-50/30 dark:bg-annotation-bg group-hover:bg-muted-alt",
+                      cell.column.id === "label" && row.original.type === "value" && "bg-card group-hover:bg-muted-alt",
                     )}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
