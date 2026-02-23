@@ -153,9 +153,9 @@ export function LoansTable({
   const getRefKey = (field: string, year: number) => `${field}-${year}`;
 
   const premiseOrder: (keyof BalanceSheetProjectionInputs)[] = [
-    "taxaJurosEmprestimo",
     "taxaNovosEmprestimosCP",
     "taxaNovosEmprestimosLP",
+    "taxaJurosEmprestimo",
   ];
 
   const focusNext = (field: string, currentYear: number) => {
@@ -201,44 +201,16 @@ export function LoansTable({
     };
 
     return [
-      // ── Premissas Globais ──
-      {
-        key: "hdr-emprestimos",
-        label: "EMPRÉSTIMOS E FINANCIAMENTOS",
-        type: "header",
-        groupKey: "emprestimos",
-        values: {},
-      },
-      ...(hasPremises
-        ? [
-            {
-              key: "taxaJurosEmprestimo",
-              label: "↳ Taxa de Juros (% a.a.)",
-              type: "premise" as RowType,
-              premiseGroup: "emprestimos",
-              premiseField:
-                "taxaJurosEmprestimo" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(
-                sortedYears.map((y) => [
-                  y,
-                  getPremise("taxaJurosEmprestimo", y),
-                ]),
-              ),
-              tooltip: "Base para Despesas Financeiras e Kd no WACC",
-            },
-          ]
-        : []),
-
       // ── Bloco CP ──
       {
         key: "hdr-cp",
-        label: "Curto Prazo (CP)",
+        label: "EMPRÉSTIMOS DE CURTO PRAZO (CP)",
         type: "header",
         values: {},
       },
       {
         key: "emp-cp-inicio",
-        label: "Empréstimos CP (início)",
+        label: "(=) Empréstimos CP (início)",
         type: "value",
         values: Object.fromEntries(
           sortedYears.map((y, i) => {
@@ -298,13 +270,13 @@ export function LoansTable({
       // ── Bloco LP ──
       {
         key: "hdr-lp",
-        label: "Longo Prazo (LP)",
+        label: "EMPRÉSTIMOS DE LONGO PRAZO (LP)",
         type: "header",
         values: {},
       },
       {
         key: "emp-lp-inicio",
-        label: "Empréstimos LP (início)",
+        label: "(=) Empréstimos LP (início)",
         type: "value",
         values: Object.fromEntries(
           sortedYears.map((y, i) => {
@@ -405,6 +377,32 @@ export function LoansTable({
           }),
         ),
       },
+      ...(hasPremises
+        ? [
+            {
+              key: "hdr-taxa-juros",
+              label: "Taxa de Juros",
+              type: "header" as RowType,
+              groupKey: "taxa-juros",
+              values: {},
+            },
+            {
+              key: "taxaJurosEmprestimo",
+              label: "↳ Taxa de Juros (% a.a.)",
+              type: "premise" as RowType,
+              premiseGroup: "taxa-juros",
+              premiseField:
+                "taxaJurosEmprestimo" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("taxaJurosEmprestimo", y),
+                ]),
+              ),
+              tooltip: "Base para Despesas Financeiras e Kd no WACC",
+            },
+          ]
+        : []),
     ];
   }, [data, localProjections, hasPremises, indicadoresData]);
 
