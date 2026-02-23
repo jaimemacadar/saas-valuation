@@ -136,6 +136,8 @@ export function calculateBPBase(
         capex: 0,
         novosEmprestimosFinanciamentosCP: 0,
         novosEmprestimosFinanciamentosLP: 0,
+        despesasFinanceirasCP: 0,
+        despesasFinanceirasLP: 0,
         despesasFinanceiras: 0,
         capitalGiro: capitalGiro.toNumber(),
         ncg: 0,
@@ -247,7 +249,18 @@ export function calculateBPProjetado(
       .times(premissas.prazoObrigacoesSociais)
       .div(360);
 
-    // Empréstimos CP: aplicar taxa de novos empréstimos CP
+    // ========== DESPESAS FINANCEIRAS ==========
+    // Calculadas sobre o saldo inicial (ano anterior) para evitar circularidade
+    const taxaJuros = new Decimal(premissas.taxaJurosEmprestimo ?? 0).div(100);
+    const despesasFinanceirasCP = new Decimal(
+      bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
+    ).times(taxaJuros);
+    const despesasFinanceirasLP = new Decimal(
+      bpAnterior.passivoRealizavelLP.emprestimosFinanciamentosLP,
+    ).times(taxaJuros);
+    const despesasFinanceiras = despesasFinanceirasCP.plus(despesasFinanceirasLP);
+
+    // Empréstimos CP: início + novos - juros pagos
     // Suporte a legado: fallback para taxaNovosEmprestimosFinanciamentos se CP/LP não existirem
     const taxaCP = new Decimal(
       premissas.taxaNovosEmprestimosCP ??
@@ -259,7 +272,7 @@ export function calculateBPProjetado(
     ).times(taxaCP);
     const pcEmprestimosCP = new Decimal(
       bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
-    ).plus(novosEmprestimosCP);
+    ).plus(novosEmprestimosCP).minus(despesasFinanceirasCP);
 
     // Outras Obrigações: manter do ano anterior
     const pcOutras = new Decimal(
@@ -273,6 +286,7 @@ export function calculateBPProjetado(
       .plus(pcOutras);
 
     // ========== PASSIVO REALIZÁVEL LP ==========
+    // Empréstimos LP: início + novos - juros pagos
     const taxaLP = new Decimal(
       premissas.taxaNovosEmprestimosLP ??
       (premissas as any).taxaNovosEmprestimosFinanciamentos ??
@@ -283,14 +297,8 @@ export function calculateBPProjetado(
     ).times(taxaLP);
     const prlpEmprestimosLP = new Decimal(
       bpAnterior.passivoRealizavelLP.emprestimosFinanciamentosLP,
-    ).plus(novosEmprestimosLP);
+    ).plus(novosEmprestimosLP).minus(despesasFinanceirasLP);
     const totalPRLP = prlpEmprestimosLP;
-
-    // ========== DESPESAS FINANCEIRAS ==========
-    // despesasFinanceiras = dívida total × taxaJurosEmprestimo
-    const taxaJuros = new Decimal(premissas.taxaJurosEmprestimo ?? 0).div(100);
-    const dividaTotal = pcEmprestimosCP.plus(prlpEmprestimosLP);
-    const despesasFinanceiras = dividaTotal.times(taxaJuros);
 
     // ========== PATRIMÔNIO LÍQUIDO ==========
     // Capital Social: manter
@@ -355,6 +363,8 @@ export function calculateBPProjetado(
         capex: capex.toNumber(),
         novosEmprestimosFinanciamentosCP: novosEmprestimosCP.toNumber(),
         novosEmprestimosFinanciamentosLP: novosEmprestimosLP.toNumber(),
+        despesasFinanceirasCP: despesasFinanceirasCP.toNumber(),
+        despesasFinanceirasLP: despesasFinanceirasLP.toNumber(),
         despesasFinanceiras: despesasFinanceiras.toNumber(),
         capitalGiro: capitalGiro.toNumber(),
         ncg: ncg.toNumber(),

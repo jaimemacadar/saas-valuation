@@ -403,6 +403,7 @@ export function InvestmentTable({
                       row.type === "header" && "font-bold text-sm",
                       row.type === "total" && "font-bold",
                       row.type === "subtotal" && "font-semibold",
+                      row.type === "value" && "text-muted-foreground",
                       row.type === "premise" && "text-xs text-muted-foreground pl-4",
                       row.type === "annotation" && "text-xs text-muted-foreground pl-4 italic",
                       row.hasChildPremise &&
@@ -476,6 +477,7 @@ export function InvestmentTable({
                           row.type === "header" && "font-bold text-sm",
                           row.type === "total" && "font-bold",
                           row.type === "subtotal" && "font-semibold",
+                          row.type === "value" && "text-muted-foreground",
                           row.type === "annotation" && "text-xs text-muted-foreground italic",
                           value !== null && value < 0 && "text-red-600"
                         )}

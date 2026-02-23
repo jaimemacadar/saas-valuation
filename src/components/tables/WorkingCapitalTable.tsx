@@ -793,6 +793,7 @@ export function WorkingCapitalTable({
                           row.type === "header" && "font-bold text-sm",
                           row.type === "total" && "font-bold",
                           row.type === "subtotal" && "font-semibold",
+                          row.type === "value" && "text-muted-foreground",
                           row.type === "annotation" &&
                             "text-xs text-muted-foreground italic",
                           value !== null && value < 0 && "text-red-600",

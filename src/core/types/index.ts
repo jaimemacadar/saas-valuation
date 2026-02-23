@@ -271,7 +271,9 @@ export interface BalanceSheetCalculated {
   capex: number;
   novosEmprestimosFinanciamentosCP: number;
   novosEmprestimosFinanciamentosLP: number;
-  despesasFinanceiras: number; // dívida total × taxaJurosEmprestimo
+  despesasFinanceirasCP: number; // empréstimos CP × taxaJurosEmprestimo
+  despesasFinanceirasLP: number; // empréstimos LP × taxaJurosEmprestimo
+  despesasFinanceiras: number; // CP + LP (invariante mantida)
   capitalGiro: number;
   ncg: number; // Necessidade de Capital de Giro (variação)
 

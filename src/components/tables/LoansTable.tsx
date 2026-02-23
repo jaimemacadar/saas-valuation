@@ -204,7 +204,7 @@ export function LoansTable({
       // ── Bloco CP ──
       {
         key: "hdr-cp",
-        label: "EMPRÉSTIMOS DE CURTO PRAZO (CP)",
+        label: "EMPRÉSTIMOS DE CURTO PRAZO",
         type: "header",
         values: {},
       },
@@ -256,6 +256,18 @@ export function LoansTable({
           ]
         : []),
       {
+        key: "desp-fin-cp",
+        label: "(-) Despesas Financeiras CP",
+        type: "value" as RowType,
+        tooltip: "Empréstimos CP × Taxa de Juros",
+        values: Object.fromEntries(
+          sortedYears.map((y) => [
+            y,
+            y === 0 ? null : -(byYear[y]?.despesasFinanceirasCP ?? 0) || null,
+          ]),
+        ),
+      },
+      {
         key: "emp-cp-final",
         label: "(=) Empréstimos CP (final)",
         type: "subtotal",
@@ -270,7 +282,7 @@ export function LoansTable({
       // ── Bloco LP ──
       {
         key: "hdr-lp",
-        label: "EMPRÉSTIMOS DE LONGO PRAZO (LP)",
+        label: "EMPRÉSTIMOS DE LONGO PRAZO",
         type: "header",
         values: {},
       },
@@ -321,6 +333,18 @@ export function LoansTable({
             },
           ]
         : []),
+      {
+        key: "desp-fin-lp",
+        label: "(-) Despesas Financeiras LP",
+        type: "value" as RowType,
+        tooltip: "Empréstimos LP × Taxa de Juros",
+        values: Object.fromEntries(
+          sortedYears.map((y) => [
+            y,
+            y === 0 ? null : -(byYear[y]?.despesasFinanceirasLP ?? 0) || null,
+          ]),
+        ),
+      },
       {
         key: "emp-lp-final",
         label: "(=) Empréstimos LP (final)",

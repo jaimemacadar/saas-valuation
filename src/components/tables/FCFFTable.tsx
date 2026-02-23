@@ -104,7 +104,9 @@ export function FCFFTable({ data }: FCFFTableProps) {
               className={cn(
                 'font-medium',
                 rowType === 'total' && 'font-bold text-base',
-                rowType === 'subtotal' && 'font-semibold'
+                rowType === 'subtotal' && 'font-semibold',
+                row.original.field === 'ebit' && 'font-semibold',
+                rowType === 'value' && row.original.field !== 'ebit' && 'text-muted-foreground'
               )}
             >
               {row.original.label}
@@ -132,6 +134,8 @@ export function FCFFTable({ data }: FCFFTableProps) {
               'text-right tabular-nums',
               rowType === 'total' && 'font-bold text-base border-t-2 border-t-foreground',
               rowType === 'subtotal' && 'font-semibold border-t',
+              row.original.field === 'ebit' && 'font-semibold',
+              rowType === 'value' && row.original.field !== 'ebit' && 'text-muted-foreground',
               // Cores condicionais para valores negativos/positivos
               value !== null && isFCFF && value >= 0 && 'text-green-600',
               value !== null && isFCFF && value < 0 && 'text-red-600'
@@ -217,7 +221,8 @@ export function FCFFTable({ data }: FCFFTableProps) {
                 className={cn(
                   "group",
                   row.original.type === 'total' && 'bg-muted-alt',
-                  row.original.type === 'subtotal' && 'bg-muted-alt'
+                  row.original.type === 'subtotal' && 'bg-muted-alt',
+                  row.original.field === 'ebit' && 'bg-muted-alt'
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -227,7 +232,8 @@ export function FCFFTable({ data }: FCFFTableProps) {
                       cell.column.id === 'label' && 'sticky left-0 z-10 transition-colors',
                       cell.column.id === 'label' && row.original.type === 'total' && 'bg-muted-alt group-hover:bg-muted-alt',
                       cell.column.id === 'label' && row.original.type === 'subtotal' && 'bg-muted-alt group-hover:bg-muted-alt',
-                      cell.column.id === 'label' && row.original.type === 'value' && 'bg-card group-hover:bg-muted-alt',
+                      cell.column.id === 'label' && row.original.field === 'ebit' && 'bg-muted-alt group-hover:bg-muted-alt',
+                      cell.column.id === 'label' && row.original.type === 'value' && row.original.field !== 'ebit' && 'bg-card group-hover:bg-muted-alt',
                     )}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

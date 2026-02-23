@@ -41,6 +41,8 @@ describe("Balance Sheet Calculations", () => {
       if (result.data) {
         expect(result.data.depreciacaoAnual).toBe(0);
         expect(result.data.capex).toBe(0);
+        expect(result.data.despesasFinanceirasCP).toBe(0);
+        expect(result.data.despesasFinanceirasLP).toBe(0);
         expect(result.data.despesasFinanceiras).toBe(0);
       }
     });
@@ -99,7 +101,7 @@ describe("Balance Sheet Calculations", () => {
       }
     });
 
-    it("deve calcular despesasFinanceiras = dívida total × taxa de juros", () => {
+    it("deve calcular despesasFinanceiras CP e LP separadamente", () => {
       const bpBase = calculateBPBase(sampleBalanceSheetBase).data!;
       const result = calculateBPProjetado(
         bpBase,
@@ -109,12 +111,16 @@ describe("Balance Sheet Calculations", () => {
 
       expect(result.success).toBe(true);
       if (result.data) {
-        const dividaTotal =
-          result.data.passivoCirculante.emprestimosFinanciamentosCP +
-          result.data.passivoRealizavelLP.emprestimosFinanciamentosLP;
-        const expectedDespFin =
-          dividaTotal * (sampleBalanceSheetProjection[0].taxaJurosEmprestimo / 100);
-        expect(result.data.despesasFinanceiras).toBeCloseTo(expectedDespFin, 0);
+        // Juros calculados sobre o saldo INICIAL (bpBase), não sobre o saldo final
+        const taxa = sampleBalanceSheetProjection[0].taxaJurosEmprestimo / 100;
+        const expectedCP = bpBase.passivoCirculante.emprestimosFinanciamentosCP * taxa;
+        const expectedLP = bpBase.passivoRealizavelLP.emprestimosFinanciamentosLP * taxa;
+
+        expect(result.data.despesasFinanceirasCP).toBeCloseTo(expectedCP, 2);
+        expect(result.data.despesasFinanceirasLP).toBeCloseTo(expectedLP, 2);
+        expect(result.data.despesasFinanceiras).toBeCloseTo(
+          result.data.despesasFinanceirasCP + result.data.despesasFinanceirasLP, 2,
+        );
       }
     });
 
@@ -212,6 +218,8 @@ describe("Balance Sheet Calculations", () => {
           expect(bp.capitalGiro).toBeDefined();
           expect(bp.depreciacaoAnual).toBeDefined();
           expect(bp.capex).toBeDefined();
+          expect(bp.despesasFinanceirasCP).toBeDefined();
+          expect(bp.despesasFinanceirasLP).toBeDefined();
           expect(bp.despesasFinanceiras).toBeDefined();
         });
       }

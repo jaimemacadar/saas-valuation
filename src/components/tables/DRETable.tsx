@@ -462,6 +462,7 @@ export function DRETable({
                 "font-medium min-w-[200px] whitespace-nowrap flex items-center gap-1.5",
                 rowType === "total" && "font-bold",
                 rowType === "subtotal" && "font-semibold",
+                rowType === "value" && "text-muted-foreground",
                 rowType === "premise" && "text-xs text-muted-foreground pl-6",
                 rowType === "annotation" &&
                   "text-xs text-muted-foreground pl-6 italic",
@@ -563,6 +564,7 @@ export function DRETable({
                   !row.original.noBorderTop &&
                   "border-t-2 border-t-foreground",
                 rowType === "subtotal" && "font-semibold",
+                rowType === "value" && "text-muted-foreground",
                 rowType === "annotation" &&
                   "text-xs text-muted-foreground italic",
                 value !== null && value < 0 && "text-red-600",
