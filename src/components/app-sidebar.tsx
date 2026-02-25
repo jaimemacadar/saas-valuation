@@ -66,7 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isModelView = !!modelId && modelId !== "new";
 
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible="icon" {...props}>      
       <SidebarHeader className="mb-4">
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
