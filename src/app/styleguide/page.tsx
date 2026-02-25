@@ -109,11 +109,19 @@ export default function StyleguidePage() {
         </div>
 
         {/* Alternative palette */}
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Alternativa</p>
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Alternativa (Red)</p>
+        <div className="grid grid-cols-3 gap-4 mb-6">
           <ColorSwatch label="Alt" variable="--alt" />
           <ColorSwatch label="Secondary Alt" variable="--secondary-alt" />
           <ColorSwatch label="Muted Alt" variable="--muted-alt" />
+        </div>
+
+        {/* Amber palette */}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">Amber (Golden Yellow)</p>
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <ColorSwatch label="Amber" variable="--amber" textColor="text-foreground" />
+          <ColorSwatch label="Secondary Amber" variable="--secondary-amber" />
+          <ColorSwatch label="Muted Amber" variable="--muted-amber" />
         </div>
 
         {/* Scales */}
@@ -121,6 +129,7 @@ export default function StyleguidePage() {
           <ScaleRow name="Escala Primary (Navy Blue)" prefix="primary" steps={colorSteps} />
           <ScaleRow name="Escala Alternativa (Red)" prefix="alt" steps={colorSteps} />
           <ScaleRow name="Escala Neutral (Grey)" prefix="neutral" steps={colorSteps} />
+          <ScaleRow name="Escala Amber (Golden Yellow)" prefix="amber" steps={colorSteps} />
         </div>
       </Section>
 
@@ -313,6 +322,9 @@ const terminalValue = fcff[n] * (1 + g) / (wacc - g);`}
             </Badge>
             <Badge style={{ background: "var(--info)", color: "var(--info-foreground)" }}>
               Info
+            </Badge>
+            <Badge style={{ background: "var(--amber)", color: "var(--amber-foreground)" }}>
+              Amber
             </Badge>
           </div>
         </div>

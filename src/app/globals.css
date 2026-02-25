@@ -81,6 +81,14 @@
   --color-muted-alt: var(--muted-alt);
   --color-muted-alt-foreground: var(--muted-alt-foreground);
 
+  /* === AMBER SEMANTIC === */
+  --color-amber: var(--amber);
+  --color-amber-foreground: var(--amber-foreground);
+  --color-secondary-amber: var(--secondary-amber);
+  --color-secondary-amber-foreground: var(--secondary-amber-foreground);
+  --color-muted-amber: var(--muted-amber);
+  --color-muted-amber-foreground: var(--muted-amber-foreground);
+
   /* === SEMANTIC COLORS === */
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
@@ -130,6 +138,18 @@
   --color-alt-700: var(--alt-700);
   --color-alt-800: var(--alt-800);
   --color-alt-900: var(--alt-900);
+
+  /* === AMBER SCALE === */
+  --color-amber-50: var(--amber-50);
+  --color-amber-100: var(--amber-100);
+  --color-amber-200: var(--amber-200);
+  --color-amber-300: var(--amber-300);
+  --color-amber-400: var(--amber-400);
+  --color-amber-500: var(--amber-500);
+  --color-amber-600: var(--amber-600);
+  --color-amber-700: var(--amber-700);
+  --color-amber-800: var(--amber-800);
+  --color-amber-900: var(--amber-900);
 }
 
 :root {
@@ -159,6 +179,18 @@
   --neutral-700: oklch(0.38 0 0);
   --neutral-800: oklch(0.27 0 0);
   --neutral-900: oklch(0.17 0 0);
+
+  /* === AMBER COLOR SCALE (hue 65, ref ≈ #f59e0b at 500) === */
+  --amber-50: oklch(0.98 0.02 65);
+  --amber-100: oklch(0.96 0.05 65);
+  --amber-200: oklch(0.93 0.09 65);
+  --amber-300: oklch(0.88 0.14 65);
+  --amber-400: oklch(0.82 0.18 65);
+  --amber-500: oklch(0.75 0.18 65);
+  --amber-600: oklch(0.65 0.17 65);
+  --amber-700: oklch(0.55 0.15 65);
+  --amber-800: oklch(0.44 0.12 65);
+  --amber-900: oklch(0.33 0.09 65);
 
   /* === ALTERNATIVE COLOR SCALE (Red — hue 24, ref #800016 at 800) === */
   --alt-50: oklch(0.97 0.013 24);
@@ -203,6 +235,14 @@
   --secondary-alt-foreground: var(--secondary-foreground);
   --muted-alt: var(--muted);
   --muted-alt-foreground: var(--muted-foreground);
+
+  /* === AMBER SEMANTIC === */
+  --amber: var(--amber-500);
+  --amber-foreground: oklch(0.17 0 0);
+  --secondary-amber: var(--secondary);
+  --secondary-amber-foreground: var(--secondary-foreground);
+  --muted-amber: var(--muted);
+  --muted-amber-foreground: var(--muted-foreground);
 
   /* === ACCENT === */
   --accent: oklch(0.95 0.03 238);
@@ -274,6 +314,18 @@
   --neutral-800: oklch(0.64 0 0); /* âncora — = neutral-500 light */
   --neutral-900: oklch(0.5 0 0); /* = neutral-600 light */
 
+  /* === AMBER SCALE (Dark — hue 65, âncora amber-800 = amber-500 light, ΔL≈0.031/step) === */
+  --amber-50: oklch(0.97 0.04 65);
+  --amber-100: oklch(0.94 0.07 65);
+  --amber-200: oklch(0.91 0.10 65);
+  --amber-300: oklch(0.88 0.13 65);
+  --amber-400: oklch(0.85 0.16 65);
+  --amber-500: oklch(0.82 0.18 65);
+  --amber-600: oklch(0.79 0.18 65);
+  --amber-700: oklch(0.77 0.18 65);
+  --amber-800: oklch(0.75 0.18 65); /* âncora — = amber-500 light */
+  --amber-900: oklch(0.65 0.17 65); /* = amber-600 light */
+
   /* === ALTERNATIVE SCALE (Dark — hue 24, âncora alt-800, ΔL≈0.055/step, chroma em arco) === */
   --alt-50: oklch(0.95 0.04 24);
   --alt-100: oklch(0.9 0.07 24);
@@ -317,6 +369,14 @@
   --secondary-alt-foreground: var(--secondary-foreground);
   --muted-alt: oklch(0.23 0 0);
   --muted-alt-foreground: var(--muted-foreground);
+
+  /* === AMBER SEMANTIC === */
+  --amber: var(--amber-500);
+  --amber-foreground: oklch(0.17 0 0);
+  --secondary-amber: var(--secondary);
+  --secondary-amber-foreground: var(--secondary-foreground);
+  --muted-amber: oklch(0.24 0 0);
+  --muted-amber-foreground: var(--muted-foreground);
 
   /* === ACCENT === */
   --accent: oklch(0.25 0.06 238);

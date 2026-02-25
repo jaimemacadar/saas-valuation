@@ -139,6 +139,25 @@ Escala completa de 50 a 900, definida em oklch. A cor de referencia `#800016` an
 
 > Em dark mode, a escala e ancorada em `alt-800 = oklch(0.51 0.206 24)` (= alt-500 light). Os demais steps sao distribuidos com ΔL≈0.055 por step (de alt-50 L=0.95 ate alt-800 L=0.51) e chroma em arco suave que peaks em alt-600/700 (C=0.22), garantindo diferenciacao perceptual em toda a escala. Classes Tailwind: `bg-alt-500`, `text-alt-800`, etc.
 
+### Escala Amber (Golden Yellow, hue 65 — ref `≈ #f59e0b` em 500)
+
+Escala completa de 50 a 900, definida em oklch. A cor de referencia `#f59e0b` ancora o step 500 (light). Classes Tailwind: `bg-amber-500`, `text-amber-800`, etc.
+
+| Token | Light Mode | Dark Mode | Nota |
+|-------|-----------|-----------|------|
+| `--amber-50` | `oklch(0.98 0.02 65)` | `oklch(0.97 0.04 65)` | Backgrounds sutis |
+| `--amber-100` | `oklch(0.96 0.05 65)` | `oklch(0.94 0.07 65)` | Borders leves |
+| `--amber-200` | `oklch(0.93 0.09 65)` | `oklch(0.91 0.10 65)` | Hover states |
+| `--amber-300` | `oklch(0.88 0.14 65)` | `oklch(0.88 0.13 65)` | Accents |
+| `--amber-400` | `oklch(0.82 0.18 65)` | `oklch(0.85 0.16 65)` | Focus rings |
+| `--amber-500` | `oklch(0.75 0.18 65)` | `oklch(0.82 0.18 65)` | **Cor âncora light** (~#f59e0b) |
+| `--amber-600` | `oklch(0.65 0.17 65)` | `oklch(0.79 0.18 65)` | Texto secundario |
+| `--amber-700` | `oklch(0.55 0.15 65)` | `oklch(0.77 0.18 65)` | |
+| `--amber-800` | `oklch(0.44 0.12 65)` | `oklch(0.75 0.18 65)` | **âncora dark** (= amber-500 light) |
+| `--amber-900` | `oklch(0.33 0.09 65)` | `oklch(0.65 0.17 65)` | = amber-600 light |
+
+> Em dark mode, a escala e ancorada em `amber-800 = oklch(0.75 0.18 65)` (= amber-500 light). Os demais steps sao distribuidos com ΔL≈0.031 por step (de amber-50 L=0.97 ate amber-800 L=0.75) e chroma em arco suave que peaks em amber-500/600 (C=0.18), garantindo diferenciacao perceptual em toda a escala. O hue 65 posiciona o amber entre o amarelo (hue ~95) e o laranja (hue ~40), coincidindo com os tokens `--warning` e `--chart-4`.
+
 ### Paleta Alternativa (Tokens Semanticos)
 
 Tokens semanticos de alto nivel para a cor alternativa, espelhando a estrutura da paleta Primary. Definidos em `globals.css` nos blocos `:root` e `.dark`.
@@ -149,10 +168,25 @@ Tokens semanticos de alto nivel para a cor alternativa, espelhando a estrutura d
 | `--alt-foreground`           | `oklch(0.985 0 0)`            | `oklch(0.985 0 0)`            | `text-alt-foreground`           | Texto sobre fundo alt                 |
 | `--secondary-alt`            | `var(--secondary)`            | `var(--secondary)`            | `bg-secondary-alt`              | Fundo neutro que acompanha alt        |
 | `--secondary-alt-foreground` | `var(--secondary-foreground)` | `var(--secondary-foreground)` | `text-secondary-alt-foreground` | Texto em secondary-alt                |
-| `--muted-alt`                | `var(--muted)`                | `oklch(0.24 0 0)`             | `bg-muted-alt`                  | Fundo muted que acompanha alt         |
+| `--muted-alt`                | `var(--muted)`                | `oklch(0.23 0 0)`             | `bg-muted-alt`                  | Fundo muted que acompanha alt         |
 | `--muted-alt-foreground`     | `var(--muted-foreground)`     | `var(--muted-foreground)`     | `text-muted-alt-foreground`     | Texto em muted-alt                    |
 
 > `--secondary-alt` e `--muted-alt` referenciam os mesmos valores neutros de `--secondary` e `--muted`, estabelecendo a paleta de suporte que acompanha a cor alternativa — o mesmo padrao da paleta Primary.
+
+### Paleta Amber (Tokens Semanticos)
+
+Tokens semanticos de alto nivel para a cor amber, espelhando a estrutura das paletas Primary e Alt. Definidos em `globals.css` nos blocos `:root` e `.dark`. O foreground e sempre texto escuro (`oklch(0.17 0 0)`) pois amber-500 e uma cor clara/brilhante que nao suporta texto branco com contraste adequado.
+
+| Token                           | Light Mode                    | Dark Mode                     | Tailwind Class                   | Descricao                              |
+| ------------------------------- | ----------------------------- | ----------------------------- | -------------------------------- | -------------------------------------- |
+| `--amber`                       | `var(--amber-500)`            | `var(--amber-500)`            | `bg-amber`                       | Cor principal amber (brand amber)      |
+| `--amber-foreground`            | `oklch(0.17 0 0)`             | `oklch(0.17 0 0)`             | `text-amber-foreground`          | Texto sobre fundo amber (sempre escuro)|
+| `--secondary-amber`             | `var(--secondary)`            | `var(--secondary)`            | `bg-secondary-amber`             | Fundo neutro que acompanha amber       |
+| `--secondary-amber-foreground`  | `var(--secondary-foreground)` | `var(--secondary-foreground)` | `text-secondary-amber-foreground`| Texto em secondary-amber               |
+| `--muted-amber`                 | `var(--muted)`                | `oklch(0.24 0 0)`             | `bg-muted-amber`                 | Fundo muted que acompanha amber        |
+| `--muted-amber-foreground`      | `var(--muted-foreground)`     | `var(--muted-foreground)`     | `text-muted-amber-foreground`    | Texto em muted-amber                   |
+
+> `--amber-foreground` usa texto escuro em ambos os modos porque `--amber` (= amber-500) possui lightness elevada (L=0.75 light / L=0.82 dark), tornando texto branco insuficiente para contraste WCAG AA. O padrao e identico ao `--warning-foreground`. `--secondary-amber` e `--muted-amber` referenciam os mesmos valores neutros de `--secondary` e `--muted`, igual ao padrao das paletas Primary e Alt.
 
 ### Tokens Base (Semanticos de Interface)
 
@@ -289,6 +323,7 @@ As escalas de cor mantêm **ordem crescente** em dark mode (50 = mais claro, 900
 | Primary (hue 238) | `oklch(0.55 0.117 238)` | = primary-500 light | L 0.95 → 0.55 | 0.05 |
 | Neutral (C=0) | `oklch(0.64 0 0)` | = neutral-500 light | L 0.97 → 0.64 | ≈0.04 |
 | Alt (hue 24) | `oklch(0.51 0.206 24)` | = alt-500 light | L 0.95 → 0.51 | ≈0.055 |
+| Amber (hue 65) | `oklch(0.75 0.18 65)` | = amber-500 light | L 0.97 → 0.75 | ≈0.031 |
 
 - **Chroma (escalas cromáticas):** segue arco suave — sobe gradualmente dos steps claros, atinge peak em torno de 600/700, e reduz levemente em 900
 - **Tokens base:** `--background` e `--foreground` trocam de valor
@@ -684,10 +719,11 @@ export const navigation: NavSection[] = [
 
 8 secoes interativas:
 
-1. **Paleta de Cores** — Duas sub-paletas com labels:
+1. **Paleta de Cores** — Tres sub-paletas com labels:
    - **Primary** — 9 swatches: Background, Foreground, Card, Primary, Secondary, Muted, Accent, Destructive, Border
-   - **Alternativa** — 3 swatches: Alt, Secondary Alt, Muted Alt
-   - Escalas completas 50-900: Primary (Navy Blue), Alternativa (Red), Neutral (Grey)
+   - **Alternativa (Red)** — 3 swatches: Alt, Secondary Alt, Muted Alt
+   - **Amber (Golden Yellow)** — 3 swatches: Amber, Secondary Amber, Muted Amber
+   - Escalas completas 50-900: Primary (Navy Blue), Alternativa (Red), Neutral (Grey), Amber (Golden Yellow)
 2. **Cores Semanticas** — Success, Warning, Info, Destructive com alerts demo
 3. **Cores de Graficos** — Chart 1-5
 4. **Tipografia** — Headings H1-H4, body, muted, mono, formula WACC
@@ -835,6 +871,7 @@ Showcase do sistema de Tabelas Financeiras com:
 <Badge className="bg-success text-success-foreground">Sucesso</Badge>
 <Badge className="bg-warning text-warning-foreground">Atencao</Badge>
 <Badge className="bg-info text-info-foreground">Info</Badge>
+<Badge className="bg-amber text-amber-foreground">Amber</Badge>
 ```
 
 ### Adicionar Novo Componente ao Styleguide
