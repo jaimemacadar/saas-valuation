@@ -24,15 +24,21 @@ const BalanceSheetStructureChart = dynamic(
 interface BalanceSheetStructureChartSectionProps {
   data: BalanceSheetCalculated[];
   indicadoresData?: IndicadoresCalculated[];
+  onlyPassivo?: boolean;
 }
 
 export function BalanceSheetStructureChartSection({
   data,
   indicadoresData,
+  onlyPassivo,
 }: BalanceSheetStructureChartSectionProps) {
   return (
     <div className="rounded-lg border bg-card p-4">
-      <BalanceSheetStructureChart data={data} indicadoresData={indicadoresData} />
+      <BalanceSheetStructureChart
+        data={data}
+        indicadoresData={indicadoresData}
+        onlyPassivo={onlyPassivo}
+      />
     </div>
   );
 }

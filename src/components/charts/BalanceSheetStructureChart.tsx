@@ -161,11 +161,13 @@ function CustomTooltip({
 interface BalanceSheetStructureChartProps {
   data: BalanceSheetCalculated[];
   indicadoresData?: IndicadoresCalculated[];
+  onlyPassivo?: boolean;
 }
 
 export function BalanceSheetStructureChart({
   data,
   indicadoresData,
+  onlyPassivo = false,
 }: BalanceSheetStructureChartProps) {
   const [showPercent, setShowPercent] = useState(false);
   const [showEmprestimosEbitda, setShowEmprestimosEbitda] = useState(true);
@@ -280,7 +282,7 @@ export function BalanceSheetStructureChart({
       </div>
 
       {/* Ativo */}
-      <div className="space-y-4">
+      {!onlyPassivo && <div className="space-y-4">
         <div>
           <h3 className="text-lg font-semibold">Estrutura do Ativo</h3>
           <p className="text-sm text-muted-foreground">
@@ -344,7 +346,7 @@ export function BalanceSheetStructureChart({
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-      </div>
+      </div>}
 
       {/* Passivo */}
       <div className="space-y-4">

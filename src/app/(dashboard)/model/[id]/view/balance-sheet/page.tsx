@@ -110,6 +110,11 @@ export default async function BalanceSheetPage({
               projectionInputs={balanceSheetProjection}
               indicadoresData={indicadoresData}
             />
+            <BalanceSheetStructureChartSection
+              data={balanceSheetData}
+              indicadoresData={indicadoresData}
+              onlyPassivo
+            />
           </TabsContent>
         </Tabs>
       </div>
