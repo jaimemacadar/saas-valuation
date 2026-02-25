@@ -4,7 +4,7 @@ name: project-overview
 description: High-level overview of the project, its purpose, and key components
 category: overview
 generated: 2026-01-27
-updated: 2026-02-24
+updated: 2026-02-25
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -39,8 +39,11 @@ See [`codebase-map.json`](./codebase-map.json) for the complete list of exports,
 
 - `src/app/` — UI, routing, and pages
   - `styleguide/` — Design System visual (tokens, componentes, dark mode toggle)
+    - `components/grafico-combinado/` — Showcase do GraficoCombinado
+    - `components/tabelas/` — Showcase das Tabelas Financeiras
 - `src/components/` — UI components and layout
   - `charts/GraficoCombinado.tsx` — Componente genérico de gráfico composto
+  - `tables/` — Tabelas financeiras (InvestmentTable, WorkingCapitalTable, LoansTable, DRETable, FCFFTable)
 - `src/core/` — Domain logic and calculations
 - `src/lib/` — Utilities and integrations
 - `src/types/` — Shared type definitions

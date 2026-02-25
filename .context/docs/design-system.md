@@ -13,6 +13,18 @@ scaffoldVersion: "2.0.0"
 
 Documentação completa do Design System da aplicação SaaS Valuation, baseado em **shadcn/ui** com tokens CSS em espaço de cor **oklch**.
 
+## Consulta Rapida — Styleguide Interativo
+
+> **Antes de criar qualquer componente visual**, acesse o styleguide em **`/styleguide`** para conferir tokens, cores, tipografia, radius e sombras ao vivo com suporte a dark mode toggle.
+>
+> | Pagina | URL | Conteudo |
+> |--------|-----|----------|
+> | Design Tokens | `/styleguide` | Paleta completa, tipografia, radius, sombras, componentes base |
+> | Grafico Combinado | `/styleguide/components/grafico-combinado` | Bar + Line + toggle, props, tokens de cor por contexto |
+> | Tabelas Financeiras | `/styleguide/components/tabelas` | 6 RowTypes, tokens de background, premissas colapsaveis |
+>
+> Este documento (`design-system.md`) e a especificacao escrita — o styleguide e a referencia visual interativa.
+
 ## Visao Geral
 
 O Design System estabelece a identidade visual da plataforma SaaS Valuation com foco em profissionalismo financeiro, clareza de dados e acessibilidade. Todos os tokens visuais sao definidos via CSS custom properties em `src/app/globals.css` e mapeados para classes Tailwind via `@theme inline`.
@@ -439,6 +451,94 @@ export type GraficoCombinadoDado = Record<string, number | string | null>;
 />
 ```
 
+#### Tabelas Financeiras
+
+Sistema de tabelas para exibicao de dados financeiros projetados por ano. Construido sobre o `table` do shadcn/ui com 6 tipos semanticos de linha, tokens de background customizados e suporte a premissas colapsaveis.
+
+**Arquivos principais:**
+- `src/components/tables/InvestmentTable.tsx` — Imobilizado / Investimentos
+- `src/components/tables/WorkingCapitalTable.tsx` — Capital de Giro
+- `src/components/tables/LoansTable.tsx` — Emprestimos CP/LP
+- `src/components/tables/DRETable.tsx` — Demonstracao de Resultado (DRE)
+- `src/components/tables/FCFFTable.tsx` — Fluxo de Caixa Livre (FCFF)
+- `src/components/tables/BalanceSheetTable.tsx` — Balanco Patrimonial completo
+
+**Tipos de linha (`RowType`):**
+
+| Tipo | Background | Label | Valor |
+|------|-----------|-------|-------|
+| `header` | `bg-muted-alt border-t-2` | `font-bold text-sm` | `font-bold text-sm` |
+| `value` | `bg-card` (padrao) | `text-muted-foreground` | `text-muted-foreground` |
+| `subtotal` | `bg-muted-alt` | `font-semibold` | `font-semibold` |
+| `total` | `bg-muted-alt` | `font-bold` | `font-bold` |
+| `premise` | `bg-premise-bg` | `text-xs text-muted-foreground pl-4` | `text-xs text-muted-foreground` |
+| `annotation` | `bg-annotation-bg` | `text-xs text-muted-foreground pl-4 italic` | `text-xs text-muted-foreground italic` |
+
+**Tokens de background customizados:**
+
+| Token | Classe Tailwind | Light | Dark | Uso |
+|-------|----------------|-------|------|-----|
+| `--muted-alt` | `bg-muted-alt` | igual `--muted` | `oklch(0.23 0 0)` | header / subtotal / total |
+| `--premise-bg` | `bg-premise-bg` | `oklch(0.97 0.01 250)` | `oklch(0.224 0.0449 254.9)` | premissas editaveis |
+| `--annotation-bg` | `bg-annotation-bg` | `oklch(0.97 0.02 75)` | `oklch(0.22 0.007 47)` | indicadores e notas |
+
+**Maps de estilo por tipo:**
+
+```tsx
+const ROW_BG: Record<RowType, string> = {
+  header:     "bg-muted-alt border-t-2",
+  value:      "",
+  subtotal:   "bg-muted-alt",
+  total:      "bg-muted-alt",
+  premise:    "bg-premise-bg",
+  annotation: "bg-annotation-bg",
+};
+
+const CELL_BG: Record<RowType, string> = {
+  header:     "bg-muted-alt group-hover:bg-muted-alt",
+  value:      "bg-card group-hover:bg-muted-alt",
+  subtotal:   "bg-muted-alt group-hover:bg-muted-alt",
+  total:      "bg-muted-alt group-hover:bg-muted-alt",
+  premise:    "bg-premise-bg group-hover:bg-muted-alt",
+  annotation: "bg-annotation-bg group-hover:bg-muted-alt",
+};
+```
+
+**Padroes obrigatorios:**
+
+1. **Container** — `rounded-md border bg-card overflow-x-auto`
+2. **Coluna de label sticky** — primeiro `TableHead` e cada primeiro `TableCell` com `sticky left-0 z-10` + bg correspondente ao tipo
+3. **Hover por grupo** — `TableRow` com `className="group"`, celulas com `group-hover:bg-muted-alt`
+4. **Valores numericos** — `text-right tabular-nums`; negativos → `text-red-600`
+5. **Cabecalho de coluna** — anos formatados como `"Ano Base"` (year === 0) ou `"Ano N"` (year > 0)
+
+**Premissas colapsaveis:**
+
+Linhas `premise` ficam ocultas por padrao. Visibilidade controlada via:
+- Botao global "Exibir premissas" (`Eye`/`EyeOff`) — `showAllPremises` state
+- Chevron na linha pai (`hasChildPremise: true`) — expande individualmente por `parentKey`
+
+```tsx
+const visibleRows = rows.filter((row) => {
+  if (row.type !== "premise") return true;
+  if (showAllPremises) return true;
+  return expanded.has(row.parentKey);
+});
+```
+
+**Barra de controles (toolbar):**
+
+Posicionada acima da tabela (`flex items-center justify-between`):
+- Legenda `"Valores em R$ (Reais)"` — `text-xs text-muted-foreground italic`
+- `Switch` **Decimais** — alterna entre `fractionDigits: 0` e `fractionDigits: 2`
+- `Button` **Exibir/Ocultar premissas** — visivel apenas se `hasPremises`
+
+**Indicador de auto-save:**
+
+Tabelas com premissas editaveis exibem indicador acima da toolbar:
+- `Loader2 animate-spin` durante o salvamento
+- `Check text-green-600` com timestamp ao concluir
+
 #### Sidebar Colapsavel (AppSidebar)
 
 Sistema de navegacao lateral colapsavel baseado no componente `Sidebar` do shadcn/ui, configurado com `collapsible="icon"`.
@@ -568,6 +668,7 @@ export const navigation: NavSection[] = [
     title: "Components",
     items: [
       { name: "Grafico Combinado", href: "/styleguide/components/grafico-combinado" },
+      { name: "Tabelas Financeiras", href: "/styleguide/components/tabelas" },
     ],
   },
 ];
@@ -602,8 +703,21 @@ Inclui **toggle de dark mode** (`ThemeToggle` — integrado ao `next-themes`) pa
 Showcase do componente `GraficoCombinado` com:
 - 3 demos interativos (basico, com toggle, formatadores custom)
 - Tabela de API com todas as 13 props documentadas
+- Tabela de tokens de cor recomendados por contexto (com swatches ao vivo), agrupados por Balanco/DRE/FCFF
 - Notas de acessibilidade (role="switch", WCAG 1.4.11)
 - Snippets de codigo para cada padrao de uso
+
+### Pagina de Componente (`/styleguide/components/tabelas`)
+
+Showcase do sistema de Tabelas Financeiras com:
+- Demo interativo com todos os 6 tipos de linha (`header`, `value`, `subtotal`, `total`, `premise`, `annotation`)
+- Controles reais: toggle Decimais (`Switch`) e Exibir/Ocultar premissas (`Eye`/`EyeOff`)
+- Chevron colapsavel por linha pai (clique em "(+) CAPEX" para expandir premissa)
+- Tabela de tipos com background, classes de label e valor por tipo
+- Tabela de tokens semanticos de background com swatches ao vivo (`bg-muted-alt`, `bg-premise-bg`, `bg-annotation-bg`)
+- 4 cards de padroes: coluna sticky, tabular-nums, premissas colapsaveis, toggle de decimais
+- Snippet estrutural completo da tabela
+- Notas de acessibilidade (semantica HTML, teclado, WCAG 2.1 AA)
 
 ## Como Usar
 

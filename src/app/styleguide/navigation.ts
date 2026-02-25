@@ -17,6 +17,7 @@ export const navigation: NavSection[] = [
     title: "Components",
     items: [
       { name: "Gráfico Combinado", href: "/styleguide/components/grafico-combinado" },
+      { name: "Tabelas Financeiras", href: "/styleguide/components/tabelas" },
     ],
   },
 ];

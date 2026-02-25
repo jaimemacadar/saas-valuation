@@ -4,7 +4,7 @@ name: development-workflow
 description: Day-to-day engineering processes, branching, and contribution guidelines
 category: workflow
 generated: 2026-01-27
-updated: 2026-02-19
+updated: 2026-02-25
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -69,6 +69,26 @@ O sistema mock fornece:
 
 Veja [MOCK_MODE.md](../../MOCK_MODE.md) para detalhes completos.
 
+## Criando Novos Componentes
+
+Antes de implementar qualquer componente visual, consulte o **Design System** para garantir consistencia com os tokens, padroes e convencoes estabelecidos:
+
+| Recurso | Onde encontrar |
+|---------|---------------|
+| **Styleguide interativo** (tokens, cores, radius ao vivo) | `/styleguide` |
+| **Grafico Combinado** (Bar + Line, props, tokens por contexto) | `/styleguide/components/grafico-combinado` |
+| **Tabelas Financeiras** (RowTypes, tokens de bg, premissas) | `/styleguide/components/tabelas` |
+| **Especificacao escrita completa** | `.context/docs/design-system.md` |
+
+### Checklist ao criar um novo componente
+
+- [ ] Consultar `/styleguide` para verificar tokens de cor, tipografia e radius aplicaveis
+- [ ] Usar `var(--token)` para cores — nunca valores literais (hex, hsl, oklch inline)
+- [ ] Seguir os padroes de RowType e tokens de background ao criar tabelas financeiras
+- [ ] Usar tokens semanticos de graficos por contexto (ver secao "Usar Cores em Graficos")
+- [ ] Documentar o novo componente no styleguide (`src/app/styleguide/components/<nome>/page.tsx`) e atualizar `navigation.ts`
+- [ ] Atualizar `design-system.md` com a secao do componente apos finalizar
+
 ## Expectativas de Code Review
 
 Todas as mudanças de código devem ser submetidas via pull request e revisadas por pelo menos um outro contribuidor antes do merge. O revisor verifica:
@@ -96,10 +116,11 @@ Novos contribuidores devem seguir esta sequência:
 
 1. Leia a [Visão Geral do Projeto](./project-overview.md) para entender o produto
 2. Leia as [Notas de Arquitetura](./architecture.md) para entender a estrutura
-3. Configure o ambiente local com modo mock (`NEXT_PUBLIC_USE_MOCK_DATA=true`)
-4. Execute `npm run test` para verificar que o ambiente está funcionando
-5. Explore os componentes principais em `src/components/` e `src/core/calculations/`
-6. Procure por issues rotuladas como `good first issue` para começar
+3. Leia o [Design System](./design-system.md) e navegue pelo styleguide em `/styleguide`
+4. Configure o ambiente local com modo mock (`NEXT_PUBLIC_USE_MOCK_DATA=true`)
+5. Execute `npm run test` para verificar que o ambiente está funcionando
+6. Explore os componentes principais em `src/components/` e `src/core/calculations/`
+7. Procure por issues rotuladas como `good first issue` para começar
 
 ---
 
