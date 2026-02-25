@@ -29,7 +29,7 @@ export default async function FCFFPage({ params }: { params: Promise<{ id: strin
         ]}
       />
 
-      <div className="flex flex-1 flex-col gap-4 p-4">
+      <div className="flex flex-1 flex-col gap-4 p-4 px-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Fluxo de Caixa Livre</h1>
           <p className="text-muted-foreground">
