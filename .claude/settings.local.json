@@ -42,7 +42,10 @@
       "Bash(powershell -Command:*)",
       "Bash(git -C \"C:/Dev/3-Projeto Saas Valuation/saas-valuation\" log --oneline -8 --name-status)",
       "Bash(echo:*)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(head:*)",
+      "Bash(del:*)",
+      "Bash(cmd:*)"
     ]
   }
 }

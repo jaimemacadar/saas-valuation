@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -368,8 +369,8 @@ export default function GraficoCombinadoPage() {
             </thead>
             <tbody>
               {tokenGroups.map((group) => (
-                <>
-                  <tr key={group.grupo} className="border-b bg-muted/30">
+                <React.Fragment key={group.grupo}>
+                  <tr className="border-b bg-muted/30">
                     <td
                       colSpan={3}
                       className="py-2 pl-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground"
@@ -378,7 +379,7 @@ export default function GraficoCombinadoPage() {
                     </td>
                   </tr>
                   {group.tokens.map((t) => (
-                    <tr key={`${group.grupo}-${t.token}`} className="border-b hover:bg-muted/40 transition-colors">
+                    <tr key={t.token} className="border-b hover:bg-muted/40 transition-colors">
                       <td className="py-3 pr-4 text-muted-foreground">{t.uso}</td>
                       <td className="py-3 pr-4 font-mono text-xs text-foreground">{t.token}</td>
                       <td className="py-3">
@@ -389,7 +390,7 @@ export default function GraficoCombinadoPage() {
                       </td>
                     </tr>
                   ))}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>

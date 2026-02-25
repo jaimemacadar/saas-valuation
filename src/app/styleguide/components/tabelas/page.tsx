@@ -460,60 +460,19 @@ export default function TabelasPage() {
             <tbody>
               {(
                 [
-                  {
-                    type: "header",
-                    rowBg: "bg-muted-alt + border-t-2",
-                    label: "font-bold text-sm",
-                    value: "font-bold text-sm",
-                  },
-                  {
-                    type: "value",
-                    rowBg: "bg-card (padrão)",
-                    label: "text-muted-foreground",
-                    value: "text-muted-foreground",
-                  },
-                  {
-                    type: "subtotal",
-                    rowBg: "bg-muted-alt",
-                    label: "font-semibold",
-                    value: "font-semibold",
-                  },
-                  {
-                    type: "total",
-                    rowBg: "bg-muted-alt",
-                    label: "font-bold",
-                    value: "font-bold",
-                  },
-                  {
-                    type: "premise",
-                    rowBg: "bg-premise-bg",
-                    label: "text-xs text-muted-foreground pl-4",
-                    value: "text-xs text-muted-foreground",
-                  },
-                  {
-                    type: "annotation",
-                    rowBg: "bg-annotation-bg",
-                    label: "text-xs text-muted-foreground pl-4 italic",
-                    value: "text-xs text-muted-foreground italic",
-                  },
+                  { type: "header", rowBg: "bg-muted-alt + border-t-2", label: "font-bold text-sm", value: "font-bold text-sm" },
+                  { type: "value", rowBg: "bg-card (padrão)", label: "text-muted-foreground", value: "text-muted-foreground" },
+                  { type: "subtotal", rowBg: "bg-muted-alt", label: "font-semibold", value: "font-semibold" },
+                  { type: "total", rowBg: "bg-muted-alt", label: "font-bold", value: "font-bold" },
+                  { type: "premise", rowBg: "bg-premise-bg", label: "text-xs text-muted-foreground pl-4", value: "text-xs text-muted-foreground" },
+                  { type: "annotation", rowBg: "bg-annotation-bg", label: "text-xs text-muted-foreground pl-4 italic", value: "text-xs text-muted-foreground italic" },
                 ] as const
               ).map((r) => (
-                <tr
-                  key={r.type}
-                  className="border-b hover:bg-muted/40 transition-colors"
-                >
-                  <td className="py-3 pr-4 font-mono text-primary font-medium">
-                    {r.type}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">
-                    {r.rowBg}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">
-                    {r.label}
-                  </td>
-                  <td className="py-3 font-mono text-xs text-muted-foreground">
-                    {r.value}
-                  </td>
+                <tr key={r.type} className="border-b hover:bg-muted/40 transition-colors">
+                  <td className="py-3 pr-4 font-mono text-primary font-medium">{r.type}</td>
+                  <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">{r.rowBg}</td>
+                  <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">{r.label}</td>
+                  <td className="py-3 font-mono text-xs text-muted-foreground">{r.value}</td>
                 </tr>
               ))}
             </tbody>
@@ -529,9 +488,7 @@ export default function TabelasPage() {
       <Section title="Tokens Semânticos de Background">
         <p className="text-sm text-muted-foreground mb-6">
           Três tokens customizados definidos em{" "}
-          <code className="font-mono text-xs bg-muted px-1 rounded">
-            globals.css
-          </code>{" "}
+          <code className="font-mono text-xs bg-muted px-1 rounded">globals.css</code>{" "}
           com valores distintos para light e dark mode.
         </p>
 
@@ -548,33 +505,14 @@ export default function TabelasPage() {
             <tbody>
               {(
                 [
-                  {
-                    token: "--muted-alt",
-                    cls: "bg-muted-alt",
-                    uso: "header / subtotal / total",
-                  },
-                  {
-                    token: "--premise-bg",
-                    cls: "bg-premise-bg",
-                    uso: "premise — premissas editáveis",
-                  },
-                  {
-                    token: "--annotation-bg",
-                    cls: "bg-annotation-bg",
-                    uso: "annotation — indicadores e notas",
-                  },
+                  { token: "--muted-alt", cls: "bg-muted-alt", uso: "header / subtotal / total" },
+                  { token: "--premise-bg", cls: "bg-premise-bg", uso: "premise — premissas editáveis" },
+                  { token: "--annotation-bg", cls: "bg-annotation-bg", uso: "annotation — indicadores e notas" },
                 ] as const
               ).map((t) => (
-                <tr
-                  key={t.token}
-                  className="border-b hover:bg-muted/40 transition-colors"
-                >
-                  <td className="py-3 pr-4 font-mono text-xs text-foreground">
-                    {`var(${t.token})`}
-                  </td>
-                  <td className="py-3 pr-4 font-mono text-xs text-primary">
-                    {t.cls}
-                  </td>
+                <tr key={t.token} className="border-b hover:bg-muted/40 transition-colors">
+                  <td className="py-3 pr-4 font-mono text-xs text-foreground">{`var(${t.token})`}</td>
+                  <td className="py-3 pr-4 font-mono text-xs text-primary">{t.cls}</td>
                   <td className="py-3 pr-4 text-muted-foreground">{t.uso}</td>
                   <td className="py-3">
                     <div className={cn("h-7 w-20 rounded border", t.cls)} />
@@ -587,9 +525,7 @@ export default function TabelasPage() {
 
         <p className="text-xs text-muted-foreground mt-4">
           <strong>Hover:</strong> todas as células usam{" "}
-          <code className="font-mono bg-muted px-1 rounded">
-            group-hover:bg-muted-alt
-          </code>{" "}
+          <code className="font-mono bg-muted px-1 rounded">group-hover:bg-muted-alt</code>{" "}
           para feedback uniforme de linha. O{" "}
           <code className="font-mono bg-muted px-1 rounded">TableRow</code>{" "}
           recebe{" "}
@@ -602,110 +538,65 @@ export default function TabelasPage() {
       <Section title="Padrões e Comportamentos">
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Coluna de label sticky</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-base">Coluna de label sticky</CardTitle></CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-3">
               <p>
-                O primeiro{" "}
-                <code className="font-mono bg-muted px-1 rounded">TableHead</code>{" "}
-                e todos os primeiros{" "}
-                <code className="font-mono bg-muted px-1 rounded">TableCell</code>{" "}
-                recebem{" "}
-                <code className="font-mono bg-muted px-1 rounded">
-                  sticky left-0 z-10
-                </code>{" "}
-                com o bg correspondente ao tipo da linha, mantendo contraste no
-                scroll horizontal.
+                O primeiro <code className="font-mono bg-muted px-1 rounded">TableHead</code>{" "}
+                e todos os primeiros <code className="font-mono bg-muted px-1 rounded">TableCell</code>{" "}
+                recebem <code className="font-mono bg-muted px-1 rounded">sticky left-0 z-10</code>{" "}
+                com o bg correspondente ao tipo da linha, mantendo contraste no scroll horizontal.
               </p>
-              <CodeBlock
-                code={`<TableCell className={cn(
+              <CodeBlock code={`<TableCell className={cn(
   "sticky left-0 z-10 transition-colors",
   CELL_BG[row.type]
-)} />`}
-              />
+)} />`} />
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Números alinhados — tabular-nums</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-base">Números alinhados — tabular-nums</CardTitle></CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-3">
               <p>
                 Todos os valores usam{" "}
-                <code className="font-mono bg-muted px-1 rounded">
-                  text-right tabular-nums
-                </code>{" "}
+                <code className="font-mono bg-muted px-1 rounded">text-right tabular-nums</code>{" "}
                 para alinhamento decimal consistente. Valores negativos recebem{" "}
                 <code className="font-mono bg-muted px-1 rounded">text-red-600</code>.
               </p>
-              <CodeBlock
-                code={`<div className={cn(
+              <CodeBlock code={`<div className={cn(
   "text-right tabular-nums",
   VALUE_STYLE[row.type],
   v !== null && v < 0 && "text-red-600"
 )}>
   {formatCurrency(v)}
-</div>`}
-              />
+</div>`} />
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Premissas colapsáveis</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-base">Premissas colapsáveis</CardTitle></CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-3">
-              <p>
-                Linhas{" "}
-                <code className="font-mono bg-muted px-1 rounded">premise</code>{" "}
-                ficam ocultas por padrão e são reveladas via:
-              </p>
+              <p>Linhas <code className="font-mono bg-muted px-1 rounded">premise</code> ficam ocultas por padrão e são reveladas via:</p>
               <ul className="list-disc pl-4 space-y-1 text-sm">
-                <li>
-                  Botão global <em>Exibir premissas</em> (
-                  <code className="font-mono bg-muted px-1 rounded">Eye/EyeOff</code>)
-                </li>
-                <li>
-                  Clique na linha pai com{" "}
-                  <code className="font-mono bg-muted px-1 rounded">
-                    hasChildPremise: true
-                  </code>{" "}
-                  — ícone{" "}
-                  <code className="font-mono bg-muted px-1 rounded">Chevron</code>{" "}
-                  no label
-                </li>
+                <li>Botão global <em>Exibir premissas</em> (<code className="font-mono bg-muted px-1 rounded">Eye/EyeOff</code>)</li>
+                <li>Clique na linha pai com <code className="font-mono bg-muted px-1 rounded">hasChildPremise: true</code> — ícone <code className="font-mono bg-muted px-1 rounded">Chevron</code> no label</li>
               </ul>
               <CodeBlock code={codePremiseFilter} />
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Toggle de decimais</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="text-base">Toggle de decimais</CardTitle></CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-3">
               <p>
-                O{" "}
-                <code className="font-mono bg-muted px-1 rounded">Switch</code>{" "}
-                <em>Decimais</em> alterna entre{" "}
-                <code className="font-mono bg-muted px-1 rounded">
-                  fractionDigits: 0
-                </code>{" "}
-                e{" "}
-                <code className="font-mono bg-muted px-1 rounded">
-                  fractionDigits: 2
-                </code>{" "}
-                no formatter de moeda.
+                O <code className="font-mono bg-muted px-1 rounded">Switch</code> <em>Decimais</em> alterna entre{" "}
+                <code className="font-mono bg-muted px-1 rounded">fractionDigits: 0</code> e{" "}
+                <code className="font-mono bg-muted px-1 rounded">fractionDigits: 2</code> no formatter de moeda.
               </p>
-              <CodeBlock
-                code={`formatCurrency(v, {
+              <CodeBlock code={`formatCurrency(v, {
   showSymbol: false,
   minimumFractionDigits: showDecimals ? 2 : 0,
   maximumFractionDigits: showDecimals ? 2 : 0,
-})`}
-              />
+})`} />
             </CardContent>
           </Card>
         </div>
@@ -719,52 +610,30 @@ export default function TabelasPage() {
       {/* ─── Acessibilidade ─── */}
       <Section title="Acessibilidade">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Notas</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">Notas</CardTitle></CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>
-              O{" "}
-              <code className="font-mono bg-muted px-1 rounded">Table</code>{" "}
-              do shadcn/ui renderiza um{" "}
-              <code className="font-mono bg-muted px-1 rounded">&lt;table&gt;</code>{" "}
-              semântico com{" "}
+              O <code className="font-mono bg-muted px-1 rounded">Table</code> do shadcn/ui renderiza um{" "}
+              <code className="font-mono bg-muted px-1 rounded">&lt;table&gt;</code> semântico com{" "}
               <code className="font-mono bg-muted px-1 rounded">thead</code>,{" "}
-              <code className="font-mono bg-muted px-1 rounded">tbody</code> e
-              cabeçalhos de coluna{" "}
-              <code className="font-mono bg-muted px-1 rounded">th</code> — lido
-              corretamente por leitores de tela.
+              <code className="font-mono bg-muted px-1 rounded">tbody</code> e cabeçalhos de coluna{" "}
+              <code className="font-mono bg-muted px-1 rounded">th</code> — lido corretamente por leitores de tela.
             </p>
             <p>
-              Linhas com{" "}
-              <code className="font-mono bg-muted px-1 rounded">
-                hasChildPremise
-              </code>{" "}
-              possuem interação de clique no label; adicione{" "}
-              <code className="font-mono bg-muted px-1 rounded">role="button"</code>{" "}
-              e{" "}
-              <code className="font-mono bg-muted px-1 rounded">tabIndex={0}</code>{" "}
-              no div interno para navegação por teclado completa.
+              Linhas com <code className="font-mono bg-muted px-1 rounded">hasChildPremise</code> possuem interação
+              de clique no label; adicione <code className="font-mono bg-muted px-1 rounded">role="button"</code> e{" "}
+              <code className="font-mono bg-muted px-1 rounded">tabIndex={0}</code> no div interno para navegação
+              por teclado completa.
             </p>
             <p>
-              A combinação{" "}
-              <code className="font-mono bg-muted px-1 rounded">
-                text-red-600
-              </code>{" "}
-              para valores negativos e{" "}
-              <code className="font-mono bg-muted px-1 rounded">
-                text-muted-foreground
-              </code>{" "}
-              para secundários mantém contraste mínimo de 4.5:1 nos tokens de
-              produção (WCAG 2.1 AA) em light e dark mode.
+              A combinação <code className="font-mono bg-muted px-1 rounded">text-red-600</code> para valores
+              negativos e <code className="font-mono bg-muted px-1 rounded">text-muted-foreground</code> para
+              secundários mantém contraste mínimo de 4.5:1 nos tokens de produção (WCAG 2.1 AA) em light e dark mode.
             </p>
             <p>
               O overflow horizontal é gerenciado com{" "}
-              <code className="font-mono bg-muted px-1 rounded">
-                overflow-x-auto
-              </code>{" "}
-              no container externo. A coluna sticky garante que o contexto da
-              linha permaneça visível durante o scroll.
+              <code className="font-mono bg-muted px-1 rounded">overflow-x-auto</code> no container externo.
+              A coluna sticky garante que o contexto da linha permaneça visível durante o scroll.
             </p>
           </CardContent>
         </Card>

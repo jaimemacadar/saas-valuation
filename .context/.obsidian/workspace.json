@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/development-workflow.md",
-                "mode": "preview",
+                "file": "docs/design-system.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "development-workflow"
+              "title": "design-system"
             }
           }
         ]
@@ -183,14 +183,15 @@
   },
   "active": "5d4144e365fbb5d7",
   "lastOpenFiles": [
+    "styleguide.md",
     "docs/design-system.md",
+    "docs/development-workflow.md",
     "docs/development-workflow.md.tmp.32984.1771984105693",
     "docs/project-overview.md",
     "docs/development-workflow.md.tmp.32984.1771984092025",
     "docs/design-system.md.tmp.32984.1771984082024",
     "docs/project-overview.md.tmp.32984.1771983983468",
     "docs/design-system.md.tmp.32984.1771983912181",
-    "styleguide.md",
     "docs/design-system.md.tmp.32984.1771983899896",
     "docs/design-system.md.tmp.32984.1771983271322",
     "docs/design-system.md.tmp.32984.1771981397953",

@@ -64,12 +64,10 @@ src/
       components/
         grafico-combinado/
           page.tsx                     # Showcase do componente GraficoCombinado
+        tabelas/
+          page.tsx                     # Showcase do componente Tabelas Financeiras
   styles/
-    design-system/
-      index.ts                         # Barrel export (reservado para expansao futura)
-      components/                      # Reservado
-      themes/                          # Reservado
-      tokens/                          # Reservado
+    globals.css                        # CSS global importado no root layout
 ```
 
 ### Fluxo de Tokens
@@ -949,6 +947,6 @@ Isso permite que classes como `bg-primary`, `text-success`, `border-border` func
 - [Architecture Notes](./architecture.md) — Secao de Design System
 - [UI Components](./qa/components-ui.md) — Documentacao completa de componentes
 - [Project Overview](./project-overview.md) — Visao geral do projeto
-- [Styleguide Live](/styleguide) — Documentacao visual interativa
+- [Styleguide Live](http://localhost:3000/styleguide) — Documentacao visual interativa
 - [shadcn/ui](https://ui.shadcn.com) — Biblioteca de componentes base
 - [Lucide Icons](https://lucide.dev) — Biblioteca de icones
