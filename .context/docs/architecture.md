@@ -4,7 +4,7 @@ name: architecture
 description: System architecture, layers, patterns, and design decisions
 category: architecture
 generated: 2026-01-27
-updated: 2026-02-20
+updated: 2026-02-24
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -91,6 +91,30 @@ Arquivos principais:
 - `src/lib/mock/utils.ts` - Cálculos automáticos de campos
 
 **Documentação completa**: [MOCK_MODE.md](../../MOCK_MODE.md)
+
+## Cálculo de Despesas Financeiras por Empréstimos (CP/LP)
+
+`src/core/calculations/balanceSheet.ts` — `calculateBPProjetado`
+
+As despesas financeiras são calculadas **separadamente para CP e LP** e usam o **saldo inicial do ano anterior** para evitar circularidade (dependência circular entre dívida e despesas):
+
+```typescript
+// Calculadas ANTES dos novos empréstimos para evitar circularidade
+const despesasFinanceirasCP = bpAnterior.passivoCirculante.emprestimosCP × taxaJuros;
+const despesasFinanceirasLP = bpAnterior.passivoRealizavelLP.emprestimosLP × taxaJuros;
+const despesasFinanceiras = despesasFinanceirasCP + despesasFinanceirasLP; // invariante
+
+// Saldo de empréstimos = início + novos - juros pagos
+const emprestimosCP = bpAnterior.CP + novosCP - despesasFinanceirasCP;
+const emprestimosLP = bpAnterior.LP + novosLP - despesasFinanceirasLP;
+```
+
+**Campos em `BalanceSheetCalculated`** (`src/core/types/index.ts`):
+- `despesasFinanceirasCP` — empréstimos CP × taxaJurosEmprestimo
+- `despesasFinanceirasLP` — empréstimos LP × taxaJurosEmprestimo
+- `despesasFinanceiras` — CP + LP (invariante: sempre igual à soma dos dois)
+
+**Exibição em `LoansTable`**: linhas separadas para despesas financeiras CP e LP, com seção de taxa de juros movida para o final da tabela (abaixo dos saldos).
 
 ## Módulo de Indicadores Financeiros
 

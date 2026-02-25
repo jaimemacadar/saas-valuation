@@ -158,11 +158,49 @@ export default function StyleguidePage() {
 
       {/* ─── 3. Chart Colors ─── */}
       <Section title="Cores de Gráficos">
-        <div className="grid grid-cols-5 gap-4">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <ColorSwatch key={n} label={`Chart ${n}`} variable={`--chart-${n}`} />
-          ))}
+        {/* Balanço — Investimentos & Capital de Giro */}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          Balanço — Investimentos &amp; Capital de Giro
+        </p>
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <ColorSwatch label="Barra primária — Imobilizado / Cap. Giro" variable="--primary-800" />
+          <ColorSwatch label="Barra secundária — Vendas / NCG" variable="--primary-500" />
+          <ColorSwatch label="Linha indicadora — Vendas/Imob. · Vendas/CG" variable="--neutral-400" />
         </div>
+
+        {/* Balanço — Empréstimos */}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          Balanço — Empréstimos
+        </p>
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <ColorSwatch label="Emp. LP — barra inferior (stackId a)" variable="--alt-800" />
+          <ColorSwatch label="Emp. CP — barra superior (stackId a)" variable="--alt-500" />
+          <ColorSwatch label="Linha indicadora — Emp./EBITDA" variable="--neutral-400" />
+        </div>
+
+        {/* DRE / FCFF */}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          DRE / FCFF
+        </p>
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <ColorSwatch label="Receita Líquida · Área Margem EBITDA" variable="--primary" />
+          <ColorSwatch label="Lucro Líquido · EBITDA · FCFF positivo" variable="--chart-2" />
+          <ColorSwatch label="FCFF negativo" variable="--destructive" />
+        </div>
+
+        {/* Estruturais */}
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          Elementos Estruturais
+        </p>
+        <div className="grid grid-cols-2 gap-4 mb-3">
+          <ColorSwatch label="Texto de eixos — tick.fill" variable="--foreground" />
+          <ColorSwatch label="Labels sobre barras — LabelList fill" variable="--primary-foreground" />
+        </div>
+        <p className="text-xs text-muted-foreground">
+          <code className="font-mono bg-muted px-1 rounded">CartesianGrid</code> usa classe Tailwind{" "}
+          <code className="font-mono bg-muted px-1 rounded">stroke-muted</code> (não é CSS var de background).
+          Tooltip usa <code className="font-mono bg-muted px-1 rounded">bg-card</code>.
+        </p>
       </Section>
 
       {/* ─── 4. Typography ─── */}

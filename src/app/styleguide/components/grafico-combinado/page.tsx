@@ -43,7 +43,7 @@ const dadosEBITDA = [
   { ano: "Ano 5", ebitda: 4_600_000, receita: 9_500_000, margem: 0.484 },
 ];
 
-/* ─── Helpers de código ─── */
+/* ─── Snippets de código ─── */
 
 const codeBasico = `import { GraficoCombinado } from "@/components/charts/GraficoCombinado";
 
@@ -53,12 +53,12 @@ const codeBasico = `import { GraficoCombinado } from "@/components/charts/Grafic
   barPrimaria={{
     dataKey: "imobilizado",
     name: "Imobilizado Líquido Final",
-    color: "#003049",
+    color: "var(--primary-800)",
   }}
   linha={{
     dataKey: "indice",
     name: "Vendas / Imobilizado (x)",
-    color: "#adb5bd",
+    color: "var(--neutral-400)",
     valueFormatter: (v) => \`\${v.toFixed(2)}x\`,
   }}
   title="Evolução do Imobilizado"
@@ -72,14 +72,21 @@ const codeToggle = `<GraficoCombinado
   barPrimaria={{
     dataKey: "imobilizado",
     name: "Imobilizado Líquido Final",
-    color: "#003049",
+    color: "var(--primary-800)",
   }}
   barSecundaria={{           // ← habilita toggle switch
     dataKey: "vendas",
     name: "Vendas (Receita Bruta)",
-    color: "#669bbc",
+    color: "var(--primary-500)",
   }}
-  linha={{ dataKey: "indice", name: "Índice (x)", color: "#adb5bd" }}
+  linha={{
+    dataKey: "indice",
+    name: "Vendas / Imobilizado (x)",
+    color: "var(--neutral-400)",
+    valueFormatter: (v) => \`\${v.toFixed(2)}x\`,
+  }}
+  toggleLabelPrimaria="Imobilizado Liq."
+  toggleLabelSecundaria="Vendas"
   title="Imobilizado vs Vendas"
 />`;
 
@@ -89,20 +96,22 @@ const codeMargem = `<GraficoCombinado
   barPrimaria={{
     dataKey: "ebitda",
     name: "EBITDA",
-    color: "var(--chart-1)",
+    color: "var(--chart-2)",
   }}
   barSecundaria={{
     dataKey: "receita",
     name: "Receita Bruta",
-    color: "oklch(0.60 0.18 145)",
+    color: "var(--primary)",
   }}
   linha={{
     dataKey: "margem",
     name: "Margem EBITDA",
-    color: "oklch(0.646 0.222 41)",
+    color: "var(--neutral-400)",
     valueFormatter: (v) => \`\${(v * 100).toFixed(1)}%\`,
   }}
   rightAxisFormatter={(v) => \`\${(v * 100).toFixed(0)}%\`}
+  toggleLabelPrimaria="EBITDA"
+  toggleLabelSecundaria="Receita"
   title="EBITDA e Margem"
 />`;
 
@@ -115,8 +124,8 @@ const props = [
   { name: "barSecundaria", type: "BarConfig", required: false, description: "Barra alternativa — habilita o toggle switch quando fornecida" },
   { name: "linha", type: "LinhaConfig", required: true, description: "Linha indicadora no eixo direito: { dataKey, name, color, valueFormatter? }" },
   { name: "title", type: "string", required: true, description: "Título do gráfico" },
-  { name: "description", type: "string", required: false, description: "Subtítulo / descrição" },
-  { name: "labelAnoBase", type: "string", required: false, description: "Texto extra após a descrição (ex: \"(Ano Base: 2,5x)\")" },
+  { name: "description", type: "string", required: false, description: "Subtítulo / descrição exibido abaixo do título" },
+  { name: "labelAnoBase", type: "string", required: false, description: "Texto destacado após a descrição (ex: \"(Ano Base: 2,5x)\")" },
   { name: "toggleLabelPrimaria", type: "string", required: false, description: "Rótulo esquerdo do toggle (padrão: barPrimaria.name)" },
   { name: "toggleLabelSecundaria", type: "string", required: false, description: "Rótulo direito do toggle (padrão: barSecundaria.name)" },
   { name: "leftAxisFormatter", type: "(v: number) => string", required: false, description: "Formatador do eixo Y esquerdo (padrão: formatCompactNumber)" },
@@ -124,7 +133,36 @@ const props = [
   { name: "height", type: "number", required: false, description: "Altura do gráfico em px (padrão: 400)" },
 ];
 
-/* ─── Page ─── */
+/* ─── Mapeamento de tokens recomendados ─── */
+
+const tokenGroups = [
+  {
+    grupo: "Balanço — Investimentos & Capital de Giro",
+    tokens: [
+      { uso: "Barra primária (Imobilizado / Capital de Giro)", token: "var(--primary-800)" },
+      { uso: "Barra secundária toggle (Vendas / NCG)", token: "var(--primary-500)" },
+      { uso: "Linha indicadora (Vendas/Imob. · Vendas/CG)", token: "var(--neutral-400)" },
+    ],
+  },
+  {
+    grupo: "Balanço — Empréstimos",
+    tokens: [
+      { uso: "Barra LP (longo prazo)", token: "var(--alt-800)" },
+      { uso: "Barra CP toggle (curto prazo)", token: "var(--alt-500)" },
+      { uso: "Linha indicadora (Empréstimos/EBITDA)", token: "var(--neutral-400)" },
+    ],
+  },
+  {
+    grupo: "DRE / FCFF",
+    tokens: [
+      { uso: "Receita / Área (série primária)", token: "var(--primary)" },
+      { uso: "EBITDA / Lucro Líquido / FCFF positivo", token: "var(--chart-2)" },
+      { uso: "FCFF negativo / erro", token: "var(--destructive)" },
+    ],
+  },
+];
+
+/* ─── Componentes auxiliares ─── */
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -143,6 +181,8 @@ function CodeBlock({ code }: { code: string }) {
   );
 }
 
+/* ─── Page ─── */
+
 export default function GraficoCombinadoPage() {
   return (
     <div className="p-10 max-w-5xl mx-auto">
@@ -153,7 +193,8 @@ export default function GraficoCombinadoPage() {
           <Badge variant="secondary">Custom</Badge>
         </div>
         <p className="text-muted-foreground text-lg">
-          Gráfico composto (Recharts <code className="font-mono text-sm bg-muted px-1 rounded">ComposedChart</code>) com barras e linha indicadora em dois eixos Y. Baseado no gráfico de Investimento do Balanço Patrimonial.
+          Gráfico composto (Recharts <code className="font-mono text-sm bg-muted px-1 rounded">ComposedChart</code>) com
+          barras e linha indicadora em dois eixos Y. Suporta toggle switch para alternar entre duas séries de barras.
         </p>
         <div className="flex gap-2 mt-3">
           <Badge variant="outline">Recharts</Badge>
@@ -168,10 +209,12 @@ export default function GraficoCombinadoPage() {
         <CodeBlock code={`import { GraficoCombinado } from "@/components/charts/GraficoCombinado";`} />
       </Section>
 
-      {/* ─── Demo 1: básico (sem toggle) ─── */}
+      {/* ─── Demo 1: básico ─── */}
       <Section title="Básico — barra única + linha indicadora">
         <p className="text-sm text-muted-foreground mb-4">
           Configuração mínima: uma barra (eixo esquerdo) e uma linha indicadora de múltiplo (eixo direito).
+          As props <code className="font-mono text-sm bg-muted px-1 rounded">description</code> e{" "}
+          <code className="font-mono text-sm bg-muted px-1 rounded">labelAnoBase</code> compõem o subtítulo.
         </p>
         <Card className="mb-6">
           <CardContent className="pt-6">
@@ -181,12 +224,12 @@ export default function GraficoCombinadoPage() {
               barPrimaria={{
                 dataKey: "imobilizado",
                 name: "Imobilizado Líquido Final",
-                color: "#003049",
+                color: "var(--primary-800)",
               }}
               linha={{
                 dataKey: "indice",
                 name: "Vendas / Imobilizado (x)",
-                color: "#adb5bd",
+                color: "var(--neutral-400)",
                 valueFormatter: (v) => `${v.toFixed(2)}x`,
               }}
               title="Evolução do Imobilizado"
@@ -201,7 +244,8 @@ export default function GraficoCombinadoPage() {
       {/* ─── Demo 2: com toggle ─── */}
       <Section title="Com Toggle — alternância entre duas barras">
         <p className="text-sm text-muted-foreground mb-4">
-          Quando <code className="font-mono text-sm bg-muted px-1 rounded">barSecundaria</code> é fornecida, um toggle switch aparece no cabeçalho para alternar entre as duas barras.
+          Quando <code className="font-mono text-sm bg-muted px-1 rounded">barSecundaria</code> é fornecida, um toggle
+          switch aparece no cabeçalho para alternar entre as duas séries de barras. A linha é sempre exibida.
         </p>
         <Card className="mb-6">
           <CardContent className="pt-6">
@@ -211,17 +255,17 @@ export default function GraficoCombinadoPage() {
               barPrimaria={{
                 dataKey: "imobilizado",
                 name: "Imobilizado Líquido Final",
-                color: "#003049",
+                color: "var(--primary-800)",
               }}
               barSecundaria={{
                 dataKey: "vendas",
                 name: "Vendas (Receita Bruta)",
-                color: "#669bbc",
+                color: "var(--primary-500)",
               }}
               linha={{
                 dataKey: "indice",
                 name: "Vendas / Imobilizado (x)",
-                color: "#adb5bd",
+                color: "var(--neutral-400)",
                 valueFormatter: (v) => `${v.toFixed(2)}x`,
               }}
               toggleLabelPrimaria="Imobilizado Liq."
@@ -235,10 +279,13 @@ export default function GraficoCombinadoPage() {
         <CodeBlock code={codeToggle} />
       </Section>
 
-      {/* ─── Demo 3: margem EBITDA ─── */}
+      {/* ─── Demo 3: EBITDA e Margem ─── */}
       <Section title="EBITDA e Margem — formatadores personalizados">
         <p className="text-sm text-muted-foreground mb-4">
-          O eixo direito e o tooltip da linha podem usar formatadores customizados — neste exemplo, percentual.
+          O eixo direito e o tooltip da linha aceitam formatadores customizados via{" "}
+          <code className="font-mono text-sm bg-muted px-1 rounded">rightAxisFormatter</code> e{" "}
+          <code className="font-mono text-sm bg-muted px-1 rounded">linha.valueFormatter</code> — neste exemplo,
+          percentual.
         </p>
         <Card className="mb-6">
           <CardContent className="pt-6">
@@ -248,17 +295,17 @@ export default function GraficoCombinadoPage() {
               barPrimaria={{
                 dataKey: "ebitda",
                 name: "EBITDA",
-                color: "var(--chart-1)",
+                color: "var(--chart-2)",
               }}
               barSecundaria={{
                 dataKey: "receita",
                 name: "Receita Bruta",
-                color: "oklch(0.52 0.18 145)",
+                color: "var(--primary)",
               }}
               linha={{
                 dataKey: "margem",
                 name: "Margem EBITDA",
-                color: "oklch(0.646 0.222 41)",
+                color: "var(--neutral-400)",
                 valueFormatter: (v) => `${(v * 100).toFixed(1)}%`,
               }}
               rightAxisFormatter={(v) => `${(v * 100).toFixed(0)}%`}
@@ -304,6 +351,51 @@ export default function GraficoCombinadoPage() {
         </div>
       </Section>
 
+      {/* ─── Tokens de cor ─── */}
+      <Section title="Tokens de Cor Recomendados">
+        <p className="text-sm text-muted-foreground mb-4">
+          Todas as cores devem usar <code className="font-mono text-sm bg-muted px-1 rounded">var(--token)</code> —
+          valores literais (hex, hsl inline, oklch inline) são proibidos pelo Design System.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b text-left">
+                <th className="py-3 pr-4 font-semibold text-foreground">Uso</th>
+                <th className="py-3 pr-4 font-semibold text-foreground">Token</th>
+                <th className="py-3 font-semibold text-foreground">Amostra</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tokenGroups.map((group) => (
+                <>
+                  <tr key={group.grupo} className="border-b bg-muted/30">
+                    <td
+                      colSpan={3}
+                      className="py-2 pl-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground"
+                    >
+                      {group.grupo}
+                    </td>
+                  </tr>
+                  {group.tokens.map((t) => (
+                    <tr key={`${group.grupo}-${t.token}`} className="border-b hover:bg-muted/40 transition-colors">
+                      <td className="py-3 pr-4 text-muted-foreground">{t.uso}</td>
+                      <td className="py-3 pr-4 font-mono text-xs text-foreground">{t.token}</td>
+                      <td className="py-3">
+                        <span
+                          className="inline-block h-5 w-10 rounded"
+                          style={{ background: t.token }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
       {/* ─── Acessibilidade ─── */}
       <Section title="Acessibilidade">
         <Card>
@@ -313,13 +405,18 @@ export default function GraficoCombinadoPage() {
           <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>
               O toggle switch usa <code className="font-mono bg-muted px-1 rounded">role="switch"</code> e{" "}
-              <code className="font-mono bg-muted px-1 rounded">aria-checked</code> para comunicar estado a leitores de tela.
+              <code className="font-mono bg-muted px-1 rounded">aria-checked</code> para comunicar estado a leitores
+              de tela. É navegável por teclado (foco visível via{" "}
+              <code className="font-mono bg-muted px-1 rounded">focus-visible:ring-2</code>).
             </p>
             <p>
-              O <code className="font-mono bg-muted px-1 rounded">Tooltip</code> do Recharts é acessível via mouse e touch. Para navegação por teclado completa, considere adicionar uma tabela de dados complementar.
+              O <code className="font-mono bg-muted px-1 rounded">Tooltip</code> do Recharts é acessível via mouse e
+              touch. Para navegação por teclado completa, considere adicionar uma tabela de dados complementar.
             </p>
             <p>
-              As cores de barras e linha devem ter contraste suficiente entre si e com o fundo do gráfico (ratio mínimo 3:1 para elementos gráficos — WCAG 1.4.11).
+              As cores de barras e linha devem ter contraste suficiente entre si e com o fundo (ratio mínimo 3:1 para
+              elementos gráficos — WCAG 1.4.11). Use os tokens do Design System para garantir contraste correto em
+              light e dark mode.
             </p>
           </CardContent>
         </Card>

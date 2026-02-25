@@ -4,7 +4,7 @@ name: design-system
 description: Design System completo com tokens, cores, tipografia, componentes e styleguide
 category: architecture
 generated: 2026-02-20
-updated: 2026-02-20
+updated: 2026-02-24
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -327,50 +327,226 @@ As escalas de cor mantêm **ordem crescente** em dark mode (50 = mais claro, 900
 
 #### GraficoCombinado
 
-Componente generico reutilizavel de grafico composto (Bar + Line + dois eixos Y + toggle switch).
+Componente generico reutilizavel de grafico composto (Bar + Line + dois eixos Y + toggle switch opcional).
 
 **Arquivo:** `src/components/charts/GraficoCombinado.tsx`
 
-**Props principais:**
+**Tipos exportados:**
 
-| Prop | Tipo | Obrigatoria | Descricao |
-|------|------|-------------|-----------|
-| `data` | `GraficoCombinadoDado[]` | Sim | Array de dados |
-| `xAxisKey` | `string` | Sim | Chave para eixo X |
-| `barPrimaria` | `BarConfig` | Sim | Config da barra principal |
-| `barSecundaria` | `BarConfig` | Nao | Habilita toggle switch |
-| `linha` | `LinhaConfig` | Sim | Linha no eixo direito |
-| `title` | `string` | Sim | Titulo do grafico |
-| `leftAxisFormatter` | `(v: number) => string` | Nao | Formatador eixo Y esquerdo |
-| `rightAxisFormatter` | `(v: number) => string` | Nao | Formatador eixo Y direito |
-| `height` | `number` | Nao | Altura em px (padrao 400) |
+```typescript
+export interface BarConfig {
+  dataKey: string;   // Chave do campo nos dados
+  name: string;      // Nome exibido na legenda
+  color: string;     // Cor da barra — use sempre var(--token), ex: "var(--chart-1)"
+}
 
-**Uso basico:**
+export interface LinhaConfig {
+  dataKey: string;   // Chave do campo nos dados
+  name: string;      // Nome exibido na legenda
+  color: string;     // Cor da linha — use sempre var(--token)
+  valueFormatter?: (value: number) => string; // Formatador no tooltip (padrao: v.toFixed(2)+"x")
+}
+
+// Ponto de dado generico — deve conter xAxisKey e todos os dataKeys configurados
+export type GraficoCombinadoDado = Record<string, number | string | null>;
+```
+
+**Todas as props (`GraficoCombinadoProps`):**
+
+| Prop | Tipo | Obrigatoria | Padrao | Descricao |
+|------|------|-------------|--------|-----------|
+| `data` | `GraficoCombinadoDado[]` | Sim | — | Array de dados do grafico |
+| `xAxisKey` | `string` | Sim | — | Chave do eixo X (ex: `"ano"`) |
+| `barPrimaria` | `BarConfig` | Sim | — | Barra sempre visivel (ou quando toggle=off) |
+| `barSecundaria` | `BarConfig` | Nao | `undefined` | Barra alternativa — ativa o toggle switch quando fornecida |
+| `linha` | `LinhaConfig` | Sim | — | Linha indicadora no eixo Y direito |
+| `title` | `string` | Sim | — | Titulo do grafico |
+| `description` | `string` | Nao | `undefined` | Subtitulo / descricao abaixo do titulo |
+| `labelAnoBase` | `string` | Nao | `undefined` | Texto destacado apos a descricao (ex: `"Ano Base: 2,5x"`) |
+| `toggleLabelPrimaria` | `string` | Nao | `barPrimaria.name` | Rotulo esquerdo do toggle switch |
+| `toggleLabelSecundaria` | `string` | Nao | `barSecundaria.name` | Rotulo direito do toggle switch |
+| `leftAxisFormatter` | `(v: number) => string` | Nao | `formatCompactNumber` | Formatador do eixo Y esquerdo (barras) |
+| `rightAxisFormatter` | `(v: number) => string` | Nao | `v.toFixed(1)+"x"` | Formatador do eixo Y direito (linha) |
+| `height` | `number` | Nao | `400` | Altura do grafico em px |
+
+**Comportamento do toggle:**
+- O switch so e exibido quando `barSecundaria` e fornecida
+- Estado inicial: `false` → exibe `barPrimaria`; estado ativo: `true` → exibe `barSecundaria`
+- A linha e sempre exibida independente do toggle
+- Acessivel: `role="switch"`, `aria-checked`, navegavel por teclado
+- Estilos: `bg-primary` (ativo) / `bg-input` (inativo)
+
+**Tooltip:** Fundo `bg-card`; barras formatadas com `formatCurrency`; linha formatada com `linha.valueFormatter ?? v.toFixed(2)+"x"`.
+
+**Tokens de Cor Recomendados:**
+
+| Prop | Contexto | Token |
+|------|----------|-------|
+| `barPrimaria.color` | Balanco — Investimentos / Capital de Giro | `var(--primary-800)` |
+| `barSecundaria.color` | Balanco — Vendas / NCG (toggle) | `var(--primary-500)` |
+| `barPrimaria.color` | Balanco — Emprestimos LP | `var(--alt-800)` |
+| `barSecundaria.color` | Balanco — Emprestimos CP (toggle) | `var(--alt-500)` |
+| `barPrimaria.color` | DRE — Receita / Area | `var(--primary)` |
+| `barPrimaria.color` | DRE — EBITDA / Lucro Liquido | `var(--chart-2)` |
+| `linha.color` | Todos os contextos (indicador ratio) | `var(--neutral-400)` |
+
+> Nao use `chart-1`, `chart-2`, `chart-3` genéricos — prefira os tokens semanticos acima alinhados ao contexto do grafico.
+
+**Uso basico (sem toggle) — Investimentos:**
 ```tsx
 <GraficoCombinado
   data={dados}
   xAxisKey="ano"
-  barPrimaria={{ dataKey: "imobilizado", name: "Imobilizado", color: "var(--chart-1)" }}
-  linha={{ dataKey: "vendasImobilizado", name: "Vendas/Imobilizado", color: "var(--chart-3)" }}
+  barPrimaria={{ dataKey: "imobilizado", name: "Imobilizado", color: "var(--primary-800)" }}
+  linha={{ dataKey: "vendasImobilizado", name: "Vendas/Imobilizado", color: "var(--neutral-400)" }}
   title="Investimentos"
+  description="Evolucao do imobilizado e eficiencia de ativos"
+  labelAnoBase="Ano Base: 2,5x"
   leftAxisFormatter={(v) => formatCompactNumber(v)}
   rightAxisFormatter={(v) => `${v.toFixed(1)}x`}
 />
 ```
 
-**Com toggle (duas barras):**
+**Com toggle (duas barras alternativas) — Capital de Giro:**
 ```tsx
 <GraficoCombinado
   data={dados}
   xAxisKey="ano"
-  barPrimaria={{ dataKey: "imobilizado", name: "Imobilizado", color: "var(--chart-1)" }}
-  barSecundaria={{ dataKey: "vendas", name: "Vendas", color: "var(--chart-2)" }}
-  linha={{ dataKey: "ratio", name: "Ratio", color: "var(--chart-3)" }}
-  title="Investimentos vs Vendas"
-  toggleLabelPrimaria="Imobilizado"
-  toggleLabelSecundaria="Vendas"
+  barPrimaria={{ dataKey: "capitalDeGiro", name: "Capital de Giro", color: "var(--primary-800)" }}
+  barSecundaria={{ dataKey: "ncg", name: "NCG", color: "var(--primary-500)" }}
+  linha={{ dataKey: "vendasCG", name: "Vendas/Cap. Giro", color: "var(--neutral-400)" }}
+  title="Capital de Giro"
+  toggleLabelPrimaria="Capital de Giro"
+  toggleLabelSecundaria="NCG"
 />
 ```
+
+**Com `valueFormatter` customizado — Alavancagem (Emprestimos):**
+```tsx
+<GraficoCombinado
+  data={dados}
+  xAxisKey="ano"
+  barPrimaria={{ dataKey: "emprestimosLP", name: "Divida LP", color: "var(--alt-800)" }}
+  barSecundaria={{ dataKey: "emprestimosCP", name: "Divida CP", color: "var(--alt-500)" }}
+  linha={{
+    dataKey: "emprestimosEbitda",
+    name: "Divida/EBITDA",
+    color: "var(--neutral-400)",
+    valueFormatter: (v) => `${v.toFixed(1)}x`,
+  }}
+  title="Alavancagem"
+  rightAxisFormatter={(v) => `${v.toFixed(1)}x`}
+/>
+```
+
+#### Sidebar Colapsavel (AppSidebar)
+
+Sistema de navegacao lateral colapsavel baseado no componente `Sidebar` do shadcn/ui, configurado com `collapsible="icon"`.
+
+**Arquivos principais:**
+- `src/components/app-sidebar.tsx` — Composicao principal da sidebar
+- `src/components/nav-main.tsx` — Navegacao geral do dashboard
+- `src/components/model-sidebar-nav.tsx` — Navegacao contextual de modelo
+- `src/components/nav-user.tsx` — Menu do usuario (footer)
+- `src/components/team-switcher.tsx` — Seletor de workspace (header)
+- `src/components/ui/sidebar.tsx` — Primitivos base do shadcn/ui
+
+**Constantes de largura:**
+
+| Constante | Valor | Contexto |
+|-----------|-------|----------|
+| `SIDEBAR_WIDTH` | `16rem` | Largura expandida (desktop) |
+| `SIDEBAR_WIDTH_ICON` | `2rem` | Largura colapsada (icon-only) |
+| `SIDEBAR_WIDTH_MOBILE` | `18rem` | Largura no drawer mobile |
+
+**Estado e data attributes:**
+
+| Atributo | Valor expandido | Valor colapsado |
+|----------|-----------------|-----------------|
+| `data-state` | `"expanded"` | `"collapsed"` |
+| `data-collapsible` | `""` (vazio) | `"icon"` |
+| `data-variant` | `"sidebar"` | `"sidebar"` |
+| `data-side` | `"left"` | `"left"` |
+
+**Comportamento dos elementos ao colapsar** (`group-data-[collapsible=icon]:`):
+
+| Elemento | Comportamento |
+|----------|---------------|
+| `SidebarGroupLabel` | `-mt-8 opacity-0 w-0 overflow-hidden px-0` — some da visao sem layout shift |
+| `SidebarGroupAction` | `hidden` |
+| `SidebarMenuAction` / `SidebarMenuBadge` | `hidden` |
+| `SidebarMenuSub` | `hidden` |
+| `SidebarMenuSubButton` | `hidden` |
+| `SidebarMenuButton` (size `lg`) | `!p-0` — remove padding para icon-only |
+| `SidebarContent` | `overflow-hidden` — previne scroll em modo icon |
+
+**Tooltips no modo colapsado:**
+Quando colapsada, `SidebarMenuButton` exibe tooltip com o titulo do item. O prop `tooltip` e obrigatorio para acessibilidade em modo icon-only:
+```tsx
+<SidebarMenuButton tooltip={item.title}>
+  <item.icon />
+  <span>{item.title}</span>
+</SidebarMenuButton>
+```
+
+**Persistencia e atalho de teclado:**
+- Estado persistido em cookie: `"sidebar_state"` (TTL: 7 dias)
+- Atalho: `Ctrl+B` / `Cmd+B` (constante `SIDEBAR_KEYBOARD_SHORTCUT = "b"`)
+- `SidebarRail` — area clicavel na borda da sidebar para toggle por arraste/click
+
+**Layout com SidebarInset:**
+```tsx
+// dashboard/layout.tsx
+<SidebarProvider>
+  <AppSidebar />
+  <SidebarInset className="
+    peer-data-[state=collapsed]:pl-0
+    md:pl-49
+    md:peer-data-[state=collapsed]:pl-12
+    transition-[padding] duration-200 ease-linear
+  ">
+    {children}
+  </SidebarInset>
+</SidebarProvider>
+```
+- `md:pl-49` — padding quando expandida
+- `md:peer-data-[state=collapsed]:pl-12` — padding reduzido quando colapsada
+- Transicao suave de `200ms` via `transition-[padding]`
+
+**Navegacao contextual (AppSidebar):**
+```tsx
+// Detecta contexto via URL e renderiza nav adequada
+const modelIdMatch = pathname?.match(/\/model\/([^\/]+)/);
+const isModelView = !!modelId && modelId !== "new";
+
+// → ModelSidebarNav: grupos "Geral" e "Valuation" (rotas do modelo)
+// → NavMain: menu geral do dashboard
+```
+
+**Estrutura de grupos em `ModelSidebarNav`:**
+- **Geral**: Dashboard (`/dashboard`)
+- **Valuation**: Ano Base, Premissas, DRE, Balanco Patrimonial, Fluxo de Caixa Livre, Valuation
+
+**Estrutura de grupos em `NavMain`:**
+- **Menu** (label via `SidebarGroupLabel`): items com subitens opcionais (collapsible com `ChevronRight` animado)
+
+**Tokens CSS da sidebar (ver secao Tokens de Sidebar acima):**
+- `--sidebar` / `--sidebar-foreground` — fundo e texto
+- `--sidebar-primary` / `--sidebar-primary-foreground` — cor primaria (logo no `TeamSwitcher`)
+- `--sidebar-accent` / `--sidebar-accent-foreground` — hover/active states
+- `--sidebar-border` — bordas e separadores
+
+**Hook `useSidebar`:**
+```typescript
+const {
+  state,          // "expanded" | "collapsed"
+  isMobile,       // boolean
+  toggleSidebar,  // () => void
+  openMobile,     // boolean
+  setOpenMobile,  // (open: boolean) => void
+} = useSidebar()
+```
+Deve ser usado dentro de `SidebarProvider`. Usado por `NavUser` e `TeamSwitcher` para posicionar dropdowns (`side="bottom"` no mobile, `side="right"` no desktop).
 
 ## Styleguide
 
@@ -435,32 +611,54 @@ Showcase do componente `GraficoCombinado` com:
 
 **Regra:** Todos os valores de cor em componentes de grafico — barras, linhas, areas, eixos, grids, tooltips e labels — **devem** usar `var(--token)`, referenciando tokens CSS definidos em `globals.css`. Valores literais de cor (hex, hsl, rgb, oklch inline) sao proibidos.
 
-#### Mapeamento obrigatorio de tokens para graficos
+#### Mapeamento de tokens por contexto de grafico
+
+**Balanco Patrimonial — Investimentos & Capital de Giro** (`InvestmentChart`, `WorkingCapitalChart`)
 
 | Uso | Token |
 |-----|-------|
-| Serie principal (barra/linha primaria) | `var(--chart-1)` |
-| Serie verde / valores positivos | `var(--chart-2)` |
-| Serie laranja | `var(--chart-3)` |
-| Serie amarela | `var(--chart-4)` |
-| Serie magenta | `var(--chart-5)` |
-| Valores negativos / erro | `var(--destructive)` |
-| Barra navy principal (azul-escuro) | `var(--primary-800)` |
-| Serie azul medio (barra secundaria) | `var(--primary-400)` |
-| Linha/serie neutra (indicadores) | `var(--neutral-400)` |
-| Serie vermelho vivo | `var(--alt-500)` |
-| Serie vermelho escuro | `var(--alt-800)` |
+| Barra principal (Imobilizado / Capital de Giro) | `var(--primary-800)` |
+| Barra secundaria (Vendas / NCG) | `var(--primary-500)` |
+| Linha indicadora (Vendas/Imob. · Vendas/CG) | `var(--neutral-400)` |
+
+**Balanco Patrimonial — Emprestimos** (`LoansChart`)
+
+| Uso | Token |
+|-----|-------|
+| Barra LP (emprestimos longo prazo) | `var(--alt-800)` |
+| Barra CP (emprestimos curto prazo) | `var(--alt-500)` |
+| Linha indicadora (Emprestimos/EBITDA) | `var(--neutral-400)` |
+
+**DRE / FCFF** (`EBITDAChart`, `RevenueChart`, `FCFFChart`)
+
+| Uso | Token |
+|-----|-------|
+| Area / Receita Liquida (serie primaria) | `var(--primary)` |
+| EBITDA / Lucro Liquido / FCFF positivo | `var(--chart-2)` |
+| FCFF negativo | `var(--destructive)` |
+
+**Elementos estruturais (todos os graficos)**
+
+| Uso | Token / Classe |
+|-----|----------------|
 | Texto de eixos (`tick.fill`) | `var(--foreground)` |
-| Grade do grafico (`CartesianGrid`) | classe Tailwind `stroke-muted` |
-| Fundo do tooltip | `var(--background)` |
+| Grade (`CartesianGrid`) | classe Tailwind `stroke-muted` |
+| Fundo do tooltip | `var(--card)` — classe `bg-card` |
 | Borda do tooltip | `var(--border)` |
-| Labels sobre barras coloridas | `var(--primary-foreground)` |
+| Labels sobre barras coloridas (`LabelList`) | `var(--primary-foreground)` |
 
 #### Exemplo correto
 
 ```tsx
-// Barras e linhas
-<Bar fill="var(--chart-1)" />
+// Barras (Investimentos)
+<Bar dataKey="imobilizado" fill="var(--primary-800)" />
+<Bar dataKey="vendas"      fill="var(--primary-500)" />
+
+// Linha indicadora neutra
+<Line stroke="var(--neutral-400)" dot={false} />
+
+// Area / Receita (DRE)
+<Area fill="var(--primary)" stroke="var(--primary)" />
 <Line stroke="var(--chart-2)" dot={{ fill: "var(--chart-2)" }} />
 
 // Eixos
@@ -474,7 +672,7 @@ Showcase do componente `GraficoCombinado` com:
 <LabelList style={{ fill: "var(--primary-foreground)", fontSize: 13 }} />
 
 // Tooltip
-<div className="rounded-lg border bg-background p-3 shadow-md">...</div>
+<div className="rounded-lg border bg-card p-3 shadow-md">...</div>
 ```
 
 #### Anti-patterns proibidos
