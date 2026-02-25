@@ -37,7 +37,7 @@ export default async function ProjectionsPage({ params }: ProjectionsPageProps) 
       <PageHeader
         breadcrumbs={[
           { label: "Valuations", href: "/dashboard/models" },
-          { label: companyName, href: `/model/${id}/view/dre` },
+          { label: companyName, href: `/model/${id}/view/balance-sheet` },
           { label: "Entrada de Dados" },
           { label: "Premissas de Projeção" },
         ]}

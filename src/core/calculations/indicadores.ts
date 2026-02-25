@@ -73,28 +73,28 @@ function calcEmprestimosEbitda(
 }
 
 /**
- * PL / Lucro Líquido = Patrimônio Líquido / Lucro Líquido
+ * Lucro Líquido / PL = Lucro Líquido / Patrimônio Líquido
  *
- * Indica em quantos períodos o lucro líquido seria suficiente para
- * reconstituir o patrimônio líquido. Quanto menor, mais rentável.
+ * Indica a rentabilidade do patrimônio líquido (ROE simplificado).
+ * Quanto maior, mais rentável para o acionista.
  */
 function calcPatrimonioLiquidoLucroLiquido(
   dre: DRECalculated,
   bp: BalanceSheetCalculated,
 ): IndicadorCalculated {
-  const numerator = new Decimal(bp.patrimonioLiquido.total);
-  const denominator = new Decimal(dre.lucroLiquido);
+  const numerator = new Decimal(dre.lucroLiquido);
+  const denominator = new Decimal(bp.patrimonioLiquido.total);
 
   const value = denominator.isZero()
     ? new Decimal(0)
-    : numerator.div(denominator);
+    : numerator.div(denominator).mul(100);
 
   return {
     year: dre.year,
-    id: "pl-lucro-liquido",
-    label: "PL / Lucro Líquido",
+    id: "lucro-liquido-pl",
+    label: "Lucro Líquido / PL",
     value: value.toNumber(),
-    format: "multiple",
+    format: "percentage",
     numerator: numerator.toNumber(),
     denominator: denominator.toNumber(),
   };

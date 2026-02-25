@@ -33,16 +33,14 @@ describe('ModelSidebarNav', () => {
   });
 
   it('deve renderizar todos os itens de navegação', () => {
-    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/view/dre`);
+    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/view/balance-sheet`);
 
     render(<ModelSidebarNav modelId={modelId} />);
 
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
     expect(screen.getByText('Ano Base')).toBeInTheDocument();
     expect(screen.getByText('Premissas')).toBeInTheDocument();
-    expect(screen.getByText('DRE')).toBeInTheDocument();
-    expect(screen.getByText('Balanço Patrimonial')).toBeInTheDocument();
-    expect(screen.getByText('Fluxo de Caixa Livre')).toBeInTheDocument();
+    expect(screen.getByText('Projeções Financeiras')).toBeInTheDocument();
     expect(screen.getByText('Valuation')).toBeInTheDocument();
   });
 
@@ -71,13 +69,11 @@ describe('ModelSidebarNav', () => {
   });
 
   it('deve gerar URLs corretas para todas as visualizações', () => {
-    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/view/dre`);
+    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/view/balance-sheet`);
 
     const { container } = render(<ModelSidebarNav modelId={modelId} />);
 
-    expect(container.querySelector(`a[href="/model/${modelId}/view/dre"]`)).toBeInTheDocument();
     expect(container.querySelector(`a[href="/model/${modelId}/view/balance-sheet"]`)).toBeInTheDocument();
-    expect(container.querySelector(`a[href="/model/${modelId}/view/fcff"]`)).toBeInTheDocument();
     expect(container.querySelector(`a[href="/model/${modelId}/view/valuation"]`)).toBeInTheDocument();
   });
 
@@ -108,17 +104,17 @@ describe('ModelSidebarNav', () => {
 
     // Deve ainda renderizar a navegação, apenas sem marcar nada como ativo
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('DRE')).toBeInTheDocument();
+    expect(screen.getByText('Projeções Financeiras')).toBeInTheDocument();
     expect(screen.getByText('Valuation')).toBeInTheDocument();
   });
 
-  it('deve renderizar exatamente 7 itens de menu', () => {
-    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/view/dre`);
+  it('deve renderizar exatamente 5 itens de menu', () => {
+    (usePathname as jest.Mock).mockReturnValue(`/model/${modelId}/view/balance-sheet`);
 
     render(<ModelSidebarNav modelId={modelId} />);
 
     const menuItems = screen.getAllByTestId('sidebar-menu-item');
-    // Deve haver exatamente 7 itens de menu
-    expect(menuItems.length).toBe(7);
+    // 1 Dashboard + 2 Input (Ano Base, Premissas) + 2 View (Projeções Financeiras, Valuation)
+    expect(menuItems.length).toBe(5);
   });
 });

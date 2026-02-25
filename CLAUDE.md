@@ -1,6 +1,6 @@
 # Project Rules and Guidelines
 
-> Auto-generated from .context/docs on 2026-02-25T01:48:29.287Z
+> Auto-generated from .context/docs on 2026-02-25T20:34:06.607Z
 
 ## README
 
@@ -54,7 +54,7 @@ Bem-vindo à base de conhecimento do repositório. Comece com a visão geral do 
 | Guia de Ferramentas & Produtividade | `tooling.md` | Scripts CLI, configs IDE, workflows de automação |
 
 
-## README
+## qa/README
 
 # Q&A Index
 

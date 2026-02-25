@@ -187,7 +187,7 @@ export async function createModel(formData: {
       });
 
       revalidatePath("/dashboard");
-      redirect(`/model/${newModel.id}/view/dre`);
+      redirect(`/model/${newModel.id}/view/balance-sheet`);
     }
 
     // Produção
@@ -211,7 +211,7 @@ export async function createModel(formData: {
     }
 
     revalidatePath("/dashboard");
-    redirect(`/model/${data.id}/view/dre`);
+    redirect(`/model/${data.id}/view/balance-sheet`);
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;
@@ -396,7 +396,7 @@ export async function duplicateModel(id: string): Promise<ActionResult> {
       }
 
       revalidatePath("/dashboard");
-      redirect(`/model/${duplicate.id}/view/dre`);
+      redirect(`/model/${duplicate.id}/view/balance-sheet`);
     }
 
     // Produção
@@ -436,7 +436,7 @@ export async function duplicateModel(id: string): Promise<ActionResult> {
     }
 
     revalidatePath("/dashboard");
-    redirect(`/model/${duplicate.id}/view/dre`);
+    redirect(`/model/${duplicate.id}/view/balance-sheet`);
   } catch (error) {
     if (error instanceof Error && error.message === "NEXT_REDIRECT") {
       throw error;

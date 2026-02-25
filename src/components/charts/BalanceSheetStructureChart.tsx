@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  BarChart,
   Bar,
   ComposedChart,
   Line,
@@ -24,7 +23,8 @@ const COLORS = {
   passivoNaoCirculante: "var(--alt-800)",
   patrimonioLiquido: "var(--alt-900)",
   emprestimosEbitda: "var(--neutral-400)",
-  plLucroLiquido: "var(--chart-3)",
+  plLucroLiquido: "var(--amber)",
+  vendasImobilizado: "var(--neutral-400)",
 } as const;
 
 const LINE_CONFIG = {
@@ -33,7 +33,13 @@ const LINE_CONFIG = {
   activeDotRadius: 6,
 } as const;
 
-const INDICATOR_KEYS = new Set(["emprestimosEbitda", "plLucroLiquido"]);
+const INDICATOR_KEYS = new Set([
+  "emprestimosEbitda",
+  "plLucroLiquido",
+  "vendasImobilizado",
+]);
+
+const PERCENT_INDICATOR_KEYS = new Set(["plLucroLiquido"]);
 
 interface ChartRow {
   ano: string;
@@ -49,6 +55,7 @@ interface ChartRow {
   passivoCirculante_pct: number;
   emprestimosEbitda: number | null;
   plLucroLiquido: number | null;
+  vendasImobilizado: number | null;
 }
 
 interface TooltipPayloadEntry {
@@ -142,13 +149,16 @@ function CustomTooltip({
         <div className="mt-2 pt-1 border-t">
           {indicatorEntries.map((entry, index) => {
             if (entry.value === null || entry.value === undefined) return null;
+            const formatted = PERCENT_INDICATOR_KEYS.has(entry.dataKey)
+              ? `${entry.value.toFixed(1)}%`
+              : `${entry.value.toFixed(2)}x`;
             return (
               <p
                 key={index}
                 style={{ color: entry.color }}
                 className="text-sm"
               >
-                {entry.name}: {entry.value.toFixed(2)}x
+                {entry.name}: {formatted}
               </p>
             );
           })}
@@ -162,16 +172,19 @@ interface BalanceSheetStructureChartProps {
   data: BalanceSheetCalculated[];
   indicadoresData?: IndicadoresCalculated[];
   onlyPassivo?: boolean;
+  onlyAtivo?: boolean;
 }
 
 export function BalanceSheetStructureChart({
   data,
   indicadoresData,
   onlyPassivo = false,
+  onlyAtivo = false,
 }: BalanceSheetStructureChartProps) {
   const [showPercent, setShowPercent] = useState(false);
   const [showEmprestimosEbitda, setShowEmprestimosEbitda] = useState(true);
   const [showPlLucroLiquido, setShowPlLucroLiquido] = useState(true);
+  const [showVendasImobilizado, setShowVendasImobilizado] = useState(true);
 
   if (!data || data.length === 0) {
     return (
@@ -190,7 +203,14 @@ export function BalanceSheetStructureChart({
 
   const plLucroLiquidoByYear = Object.fromEntries(
     (indicadoresData ?? []).map((ind) => {
-      const val = ind.indicadores.find((i) => i.id === "pl-lucro-liquido");
+      const val = ind.indicadores.find((i) => i.id === "lucro-liquido-pl");
+      return [ind.year, val?.value ?? null];
+    })
+  );
+
+  const vendasImobilizadoByYear = Object.fromEntries(
+    (indicadoresData ?? []).map((ind) => {
+      const val = ind.indicadores.find((i) => i.id === "vendas-imobilizado");
       return [ind.year, val?.value ?? null];
     })
   );
@@ -223,6 +243,7 @@ export function BalanceSheetStructureChart({
         passivoCirculante_pct: totalPassivo > 0 ? (pc / totalPassivo) * 100 : 0,
         emprestimosEbitda: emprestimosEbitdaByYear[d.year] ?? null,
         plLucroLiquido: plLucroLiquidoByYear[d.year] ?? null,
+        vendasImobilizado: vendasImobilizadoByYear[d.year] ?? null,
       };
     });
 
@@ -256,7 +277,7 @@ export function BalanceSheetStructureChart({
 
   return (
     <div className="space-y-8">
-      {/* Switch */}
+      {/* Switch Nominal / % */}
       <div className="flex justify-end">
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Nominal</span>
@@ -282,270 +303,362 @@ export function BalanceSheetStructureChart({
       </div>
 
       {/* Ativo */}
-      {!onlyPassivo && <div className="space-y-4">
-        <div>
-          <h3 className="text-lg font-semibold">Estrutura do Ativo</h3>
-          <p className="text-sm text-muted-foreground">
-            Ativo Circulante e Ativo Nao Circulante por ano projetado
-          </p>
-        </div>
-        <ResponsiveContainer width="100%" height={380}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis
-              dataKey="ano"
-              className="text-xs"
-              tick={{ fill: "var(--foreground)" }}
-            />
-            <YAxis
-              className="text-xs"
-              tick={{ fill: "var(--foreground)" }}
-              tickFormatter={yAxisFormatter}
-              domain={yAxisDomain}
-            />
-            <Tooltip content={tooltipContent} cursor={{ fill: 'var(--muted-alt)', opacity: 0.5 }} />
-            <Legend wrapperStyle={{ paddingTop: "20px" }} />
-            <Bar
-              dataKey={
-                showPercent ? "ativoNaoCirculante_pct" : "ativoNaoCirculante"
-              }
-              name="Ativo Nao Circulante"
-              fill={COLORS.ativoNaoCirculante}
-              stackId="ativo"
-              radius={[0, 0, 0, 0]}
+      {!onlyPassivo && (
+        <div className="space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold">Estrutura do Ativo</h3>
+              <p className="text-sm text-muted-foreground">
+                Ativo Circulante e Ativo Nao Circulante por ano projetado
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0 mr-[50px]">
+              <button
+                type="button"
+                onClick={() => setShowVendasImobilizado((p) => !p)}
+                className={[
+                  "flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-all",
+                  showVendasImobilizado
+                    ? "border-current"
+                    : "border-border text-muted-foreground",
+                ].join(" ")}
+                style={
+                  showVendasImobilizado
+                    ? { color: COLORS.vendasImobilizado }
+                    : undefined
+                }
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full shrink-0"
+                  style={{
+                    backgroundColor: showVendasImobilizado
+                      ? COLORS.vendasImobilizado
+                      : "var(--muted-foreground)",
+                  }}
+                />
+                Vendas / Imobilizado
+              </button>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={380}>
+            <ComposedChart
+              data={chartData}
+              margin={{ top: 5, right: 50, left: 20, bottom: 5 }}
             >
-              <LabelList
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis
+                dataKey="ano"
+                className="text-xs"
+                tick={{ fill: "var(--foreground)" }}
+              />
+              <YAxis
+                yAxisId="left"
+                className="text-xs"
+                tick={{ fill: "var(--foreground)" }}
+                tickFormatter={yAxisFormatter}
+                domain={yAxisDomain}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                className="text-xs"
+                tick={{ fill: "var(--foreground)" }}
+                tickFormatter={(v) => `${v.toFixed(1)}x`}
+              />
+              <Tooltip
+                content={tooltipContent}
+                cursor={{ fill: "var(--muted-alt)", opacity: 0.5 }}
+              />
+              <Legend wrapperStyle={{ paddingTop: "20px" }} />
+              <Bar
+                yAxisId="left"
                 dataKey={
                   showPercent ? "ativoNaoCirculante_pct" : "ativoNaoCirculante"
                 }
-                position="center"
-                formatter={labelFormatter}
-                style={labelStyle}
-              />
-            </Bar>
-            <Bar
-              dataKey={
-                showPercent ? "ativoCirculante_pct" : "ativoCirculante"
-              }
-              name="Ativo Circulante"
-              fill={COLORS.ativoCirculante}
-              stackId="ativo"
-              radius={[4, 4, 0, 0]}
-            >
-              <LabelList
+                name="Ativo Nao Circulante"
+                fill={COLORS.ativoNaoCirculante}
+                stackId="ativo"
+                radius={[0, 0, 0, 0]}
+              >
+                <LabelList
+                  dataKey={
+                    showPercent
+                      ? "ativoNaoCirculante_pct"
+                      : "ativoNaoCirculante"
+                  }
+                  position="center"
+                  formatter={labelFormatter}
+                  style={labelStyle}
+                />
+              </Bar>
+              <Bar
+                yAxisId="left"
                 dataKey={
                   showPercent ? "ativoCirculante_pct" : "ativoCirculante"
                 }
-                position="center"
-                formatter={labelFormatter}
-                style={labelStyle}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>}
+                name="Ativo Circulante"
+                fill={COLORS.ativoCirculante}
+                stackId="ativo"
+                radius={[4, 4, 0, 0]}
+              >
+                <LabelList
+                  dataKey={
+                    showPercent ? "ativoCirculante_pct" : "ativoCirculante"
+                  }
+                  position="center"
+                  formatter={labelFormatter}
+                  style={labelStyle}
+                />
+              </Bar>
+              {showVendasImobilizado && (
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="vendasImobilizado"
+                  name="Vendas / Imobilizado"
+                  stroke={COLORS.vendasImobilizado}
+                  strokeWidth={LINE_CONFIG.strokeWidth}
+                  dot={{
+                    r: LINE_CONFIG.dotRadius,
+                    fill: COLORS.vendasImobilizado,
+                  }}
+                  activeDot={{ r: LINE_CONFIG.activeDotRadius }}
+                  connectNulls={false}
+                >
+                  <LabelList
+                    dataKey="vendasImobilizado"
+                    position="top"
+                    formatter={(v: unknown) =>
+                      v != null ? `${Number(v).toFixed(2)}x` : ""
+                    }
+                    style={{
+                      fill: COLORS.vendasImobilizado,
+                      fontSize: 12,
+                      fontWeight: 500,
+                    }}
+                  />
+                </Line>
+              )}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Passivo */}
-      <div className="space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-semibold">Estrutura do Passivo</h3>
-            <p className="text-sm text-muted-foreground">
-              Passivo Circulante, Passivo Nao Circulante e Patrimonio Liquido por
-              ano projetado
-            </p>
+      {!onlyAtivo && (
+        <div className="space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold">Estrutura do Passivo</h3>
+              <p className="text-sm text-muted-foreground">
+                Passivo Circulante, Passivo Nao Circulante e Patrimonio Liquido por
+                ano projetado
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0 mr-[50px]">
+              <button
+                type="button"
+                onClick={() => setShowEmprestimosEbitda((p) => !p)}
+                className={[
+                  "flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-all",
+                  showEmprestimosEbitda
+                    ? "border-current"
+                    : "border-border text-muted-foreground",
+                ].join(" ")}
+                style={
+                  showEmprestimosEbitda
+                    ? { color: COLORS.emprestimosEbitda }
+                    : undefined
+                }
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full shrink-0"
+                  style={{
+                    backgroundColor: showEmprestimosEbitda
+                      ? COLORS.emprestimosEbitda
+                      : "var(--muted-foreground)",
+                  }}
+                />
+                Empréstimos / EBITDA
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPlLucroLiquido((p) => !p)}
+                className={[
+                  "flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-all",
+                  showPlLucroLiquido
+                    ? "border-current"
+                    : "border-border text-muted-foreground",
+                ].join(" ")}
+                style={
+                  showPlLucroLiquido
+                    ? { color: COLORS.plLucroLiquido }
+                    : undefined
+                }
+              >
+                <span
+                  className="h-1.5 w-1.5 rounded-full shrink-0"
+                  style={{
+                    backgroundColor: showPlLucroLiquido
+                      ? COLORS.plLucroLiquido
+                      : "var(--muted-foreground)",
+                  }}
+                />
+                Lucro Líquido / PL
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5 shrink-0 mr-[50px]">
-            <button
-              type="button"
-              onClick={() => setShowEmprestimosEbitda((p) => !p)}
-              className={[
-                "flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-all",
-                showEmprestimosEbitda
-                  ? "border-current"
-                  : "border-border text-muted-foreground",
-              ].join(" ")}
-              style={showEmprestimosEbitda ? { color: COLORS.emprestimosEbitda } : undefined}
+          <ResponsiveContainer width="100%" height={380}>
+            <ComposedChart
+              data={chartData}
+              margin={{ top: 5, right: 50, left: 20, bottom: 5 }}
             >
-              <span
-                className="h-1.5 w-1.5 rounded-full shrink-0"
-                style={{
-                  backgroundColor: showEmprestimosEbitda
-                    ? COLORS.emprestimosEbitda
-                    : "var(--muted-foreground)",
-                }}
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis
+                dataKey="ano"
+                className="text-xs"
+                tick={{ fill: "var(--foreground)" }}
               />
-              Empréstimos / EBITDA
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowPlLucroLiquido((p) => !p)}
-              className={[
-                "flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium transition-all",
-                showPlLucroLiquido
-                  ? "border-current"
-                  : "border-border text-muted-foreground",
-              ].join(" ")}
-              style={showPlLucroLiquido ? { color: COLORS.plLucroLiquido } : undefined}
-            >
-              <span
-                className="h-1.5 w-1.5 rounded-full shrink-0"
-                style={{
-                  backgroundColor: showPlLucroLiquido
-                    ? COLORS.plLucroLiquido
-                    : "var(--muted-foreground)",
-                }}
+              <YAxis
+                yAxisId="left"
+                className="text-xs"
+                tick={{ fill: "var(--foreground)" }}
+                tickFormatter={yAxisFormatter}
+                domain={yAxisDomain}
               />
-              PL / Lucro Líquido
-            </button>
-          </div>
-        </div>
-        <ResponsiveContainer width="100%" height={380}>
-          <ComposedChart
-            data={chartData}
-            margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis
-              dataKey="ano"
-              className="text-xs"
-              tick={{ fill: "var(--foreground)" }}
-            />
-            <YAxis
-              yAxisId="left"
-              className="text-xs"
-              tick={{ fill: "var(--foreground)" }}
-              tickFormatter={yAxisFormatter}
-              domain={yAxisDomain}
-            />
-            <YAxis
-              yAxisId="right"
-              orientation="right"
-              className="text-xs"
-              tick={{ fill: "var(--foreground)" }}
-              tickFormatter={(v) => `${v.toFixed(1)}x`}
-            />
-            <Tooltip content={tooltipContent} />
-            <Legend wrapperStyle={{ paddingTop: "20px" }} />
-            <Bar
-              yAxisId="left"
-              dataKey={
-                showPercent ? "patrimonioLiquido_pct" : "patrimonioLiquido"
-              }
-              name="Patrimonio Liquido"
-              fill={COLORS.patrimonioLiquido}
-              stackId="passivo"
-              radius={[0, 0, 0, 0]}
-            >
-              <LabelList
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                className="text-xs"
+                tick={{ fill: "var(--foreground)" }}
+                tickFormatter={(v) => `${v.toFixed(1)}x`}
+              />
+              <YAxis yAxisId="right2" orientation="right" hide />
+              <Tooltip content={tooltipContent} />
+              <Legend wrapperStyle={{ paddingTop: "20px" }} />
+              <Bar
+                yAxisId="left"
                 dataKey={
                   showPercent ? "patrimonioLiquido_pct" : "patrimonioLiquido"
                 }
-                position="center"
-                formatter={labelFormatter}
-                style={labelStyle}
-              />
-            </Bar>
-            <Bar
-              yAxisId="left"
-              dataKey={
-                showPercent
-                  ? "passivoNaoCirculante_pct"
-                  : "passivoNaoCirculante"
-              }
-              name="Passivo Nao Circulante"
-              fill={COLORS.passivoNaoCirculante}
-              stackId="passivo"
-              radius={[0, 0, 0, 0]}
-            >
-              <LabelList
+                name="Patrimonio Liquido"
+                fill={COLORS.patrimonioLiquido}
+                stackId="passivo"
+                radius={[0, 0, 0, 0]}
+              >
+                <LabelList
+                  dataKey={
+                    showPercent ? "patrimonioLiquido_pct" : "patrimonioLiquido"
+                  }
+                  position="center"
+                  formatter={labelFormatter}
+                  style={labelStyle}
+                />
+              </Bar>
+              <Bar
+                yAxisId="left"
                 dataKey={
                   showPercent
                     ? "passivoNaoCirculante_pct"
                     : "passivoNaoCirculante"
                 }
-                position="center"
-                formatter={labelFormatter}
-                style={labelStyle}
-              />
-            </Bar>
-            <Bar
-              yAxisId="left"
-              dataKey={
-                showPercent ? "passivoCirculante_pct" : "passivoCirculante"
-              }
-              name="Passivo Circulante"
-              fill={COLORS.passivoCirculante}
-              stackId="passivo"
-              radius={[4, 4, 0, 0]}
-            >
-              <LabelList
+                name="Passivo Nao Circulante"
+                fill={COLORS.passivoNaoCirculante}
+                stackId="passivo"
+                radius={[0, 0, 0, 0]}
+              >
+                <LabelList
+                  dataKey={
+                    showPercent
+                      ? "passivoNaoCirculante_pct"
+                      : "passivoNaoCirculante"
+                  }
+                  position="center"
+                  formatter={labelFormatter}
+                  style={labelStyle}
+                />
+              </Bar>
+              <Bar
+                yAxisId="left"
                 dataKey={
                   showPercent ? "passivoCirculante_pct" : "passivoCirculante"
                 }
-                position="center"
-                formatter={labelFormatter}
-                style={labelStyle}
-              />
-            </Bar>
-            {showEmprestimosEbitda && (
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="emprestimosEbitda"
-                name="Empréstimos / EBITDA"
-                stroke={COLORS.emprestimosEbitda}
-                strokeWidth={LINE_CONFIG.strokeWidth}
-                dot={{ r: LINE_CONFIG.dotRadius, fill: COLORS.emprestimosEbitda }}
-                activeDot={{ r: LINE_CONFIG.activeDotRadius }}
-                connectNulls={false}
+                name="Passivo Circulante"
+                fill={COLORS.passivoCirculante}
+                stackId="passivo"
+                radius={[4, 4, 0, 0]}
               >
                 <LabelList
+                  dataKey={
+                    showPercent ? "passivoCirculante_pct" : "passivoCirculante"
+                  }
+                  position="center"
+                  formatter={labelFormatter}
+                  style={labelStyle}
+                />
+              </Bar>
+              {showEmprestimosEbitda && (
+                <Line
+                  yAxisId="right"
+                  type="monotone"
                   dataKey="emprestimosEbitda"
-                  position="top"
-                  formatter={(v: unknown) =>
-                    v != null ? `${Number(v).toFixed(2)}x` : ""
-                  }
-                  style={{
+                  name="Empréstimos / EBITDA"
+                  stroke={COLORS.emprestimosEbitda}
+                  strokeWidth={LINE_CONFIG.strokeWidth}
+                  dot={{
+                    r: LINE_CONFIG.dotRadius,
                     fill: COLORS.emprestimosEbitda,
-                    fontSize: 12,
-                    fontWeight: 500,
                   }}
-                />
-              </Line>
-            )}
-            {showPlLucroLiquido && (
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="plLucroLiquido"
-                name="PL / Lucro Líquido"
-                stroke={COLORS.plLucroLiquido}
-                strokeWidth={LINE_CONFIG.strokeWidth}
-                dot={{ r: LINE_CONFIG.dotRadius, fill: COLORS.plLucroLiquido }}
-                activeDot={{ r: LINE_CONFIG.activeDotRadius }}
-                connectNulls={false}
-              >
-                <LabelList
+                  activeDot={{ r: LINE_CONFIG.activeDotRadius }}
+                  connectNulls={false}
+                >
+                  <LabelList
+                    dataKey="emprestimosEbitda"
+                    position="top"
+                    formatter={(v: unknown) =>
+                      v != null ? `${Number(v).toFixed(2)}x` : ""
+                    }
+                    style={{
+                      fill: COLORS.emprestimosEbitda,
+                      fontSize: 12,
+                      fontWeight: 500,
+                    }}
+                  />
+                </Line>
+              )}
+              {showPlLucroLiquido && (
+                <Line
+                  yAxisId="right2"
+                  type="monotone"
                   dataKey="plLucroLiquido"
-                  position="top"
-                  formatter={(v: unknown) =>
-                    v != null ? `${Number(v).toFixed(2)}x` : ""
-                  }
-                  style={{
+                  name="Lucro Líquido / PL"
+                  stroke={COLORS.plLucroLiquido}
+                  strokeWidth={LINE_CONFIG.strokeWidth}
+                  dot={{
+                    r: LINE_CONFIG.dotRadius,
                     fill: COLORS.plLucroLiquido,
-                    fontSize: 12,
-                    fontWeight: 500,
                   }}
-                />
-              </Line>
-            )}
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
+                  activeDot={{ r: LINE_CONFIG.activeDotRadius }}
+                  connectNulls={false}
+                >
+                  <LabelList
+                    dataKey="plLucroLiquido"
+                    position="top"
+                    formatter={(v: unknown) =>
+                      v != null ? `${Number(v).toFixed(1)}%` : ""
+                    }
+                    style={{
+                      fill: COLORS.plLucroLiquido,
+                      fontSize: 12,
+                      fontWeight: 500,
+                    }}
+                  />
+                </Line>
+              )}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }

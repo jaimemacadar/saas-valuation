@@ -45,7 +45,8 @@
       "Bash(tail:*)",
       "Bash(head:*)",
       "Bash(del:*)",
-      "Bash(cmd:*)"
+      "Bash(cmd:*)",
+      "Bash(Remove-Item:*)"
     ]
   }
 }

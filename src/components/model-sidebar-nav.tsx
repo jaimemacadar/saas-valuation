@@ -4,9 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BarChart3,
-  FileText,
   Scale,
-  TrendingUp,
   Home,
   Database,
   Activity,
@@ -53,19 +51,9 @@ export function ModelSidebarNav({ modelId }: ModelSidebarNavProps) {
       url: `/model/${modelId}/input/projections`,
     },
     {
-      title: 'DRE',
-      icon: FileText,
-      url: `/model/${modelId}/view/dre`,
-    },
-    {
-      title: 'Balanço Patrimonial',
+      title: 'Projeções Financeiras',
       icon: Scale,
       url: `/model/${modelId}/view/balance-sheet`,
-    },
-    {
-      title: 'Fluxo de Caixa Livre',
-      icon: TrendingUp,
-      url: `/model/${modelId}/view/fcff`,
     },
     {
       title: 'Valuation',

@@ -41,7 +41,7 @@ export default function NewModelPage() {
       const result = await createModel(modelData);
 
       if (result.success && result.data) {
-        router.push(`/model/${result.data.id}/view/dre`);
+        router.push(`/model/${result.data.id}/view/balance-sheet`);
       } else {
         setError(result.error || 'Erro ao criar modelo');
       }

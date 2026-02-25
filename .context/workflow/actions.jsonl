@@ -448,3 +448,4 @@
 {"timestamp":"2026-02-25T01:45:19.219Z","tool":"sync","action":"exportDocs","status":"success","details":{"params":{"action":"exportDocs","force":true},"result":{"success":true}}}
 {"timestamp":"2026-02-25T01:46:26.610Z","tool":"sync","action":"exportDocs","status":"success","details":{"params":{"action":"exportDocs","force":true},"result":{"success":true}}}
 {"timestamp":"2026-02-25T01:48:29.291Z","tool":"sync","action":"exportDocs","status":"success","details":{"params":{"action":"exportDocs","force":true},"result":{"success":true}}}
+{"timestamp":"2026-02-25T20:34:06.609Z","tool":"sync","action":"exportContext","status":"success","details":{"params":{"action":"exportContext","preset":"claude","force":true,"skipAgents":true,"skipSkills":true},"result":{"success":true}}}

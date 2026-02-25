@@ -24,7 +24,7 @@ export default async function AnoBasePage({ params }: { params: Promise<{ id: st
       <PageHeader
         breadcrumbs={[
           { label: "Valuations", href: "/dashboard/models" },
-          { label: result.data.company_name, href: `/model/${id}/view/dre` },
+          { label: result.data.company_name, href: `/model/${id}/view/balance-sheet` },
           { label: "Entrada de Dados" },
           { label: "Ano Base" },
         ]}

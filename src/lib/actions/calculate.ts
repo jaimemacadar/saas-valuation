@@ -273,9 +273,7 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     }
 
     // Invalidar cache das páginas de visualização
-    revalidatePath(`/model/${modelId}/view/dre`);
     revalidatePath(`/model/${modelId}/view/balance-sheet`);
-    revalidatePath(`/model/${modelId}/view/fcff`);
     revalidatePath(`/model/${modelId}/input/projections`);
 
     return {

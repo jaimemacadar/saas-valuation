@@ -25,12 +25,14 @@ interface BalanceSheetStructureChartSectionProps {
   data: BalanceSheetCalculated[];
   indicadoresData?: IndicadoresCalculated[];
   onlyPassivo?: boolean;
+  onlyAtivo?: boolean;
 }
 
 export function BalanceSheetStructureChartSection({
   data,
   indicadoresData,
   onlyPassivo,
+  onlyAtivo,
 }: BalanceSheetStructureChartSectionProps) {
   return (
     <div className="rounded-lg border bg-card p-4">
@@ -38,6 +40,7 @@ export function BalanceSheetStructureChartSection({
         data={data}
         indicadoresData={indicadoresData}
         onlyPassivo={onlyPassivo}
+        onlyAtivo={onlyAtivo}
       />
     </div>
   );

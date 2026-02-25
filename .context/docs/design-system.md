@@ -4,7 +4,7 @@ name: design-system
 description: Design System completo com tokens, cores, tipografia, componentes e styleguide
 category: architecture
 generated: 2026-02-20
-updated: 2026-02-24
+updated: 2026-02-25
 status: filled
 scaffoldVersion: "2.0.0"
 ---
@@ -484,6 +484,98 @@ export type GraficoCombinadoDado = Record<string, number | string | null>;
 />
 ```
 
+#### BalanceSheetStructureChart
+
+Grafico composto de barras empilhadas + linhas de indicadores para exibir a estrutura do Ativo ou Passivo do Balanco Patrimonial.
+
+**Arquivo:** `src/components/charts/BalanceSheetStructureChart.tsx`
+
+**Wrapper (lazy load SSR):** `src/components/charts/BalanceSheetStructureChartSection.tsx`
+
+**Props (`BalanceSheetStructureChartProps`):**
+
+| Prop | Tipo | Obrigatoria | Padrao | Descricao |
+|------|------|-------------|--------|-----------|
+| `data` | `BalanceSheetCalculated[]` | Sim | — | Dados do Balanco Patrimonial projetado |
+| `indicadoresData` | `IndicadoresCalculated[]` | Nao | `undefined` | Indicadores para linhas sobrepostas |
+| `onlyPassivo` | `boolean` | Nao | `false` | Exibe apenas o sub-grafico do Passivo |
+| `onlyAtivo` | `boolean` | Nao | `false` | Exibe apenas o sub-grafico do Ativo |
+
+**Comportamento:**
+- Sem `onlyPassivo`/`onlyAtivo`, exibe ambos os sub-graficos empilhados verticalmente
+- **Toggle Nominal / % do Total** (switch, canto superior direito) — alterna entre valores absolutos e percentual sobre o total do periodo
+- **Botoes pill** (inline no cabecalho de cada sub-grafico) — ocultam/exibem cada linha de indicador individualmente
+- Cada sub-grafico usa `ComposedChart` (Recharts) com eixo Y esquerdo (barras empilhadas) e eixo Y direito (linhas de indicadores)
+- Height fixo por sub-grafico: `380px`; margem: `{ top: 5, right: 50, left: 20, bottom: 5 }`
+
+**Tokens de cor:**
+
+| Serie | Token | Contexto |
+|-------|-------|----------|
+| Ativo Nao Circulante | `var(--primary-800)` | Barra empilhada base |
+| Ativo Circulante | `var(--primary-500)` | Barra empilhada topo |
+| Patrimonio Liquido | `var(--alt-900)` | Barra empilhada base do Passivo |
+| Passivo Nao Circulante | `var(--alt-800)` | Barra empilhada meio |
+| Passivo Circulante | `var(--alt-500)` | Barra empilhada topo |
+| Empréstimos / EBITDA | `var(--neutral-400)` | Linha indicadora (multiplo `x`) |
+| Vendas / Imobilizado | `var(--neutral-400)` | Linha indicadora (multiplo `x`) |
+| Lucro Liquido / PL | `var(--amber)` | Linha indicadora (percentual `%`) |
+
+**Labels sobre barras:**
+- `LabelList` com `fill: "var(--primary-foreground)"`, `fontSize: 12`, `fontWeight: 600`
+- Modo nominal: valor compacto via `formatCompactNumber`; modo percentual: `"XX.X%"`
+
+**Botoes pill (indicadores toglaveis):**
+- Estilo: `rounded-full border px-2 py-0.5 text-[11px] font-medium transition-all`
+- Estado ativo: `border-current` + cor do indicador no texto
+- Estado inativo: `border-border text-muted-foreground`
+- Indicador visual: `h-1.5 w-1.5 rounded-full` — cor do token (ativo) ou `var(--muted-foreground)` (inativo)
+- Posicionados em `mr-[50px]` para compensar a largura do eixo Y direito
+
+**Tooltip customizado:**
+- Container: `rounded-lg border bg-card p-3 shadow-md`
+- Em modo percentual: exibe `XX.X%` + valor nominal entre parenteses
+- Em modo nominal: exibe `formatCurrency(valor)`
+- Total das barras exibido ao final (linha `border-t`)
+- Indicadores separados por `border-t` abaixo das barras; multiplos formatados como `x.xx x` ou `xx.x%`
+
+**Radius das barras:**
+- Barra inferior da pilha: `radius={[0, 0, 0, 0]}`
+- Barra superior da pilha: `radius={[4, 4, 0, 0]}`
+
+#### BalanceSheetChartsToggle e LoansChartsToggle
+
+Componentes de navegacao segmentada (tab toggle) que alternam a visao dos graficos dentro de cada aba da pagina de Balanco Patrimonial.
+
+**Arquivos:**
+- `src/components/charts/BalanceSheetChartsToggle.tsx` — aba "Balanco Patrimonial"
+- `src/components/charts/LoansChartsToggle.tsx` — aba "Emprestimos"
+
+**Padrao visual (pill segmentado):**
+
+```tsx
+<div className="flex items-center gap-1 rounded-lg border bg-muted p-1">
+  {/* ativo */}
+  <button className="rounded-md px-3 py-1 text-sm font-medium transition-all bg-card shadow-sm text-foreground">
+    Opcao A
+  </button>
+  {/* inativo */}
+  <button className="rounded-md px-3 py-1 text-sm font-medium transition-all text-muted-foreground hover:text-foreground">
+    Opcao B
+  </button>
+</div>
+```
+
+**BalanceSheetChartsToggle:**
+- Opcoes: `"Estrutura do Ativo"` (padrao) | `"Estrutura do Passivo"`
+- Renderiza `BalanceSheetStructureChartSection` com `onlyAtivo` ou `onlyPassivo` conforme selecao
+
+**LoansChartsToggle:**
+- Opcoes: `"Evolucao dos Emprestimos"` (padrao) | `"Estrutura do Passivo"`
+- Renderiza `LoansChartSection` (graficos de emprestimos CP/LP) ou `BalanceSheetStructureChartSection` com `onlyPassivo`
+
+---
+
 #### Tabelas Financeiras
 
 Sistema de tabelas para exibicao de dados financeiros projetados por ano. Construido sobre o `table` do shadcn/ui com 6 tipos semanticos de linha, tokens de background customizados e suporte a premissas colapsaveis.
@@ -768,6 +860,18 @@ Showcase do sistema de Tabelas Financeiras com:
 | Barra principal (Imobilizado / Capital de Giro) | `var(--primary-800)` |
 | Barra secundaria (Vendas / NCG) | `var(--primary-500)` |
 | Linha indicadora (Vendas/Imob. · Vendas/CG) | `var(--neutral-400)` |
+
+**Balanco Patrimonial — Estrutura do Ativo e Passivo** (`BalanceSheetStructureChart`)
+
+| Uso | Token |
+|-----|-------|
+| Barra Ativo Nao Circulante | `var(--primary-800)` |
+| Barra Ativo Circulante | `var(--primary-500)` |
+| Barra Patrimonio Liquido | `var(--alt-900)` |
+| Barra Passivo Nao Circulante | `var(--alt-800)` |
+| Barra Passivo Circulante | `var(--alt-500)` |
+| Linha Emprestimos/EBITDA e Vendas/Imobilizado | `var(--neutral-400)` |
+| Linha Lucro Liquido/PL | `var(--amber)` |
 
 **Balanco Patrimonial — Emprestimos** (`LoansChart`)
 
