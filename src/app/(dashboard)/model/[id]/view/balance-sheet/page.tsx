@@ -5,12 +5,16 @@ import { BalanceSheetTable } from '@/components/tables/BalanceSheetTable';
 import { InvestmentTable } from '@/components/tables/InvestmentTable';
 import { WorkingCapitalTable } from '@/components/tables/WorkingCapitalTable';
 import { LoansTable } from '@/components/tables/LoansTable';
-import { BalanceSheetCalculated, BalanceSheetProjectionInputs, DRECalculated, IndicadoresCalculated } from '@/core/types';
+import { DRETable } from '@/components/tables/DRETable';
+import { FCFFTable } from '@/components/tables/FCFFTable';
+import { BalanceSheetCalculated, BalanceSheetProjectionInputs, DRECalculated, DREProjectionInputs, FCFFCalculated, IndicadoresCalculated } from '@/core/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InvestmentChartSection } from '@/components/charts/InvestmentChartSection';
 import { WorkingCapitalChartSection } from '@/components/charts/WorkingCapitalChartSection';
-import { LoansChartSection } from '@/components/charts/LoansChartSection';
-import { BalanceSheetStructureChartSection } from '@/components/charts/BalanceSheetStructureChartSection';
+import { LoansChartsToggle } from '@/components/charts/LoansChartsToggle';
+import { BalanceSheetChartsToggle } from '@/components/charts/BalanceSheetChartsToggle';
+import { FCFFChartsSection } from '@/components/charts/FCFFChartsSection';
+import { DREChartsToggle } from '@/components/charts/DREChartsToggle';
 
 export default async function BalanceSheetPage({
   params,
@@ -28,12 +32,16 @@ export default async function BalanceSheetPage({
     balanceSheet?: BalanceSheetCalculated[];
     balanceSheetProjection?: BalanceSheetProjectionInputs[];
     dre?: DRECalculated[];
+    dreProjection?: DREProjectionInputs[];
+    fcff?: FCFFCalculated[];
     indicadores?: IndicadoresCalculated[];
   };
 
   const balanceSheetData = modelData?.balanceSheet || [];
   const balanceSheetProjection = modelData?.balanceSheetProjection || [];
   const dreData = modelData?.dre || [];
+  const dreProjection = modelData?.dreProjection || [];
+  const fcffData = modelData?.fcff || [];
   const indicadoresData = modelData?.indicadores || [];
 
   return (
@@ -42,30 +50,40 @@ export default async function BalanceSheetPage({
         breadcrumbs={[
           { label: "Valuations", href: "/dashboard/models" },
           { label: result.data.company_name, href: `/model/${id}/view/balance-sheet` },
-          { label: "Balanço Patrimonial" },
+          { label: "Projeções Financeiras" },
         ]}
       />
 
       <div className="flex flex-1 flex-col gap-4 p-4 px-6">
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">Balanço Patrimonial</h1>
+          <h1 className="text-2xl font-bold">Projeções Financeiras</h1>
           <p className="text-muted-foreground">
-            Visualize o Balanço Patrimonial projetado e edite as premissas de Investimento,
-            Capital de Giro e Empréstimos.
+            Visualize a DRE, Balanço Patrimonial e Fluxo de Caixa Livre projetados.
           </p>
         </div>
 
-        <Tabs defaultValue="balance-sheet" className="w-full">
+        <Tabs defaultValue="dre" className="w-full">
           <TabsList>
+            <TabsTrigger value="dre">DRE</TabsTrigger>
             <TabsTrigger value="balance-sheet">Balanço Patrimonial</TabsTrigger>
             <TabsTrigger value="investment">Investimento</TabsTrigger>
             <TabsTrigger value="working-capital">Capital de Giro</TabsTrigger>
             <TabsTrigger value="loans">Empréstimos</TabsTrigger>
+            <TabsTrigger value="fcff">Fluxo de Caixa Livre</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dre" className="space-y-4">
+            <DRETable
+              data={dreData}
+              projectionInputs={dreProjection}
+              modelId={id}
+            />
+            <DREChartsToggle data={dreData} />
+          </TabsContent>
 
           <TabsContent value="balance-sheet" className="space-y-4">
             <BalanceSheetTable data={balanceSheetData} />
-            <BalanceSheetStructureChartSection
+            <BalanceSheetChartsToggle
               data={balanceSheetData}
               indicadoresData={indicadoresData}
             />
@@ -105,16 +123,16 @@ export default async function BalanceSheetPage({
               modelId={id}
               indicadoresData={indicadoresData}
             />
-            <LoansChartSection
+            <LoansChartsToggle
               data={balanceSheetData}
               projectionInputs={balanceSheetProjection}
               indicadoresData={indicadoresData}
             />
-            <BalanceSheetStructureChartSection
-              data={balanceSheetData}
-              indicadoresData={indicadoresData}
-              onlyPassivo
-            />
+          </TabsContent>
+
+          <TabsContent value="fcff" className="space-y-4">
+            <FCFFTable data={fcffData} />
+            <FCFFChartsSection data={fcffData} />
           </TabsContent>
         </Tabs>
       </div>
