@@ -72,6 +72,34 @@ function calcEmprestimosEbitda(
   };
 }
 
+/**
+ * PL / Lucro Líquido = Patrimônio Líquido / Lucro Líquido
+ *
+ * Indica em quantos períodos o lucro líquido seria suficiente para
+ * reconstituir o patrimônio líquido. Quanto menor, mais rentável.
+ */
+function calcPatrimonioLiquidoLucroLiquido(
+  dre: DRECalculated,
+  bp: BalanceSheetCalculated,
+): IndicadorCalculated {
+  const numerator = new Decimal(bp.patrimonioLiquido.total);
+  const denominator = new Decimal(dre.lucroLiquido);
+
+  const value = denominator.isZero()
+    ? new Decimal(0)
+    : numerator.div(denominator);
+
+  return {
+    year: dre.year,
+    id: "pl-lucro-liquido",
+    label: "PL / Lucro Líquido",
+    value: value.toNumber(),
+    format: "multiple",
+    numerator: numerator.toNumber(),
+    denominator: denominator.toNumber(),
+  };
+}
+
 // ============================================================
 // Registry de indicadores
 // ============================================================
@@ -84,6 +112,7 @@ type IndicadorFn = (
 const INDICATOR_REGISTRY: IndicadorFn[] = [
   calcVendasImobilizado,
   calcEmprestimosEbitda,
+  calcPatrimonioLiquidoLucroLiquido,
 ];
 
 // ============================================================

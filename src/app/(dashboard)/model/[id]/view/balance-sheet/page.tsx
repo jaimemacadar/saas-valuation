@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InvestmentChartSection } from '@/components/charts/InvestmentChartSection';
 import { WorkingCapitalChartSection } from '@/components/charts/WorkingCapitalChartSection';
 import { LoansChartSection } from '@/components/charts/LoansChartSection';
+import { BalanceSheetStructureChartSection } from '@/components/charts/BalanceSheetStructureChartSection';
 
 export default async function BalanceSheetPage({
   params,
@@ -64,6 +65,10 @@ export default async function BalanceSheetPage({
 
           <TabsContent value="balance-sheet" className="space-y-4">
             <BalanceSheetTable data={balanceSheetData} />
+            <BalanceSheetStructureChartSection
+              data={balanceSheetData}
+              indicadoresData={indicadoresData}
+            />
           </TabsContent>
 
           <TabsContent value="investment" className="space-y-4">
