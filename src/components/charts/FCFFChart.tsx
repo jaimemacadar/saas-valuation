@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Cell,
   ReferenceLine,
+  LabelList,
 } from 'recharts';
 import { FCFFCalculated } from '@/core/types';
 import { formatCurrency, formatCompactNumber } from '@/lib/utils/formatters';
@@ -28,20 +29,23 @@ export function FCFFChart({ data }: FCFFChartProps) {
     );
   }
 
-  // Formata dados para Recharts
-  const chartData = data.map((year) => ({
-    ano: year.year === 0 ? 'Base' : `Ano ${year.year}`,
+  const filteredData = data.filter((year) => year.year > 0);
+
+  const chartData = filteredData.map((year) => ({
+    ano: `Ano ${year.year}`,
     fcff: year.fcff,
   }));
 
-  // Cores condicionais para barras
   const getBarColor = (value: number) => {
-    return value >= 0
-      ? 'var(--chart-2)' // Verde
-      : 'var(--destructive)'; // Vermelho
+    return value >= 0 ? 'var(--chart-2)' : 'var(--destructive)';
   };
 
-  // Custom tooltip
+  const labelStyle = {
+    fill: 'var(--primary-foreground)',
+    fontSize: 15,
+    fontWeight: 600,
+  };
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const value = payload[0].value;
@@ -67,11 +71,13 @@ export function FCFFChart({ data }: FCFFChartProps) {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold">Fluxo de Caixa Livre (FCFF)</h3>
-        <p className="text-sm text-muted-foreground">
-          Geração de caixa livre para a firma por ano
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold">Fluxo de Caixa Livre (FCFF)</h3>
+          <p className="text-sm text-muted-foreground">
+            Geração de caixa livre para a firma por ano
+          </p>
+        </div>
       </div>
 
       <ResponsiveContainer width="100%" height={400}>
@@ -102,28 +108,33 @@ export function FCFFChart({ data }: FCFFChartProps) {
             strokeDasharray="3 3"
             strokeWidth={1}
           />
-          <Bar dataKey="fcff" name="FCFF" radius={[8, 8, 0, 0]}>
+          <Bar dataKey="fcff" name="FCFF" radius={[4, 4, 0, 0]}>
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={getBarColor(entry.fcff)} />
             ))}
+            <LabelList
+              dataKey="fcff"
+              position="center"
+              formatter={(value) => formatCompactNumber(Number(value))}
+              style={labelStyle}
+            />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
 
-      {/* Estatísticas resumidas */}
-      <div className="grid grid-cols-2 gap-4 mt-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="rounded-lg border bg-card p-3">
           <div className="text-xs text-muted-foreground">FCFF Médio</div>
           <div className="text-lg font-semibold mt-1">
             {formatCurrency(
-              data.reduce((sum, d) => sum + d.fcff, 0) / data.length
+              filteredData.reduce((sum, d) => sum + d.fcff, 0) / filteredData.length
             )}
           </div>
         </div>
         <div className="rounded-lg border bg-card p-3">
           <div className="text-xs text-muted-foreground">FCFF Acumulado</div>
           <div className="text-lg font-semibold mt-1">
-            {formatCurrency(data.reduce((sum, d) => sum + d.fcff, 0))}
+            {formatCurrency(filteredData.reduce((sum, d) => sum + d.fcff, 0))}
           </div>
         </div>
       </div>

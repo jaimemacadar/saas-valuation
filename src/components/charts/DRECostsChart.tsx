@@ -159,7 +159,7 @@ export function DRECostsChart({ data }: DRECostsChartProps) {
             dataKey={showPercent ? "impostos_pct" : "impostos"}
             name="Impostos"
             stackId="custos"
-            fill="var(--alt-800)"
+            fill="var(--primary-900)"
             radius={[0, 0, 0, 0]}
           >
             <LabelList
@@ -212,7 +212,7 @@ export function DRECostsChart({ data }: DRECostsChartProps) {
             dataKey={showPercent ? "irCSLL_pct" : "irCSLL"}
             name="IR/CSLL"
             stackId="custos"
-            fill="var(--alt-600)"
+            fill="var(--alt-700)"
             radius={[4, 4, 0, 0]}
           >
             <LabelList
