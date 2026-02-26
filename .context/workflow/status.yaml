@@ -1,36 +1,31 @@
 project:
-  name: "dark-mode"
+  name: "aplicacoes-financeiras"
   scale: MEDIUM
-  started: "2026-02-20T18:00:25.349Z"
-  current_phase: V
+  started: "2026-02-26T00:43:00.667Z"
+  current_phase: P
 
 phases:
   P:
-    status: filled
-    started_at: "2026-02-20T18:00:25.349Z"
-    completed_at: "2026-02-20T18:02:45.213Z"
-  R:
-    status: filled
-    started_at: "2026-02-20T18:02:45.215Z"
-    completed_at: "2026-02-20T18:02:48.203Z"
-  E:
-    status: filled
-    started_at: "2026-02-20T18:02:48.204Z"
-    completed_at: "2026-02-20T18:03:55.181Z"
-  V:
     status: in_progress
-    started_at: "2026-02-20T18:03:55.183Z"
+    started_at: "2026-02-26T00:43:00.667Z"
+  R:
+    status: pending
+  E:
+    status: pending
+  V:
+    status: pending
   C:
     status: skipped
     reason: "Not required for scale MEDIUM"
 
 execution:
   history:
-    - timestamp: "2026-02-20T18:03:55.183Z"
-      phase: V
-      action: started
-  last_activity: "2026-02-20T18:03:55.183Z"
-  resume_context: "Fase V (Validação) em progresso"
+    - timestamp: "2026-02-26T00:43:03.763Z"
+      phase: P
+      action: plan_linked
+      plan: "aplicacoes-financeiras"
+  last_activity: "2026-02-26T00:43:03.763Z"
+  resume_context: "Plano vinculado - aguardando revisão"
 
 approval:
   plan_created: true

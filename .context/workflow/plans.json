@@ -1,14 +1,14 @@
 {
   "active": [
     {
-      "slug": "dark-mode",
-      "path": "plans/dark-mode.md",
-      "title": "Dark Mode / Light Mode Toggle",
-      "summary": "Implementar funcionalidade de dark mode e light mode para toda a aplicacao, com botao de toggle no cabecalho superior a direita.",
-      "linkedAt": "2026-02-20T18:02:42.442Z",
+      "slug": "aplicacoes-financeiras",
+      "path": "plans/aplicacoes-financeiras.md",
+      "title": "Aplicações Financeiras — Nova conta no Balanço Patrimonial",
+      "summary": "Substituir as contas separadas \"Caixa e Equivalentes\" e \"Aplicações Financeiras\" por uma conta unificada **\"Caixa e Aplicações Financeiras\"** no Balanço Patrimonial, com lógica de Saldo Inicial + Novas Aplicações + Receitas Financeiras, tabela dedicada e premissas editáveis.",
+      "linkedAt": "2026-02-26T00:43:03.761Z",
       "status": "active"
     }
   ],
   "completed": [],
-  "primary": "dark-mode"
+  "primary": "aplicacoes-financeiras"
 }

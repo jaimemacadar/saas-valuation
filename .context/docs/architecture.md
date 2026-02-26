@@ -512,4 +512,6 @@ Page (Server Component)
 
 - [Project Overview](./project-overview.md)
 - [Data Flow](./data-flow.md)
+- [Motor de Cálculo](./calculation-engine.md)
+- [Estrutura de Dados](./data-structure.md)
 - [codebase-map.json](./codebase-map.json)

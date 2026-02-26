@@ -3,21 +3,22 @@
 This directory contains plans for coordinating work across documentation and playbooks.
 
 ## Plan Queue
-1. [Card Valuations](./card-valuations.md)
-2. [Dark Mode](./dark-mode.md)
-3. [Deduzir Despesas Financeiras Emprestimos](./deduzir-despesas-financeiras-emprestimos.md)
-4. [Design System](./design-system.md)
-5. [Dre Toggle Premises](./dre-toggle-premises.md)
-6. [Entrada De Dados](./entrada-de-dados.md)
-7. [Fase 3](./fase-3.md)
-8. [Fase 3 1 Ajustes](./fase-3-1-ajustes.md)
-9. [Fase 3 2 Ajustes](./fase-3-2-ajustes.md)
-10. [Mock Data System](./mock-data-system.md)
-11. [Polished Popping Bubble](./polished-popping-bubble.md)
-12. [PRD](./PRD.md)
-13. [Premissas De Projecao](./premissas-de-projecao.md)
-14. [Premissas Inline Dre](./premissas-inline-dre.md)
-15. [Tabelas Auxiliares Bp](./tabelas-auxiliares-bp.md)
+1. [Aplicacoes Financeiras](./aplicacoes-financeiras.md)
+2. [Card Valuations](./card-valuations.md)
+3. [Dark Mode](./dark-mode.md)
+4. [Deduzir Despesas Financeiras Emprestimos](./deduzir-despesas-financeiras-emprestimos.md)
+5. [Design System](./design-system.md)
+6. [Dre Toggle Premises](./dre-toggle-premises.md)
+7. [Entrada De Dados](./entrada-de-dados.md)
+8. [Fase 3](./fase-3.md)
+9. [Fase 3 1 Ajustes](./fase-3-1-ajustes.md)
+10. [Fase 3 2 Ajustes](./fase-3-2-ajustes.md)
+11. [Mock Data System](./mock-data-system.md)
+12. [Polished Popping Bubble](./polished-popping-bubble.md)
+13. [PRD](./PRD.md)
+14. [Premissas De Projecao](./premissas-de-projecao.md)
+15. [Premissas Inline Dre](./premissas-inline-dre.md)
+16. [Tabelas Auxiliares Bp](./tabelas-auxiliares-bp.md)
 
 ## How To Create Or Update Plans
 - Run "ai-context plan <name>" to scaffold a new plan template.

@@ -1,0 +1,14 @@
+{
+  "active": [
+    {
+      "slug": "dark-mode",
+      "path": "plans/dark-mode.md",
+      "title": "Dark Mode / Light Mode Toggle",
+      "summary": "Implementar funcionalidade de dark mode e light mode para toda a aplicacao, com botao de toggle no cabecalho superior a direita.",
+      "linkedAt": "2026-02-20T18:02:42.442Z",
+      "status": "active"
+    }
+  ],
+  "completed": [],
+  "primary": "dark-mode"
+}

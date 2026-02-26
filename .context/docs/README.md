@@ -11,6 +11,8 @@ Bem-vindo à base de conhecimento do repositório. Comece com a visão geral do 
 - [Glossário & Conceitos de Domínio](./glossary.md)
 - [Notas de Segurança & Conformidade](./security.md)
 - [Guia de Ferramentas & Produtividade](./tooling.md)
+- [Motor de Cálculo](./calculation-engine.md)
+- [Estrutura de Dados](./data-structure.md)
 
 ## Snapshot do Repositório
 - `AGENTS.md/`
@@ -46,3 +48,5 @@ Bem-vindo à base de conhecimento do repositório. Comece com a visão geral do 
 | Notas de Segurança & Conformidade | `security.md` | Modelo de auth, gestão de secrets, requisitos de conformidade |
 | Design System | `design-system.md` | Tokens de cor, tipografia, componentes, styleguide, dark mode |
 | Guia de Ferramentas & Produtividade | `tooling.md` | Scripts CLI, configs IDE, workflows de automação |
+| Motor de Cálculo | `calculation-engine.md` | Pipeline de cálculo, fórmulas, módulos em `src/core/` |
+| Estrutura de Dados | `data-structure.md` | Interfaces TypeScript, schemas Zod, tabelas Supabase |
