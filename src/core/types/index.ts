@@ -202,17 +202,21 @@ export interface BalanceSheetProjectionInputs {
   taxaDepreciacao: number;           // % sobre Imobilizado Bruto
   indiceImobilizadoVendas: number;   // decimal (ex: 0.15 = 15% da receita bruta)
 
+  // Aplicações Financeiras
+  taxaJurosAplicacoes: number;       // % a.a. sobre saldo inicial de Aplicações Financeiras
+
   // Prazos médios - Ativo Circulante (dias)
   prazoCaixaEquivalentes: number;
-  prazoAplicacoesFinanceiras: number;
   prazoContasReceber: number;
   prazoEstoques: number;
   prazoAtivosBiologicos: number;
+  prazoOutrosCreditos: number;
 
   // Prazos médios - Passivo Circulante (dias)
   prazoFornecedores: number;
   prazoImpostosAPagar: number;
   prazoObrigacoesSociais: number;
+  prazoOutrasObrigacoes: number;
 
   // Empréstimos
   taxaNovosEmprestimosCP: number;  // % de crescimento da dívida de Curto Prazo
@@ -274,6 +278,8 @@ export interface BalanceSheetCalculated {
   despesasFinanceirasCP: number; // empréstimos CP × taxaJurosEmprestimo
   despesasFinanceirasLP: number; // empréstimos LP × taxaJurosEmprestimo
   despesasFinanceiras: number; // CP + LP (invariante mantida)
+  receitasFinanceiras: number; // taxaJurosAplicacoes × saldo inicial
+  novasAplicacoes: number; // placeholder — será conectado ao FCFF
   capitalGiro: number;
   ncg: number; // Necessidade de Capital de Giro (variação)
 

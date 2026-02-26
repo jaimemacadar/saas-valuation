@@ -128,11 +128,11 @@ export const BalanceSheetProjectionInputsSchema = z.object({
     .number()
     .min(0)
     .max(1, "Índice imobilizado/vendas deve estar entre 0 e 1"),
-  prazoCaixaEquivalentes: z
+  taxaJurosAplicacoes: z
     .number()
     .min(0)
-    .max(360, "Prazo deve estar entre 0 e 360 dias"),
-  prazoAplicacoesFinanceiras: z
+    .max(100, "Taxa de juros de aplicações deve estar entre 0 e 100%"),
+  prazoCaixaEquivalentes: z
     .number()
     .min(0)
     .max(360, "Prazo deve estar entre 0 e 360 dias"),
@@ -148,6 +148,10 @@ export const BalanceSheetProjectionInputsSchema = z.object({
     .number()
     .min(0)
     .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoOutrosCreditos: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
   prazoFornecedores: z
     .number()
     .min(0)
@@ -157,6 +161,10 @@ export const BalanceSheetProjectionInputsSchema = z.object({
     .min(0)
     .max(360, "Prazo deve estar entre 0 e 360 dias"),
   prazoObrigacoesSociais: z
+    .number()
+    .min(0)
+    .max(360, "Prazo deve estar entre 0 e 360 dias"),
+  prazoOutrasObrigacoes: z
     .number()
     .min(0)
     .max(360, "Prazo deve estar entre 0 e 360 dias"),

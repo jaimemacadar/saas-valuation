@@ -3,6 +3,7 @@ import { getModelById } from '@/lib/actions/models';
 import { PageHeader } from '@/components/page-header';
 import { BalanceSheetTable } from '@/components/tables/BalanceSheetTable';
 import { InvestmentTable } from '@/components/tables/InvestmentTable';
+import { CashApplicationsTable } from '@/components/tables/CashApplicationsTable';
 import { WorkingCapitalTable } from '@/components/tables/WorkingCapitalTable';
 import { LoansTable } from '@/components/tables/LoansTable';
 import { DRETable } from '@/components/tables/DRETable';
@@ -66,6 +67,7 @@ export default async function BalanceSheetPage({
           <TabsList>
             <TabsTrigger value="dre">DRE</TabsTrigger>
             <TabsTrigger value="balance-sheet">Balanço Patrimonial</TabsTrigger>
+            <TabsTrigger value="cash-applications">Aplicações Financeiras</TabsTrigger>
             <TabsTrigger value="investment">Investimento</TabsTrigger>
             <TabsTrigger value="working-capital">Capital de Giro</TabsTrigger>
             <TabsTrigger value="loans">Empréstimos</TabsTrigger>
@@ -86,6 +88,14 @@ export default async function BalanceSheetPage({
             <BalanceSheetChartsToggle
               data={balanceSheetData}
               indicadoresData={indicadoresData}
+            />
+          </TabsContent>
+
+          <TabsContent value="cash-applications" className="space-y-4">
+            <CashApplicationsTable
+              data={balanceSheetData}
+              projectionInputs={balanceSheetProjection}
+              modelId={id}
             />
           </TabsContent>
 

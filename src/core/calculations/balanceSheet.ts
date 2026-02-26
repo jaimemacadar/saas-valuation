@@ -26,9 +26,7 @@ export function calculateBPBase(
   try {
     // Ativo Circulante
     const acCaixa = new Decimal(bpBase.ativoCirculante.caixaEquivalentes);
-    const acAplicacoes = new Decimal(
-      bpBase.ativoCirculante.aplicacoesFinanceiras,
-    );
+    const acAplicacoes = new Decimal(bpBase.ativoCirculante.aplicacoesFinanceiras);
     const acContasReceber = new Decimal(bpBase.ativoCirculante.contasReceber);
     const acEstoques = new Decimal(bpBase.ativoCirculante.estoques);
     const acAtivosBio = new Decimal(bpBase.ativoCirculante.ativosBiologicos);
@@ -91,8 +89,8 @@ export function calculateBPBase(
     const ativoTotal = totalAC.plus(totalARLP);
     const passivoTotal = totalPC.plus(totalPRLP).plus(totalPL);
 
-    // Capital de Giro
-    const capitalGiro = totalAC.minus(totalPC);
+    // Capital de Giro — excluindo Aplicações Financeiras (conta financeira, não operacional)
+    const capitalGiro = totalAC.minus(acAplicacoes).minus(totalPC);
 
     return {
       success: true,
@@ -139,6 +137,8 @@ export function calculateBPBase(
         despesasFinanceirasCP: 0,
         despesasFinanceirasLP: 0,
         despesasFinanceiras: 0,
+        receitasFinanceiras: 0,
+        novasAplicacoes: 0,
         capitalGiro: capitalGiro.toNumber(),
         ncg: 0,
         ativoTotal: ativoTotal.toNumber(),
@@ -182,23 +182,34 @@ export function calculateBPProjetado(
     const receitaBruta = new Decimal(dreAno.receitaBruta);
 
     // ========== ATIVO CIRCULANTE ==========
-    // Prazos médios em dias (prazo / 360 * receita bruta)
+    // Caixa e Equivalentes: prazo médio (sem mudança)
     const acCaixa = receitaBruta
       .times(premissas.prazoCaixaEquivalentes)
       .div(360);
-    const acAplicacoes = receitaBruta
-      .times(premissas.prazoAplicacoesFinanceiras)
-      .div(360);
+
+    // Aplicações Financeiras: lógica de saldo
+    const saldoInicialAplicacoes = new Decimal(bpAnterior.ativoCirculante.aplicacoesFinanceiras);
+    const taxaJurosAplicacoes = new Decimal(premissas.taxaJurosAplicacoes ?? 0).div(100);
+    const receitasFinanceiras = saldoInicialAplicacoes.times(taxaJurosAplicacoes);
+    const novasAplicacoes = new Decimal(0); // placeholder — será conectado ao FCFF
+    const acAplicacoes = saldoInicialAplicacoes.plus(novasAplicacoes).plus(receitasFinanceiras);
+
+    // Bases de cálculo da DRE
+    const cmv = new Decimal(dreAno.cmv);
+    const impostosEDevolucoes = new Decimal(dreAno.impostosEDevolucoes);
+    const despesasOperacionais = new Decimal(dreAno.despesasOperacionais);
+
+    // Prazos médios em dias
     const acContasReceber = receitaBruta
       .times(premissas.prazoContasReceber)
       .div(360);
-    const acEstoques = receitaBruta.times(premissas.prazoEstoques).div(360);
+    const acEstoques = cmv.times(premissas.prazoEstoques).div(360);
     const acAtivosBio = receitaBruta
       .times(premissas.prazoAtivosBiologicos)
       .div(360);
 
-    // Outros Créditos: manter do ano anterior (pode ser melhorado)
-    const acOutros = new Decimal(bpAnterior.ativoCirculante.outrosCreditos);
+    // Outros Créditos: prazo médio sobre Receita Bruta
+    const acOutros = receitaBruta.times(premissas.prazoOutrosCreditos).div(360);
 
     const totalAC = acCaixa
       .plus(acAplicacoes)
@@ -240,14 +251,10 @@ export function calculateBPProjetado(
       .plus(arlpIntangivel);
 
     // ========== PASSIVO CIRCULANTE ==========
-    // Prazos médios em dias
-    const pcFornecedores = receitaBruta
-      .times(premissas.prazoFornecedores)
-      .div(360);
-    const pcImpostos = receitaBruta.times(premissas.prazoImpostosAPagar).div(360);
-    const pcObrigacoes = receitaBruta
-      .times(premissas.prazoObrigacoesSociais)
-      .div(360);
+    // Prazos médios com bases corretas por conta
+    const pcFornecedores = cmv.times(premissas.prazoFornecedores).div(360);
+    const pcImpostos = impostosEDevolucoes.times(premissas.prazoImpostosAPagar).div(360);
+    const pcObrigacoes = despesasOperacionais.times(premissas.prazoObrigacoesSociais).div(360);
 
     // ========== DESPESAS FINANCEIRAS ==========
     // Calculadas sobre o saldo inicial (ano anterior) para evitar circularidade
@@ -274,10 +281,8 @@ export function calculateBPProjetado(
       bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
     ).plus(novosEmprestimosCP).minus(despesasFinanceirasCP);
 
-    // Outras Obrigações: manter do ano anterior
-    const pcOutras = new Decimal(
-      bpAnterior.passivoCirculante.outrasObrigacoes,
-    );
+    // Outras Obrigações: prazo médio sobre Receita Bruta
+    const pcOutras = receitaBruta.times(premissas.prazoOutrasObrigacoes).div(360);
 
     const totalPC = pcFornecedores
       .plus(pcImpostos)
@@ -318,7 +323,8 @@ export function calculateBPProjetado(
     // ========== TOTAIS E CONTAS AUXILIARES ==========
     const ativoTotal = totalAC.plus(totalARLP);
     const passivoTotal = totalPC.plus(totalPRLP).plus(totalPL);
-    const capitalGiro = totalAC.minus(totalPC);
+    // Capital de Giro — excluindo Aplicações Financeiras (conta financeira, não operacional)
+    const capitalGiro = totalAC.minus(acAplicacoes).minus(totalPC);
     const ncg = capitalGiro.minus(bpAnterior.capitalGiro);
 
     return {
@@ -366,6 +372,8 @@ export function calculateBPProjetado(
         despesasFinanceirasCP: despesasFinanceirasCP.toNumber(),
         despesasFinanceirasLP: despesasFinanceirasLP.toNumber(),
         despesasFinanceiras: despesasFinanceiras.toNumber(),
+        receitasFinanceiras: receitasFinanceiras.toNumber(),
+        novasAplicacoes: novasAplicacoes.toNumber(),
         capitalGiro: capitalGiro.toNumber(),
         ncg: ncg.toNumber(),
         ativoTotal: ativoTotal.toNumber(),

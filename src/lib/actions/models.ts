@@ -650,9 +650,9 @@ export async function saveDREProjection(
 
     if (!calcResult.success) {
       console.error('[Auto-calculation failed]:', calcResult.error);
-      // Não retornamos erro pois os dados foram salvos com sucesso
-      // O cálculo pode ser refeito ao salvar premissas manualmente
     }
+
+    revalidatePath(`/model/${modelId}`);
 
     return updateResult;
   } catch (error) {
@@ -709,9 +709,9 @@ export async function saveBalanceSheetProjection(
 
     if (!calcResult.success) {
       console.error('[Auto-calculation failed]:', calcResult.error);
-      // Não retornamos erro pois os dados foram salvos com sucesso
-      // O cálculo pode ser refeito ao salvar premissas manualmente
     }
+
+    revalidatePath(`/model/${modelId}`);
 
     return updateResult;
   } catch (error) {

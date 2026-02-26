@@ -226,6 +226,14 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
                     onChange={(value) => handleChange("ativoCirculante", "estoques", value)}
                     disabled={isLoading}
                   />
+
+                  <FinancialInput
+                    id="outrosCreditos"
+                    label="Outros Créditos"
+                    value={formData.ativoCirculante.outrosCreditos}
+                    onChange={(value) => handleChange("ativoCirculante", "outrosCreditos", value)}
+                    disabled={isLoading}
+                  />
                 </div>
 
                 <div className="rounded-lg bg-muted p-3">
@@ -238,9 +246,17 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
 
               {/* ATIVO REALIZÁVEL LP */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold border-b pb-2">Ativo Realizável Longo Prazo</h3>
+                <h3 className="text-sm font-semibold border-b pb-2">Ativo Não Circulante</h3>
 
                 <div className="space-y-3">
+                  <FinancialInput
+                    id="investimentos"
+                    label="Investimentos"
+                    value={formData.ativoRealizavelLP.investimentos}
+                    onChange={(value) => handleChange("ativoRealizavelLP", "investimentos", value)}
+                    disabled={isLoading}
+                  />
+
                   <FinancialInput
                     id="ativoImobilizadoBruto"
                     label="Ativo Imobilizado Bruto"
@@ -256,11 +272,19 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
                     onChange={(value) => handleChange("ativoRealizavelLP", "depreciacaoAcumulada", value)}
                     disabled={isLoading}
                   />
+
+                  <FinancialInput
+                    id="intangivel"
+                    label="Intangível"
+                    value={formData.ativoRealizavelLP.intangivel}
+                    onChange={(value) => handleChange("ativoRealizavelLP", "intangivel", value)}
+                    disabled={isLoading}
+                  />
                 </div>
 
                 <div className="rounded-lg bg-muted p-3">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">Total Ativo Realizável LP</span>
+                    <span className="font-medium">Total Ativo Não Circulante</span>
                     <span className="font-semibold">{formatCurrency(totalAtivoRealizavelLP)}</span>
                   </div>
                 </div>
@@ -291,10 +315,34 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
                   />
 
                   <FinancialInput
+                    id="impostosAPagar"
+                    label="Impostos a Pagar"
+                    value={formData.passivoCirculante.impostosAPagar}
+                    onChange={(value) => handleChange("passivoCirculante", "impostosAPagar", value)}
+                    disabled={isLoading}
+                  />
+
+                  <FinancialInput
+                    id="obrigacoesSociaisETrabalhistas"
+                    label="Obrig. Sociais e Trabalhistas"
+                    value={formData.passivoCirculante.obrigacoesSociaisETrabalhistas}
+                    onChange={(value) => handleChange("passivoCirculante", "obrigacoesSociaisETrabalhistas", value)}
+                    disabled={isLoading}
+                  />
+
+                  <FinancialInput
                     id="emprestimosFinanciamentosCP"
-                    label="Empréstimos/Financ. CP"
+                    label="Empréstimos e Financ. CP"
                     value={formData.passivoCirculante.emprestimosFinanciamentosCP}
                     onChange={(value) => handleChange("passivoCirculante", "emprestimosFinanciamentosCP", value)}
+                    disabled={isLoading}
+                  />
+
+                  <FinancialInput
+                    id="outrasObrigacoes"
+                    label="Outras Obrigações"
+                    value={formData.passivoCirculante.outrasObrigacoes}
+                    onChange={(value) => handleChange("passivoCirculante", "outrasObrigacoes", value)}
                     disabled={isLoading}
                   />
                 </div>
@@ -309,12 +357,12 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
 
               {/* PASSIVO REALIZÁVEL LP */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold border-b pb-2">Passivo Realizável Longo Prazo</h3>
+                <h3 className="text-sm font-semibold border-b pb-2">Passivo Não Circulante</h3>
 
                 <div className="space-y-3">
                   <FinancialInput
                     id="emprestimosFinanciamentosLP"
-                    label="Empréstimos/Financ. LP"
+                    label="Empréstimos e Financ. LP"
                     value={formData.passivoRealizavelLP.emprestimosFinanciamentosLP}
                     onChange={(value) => handleChange("passivoRealizavelLP", "emprestimosFinanciamentosLP", value)}
                     disabled={isLoading}
@@ -323,7 +371,7 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
 
                 <div className="rounded-lg bg-muted p-3">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium">Total Passivo Realizável LP</span>
+                    <span className="font-medium">Total Passivo Não Circulante</span>
                     <span className="font-semibold">{formatCurrency(totalPassivoRealizavelLP)}</span>
                   </div>
                 </div>

@@ -167,13 +167,13 @@ export function WorkingCapitalTable({
 
   const premiseOrder: (keyof BalanceSheetProjectionInputs)[] = [
     "prazoCaixaEquivalentes",
-    "prazoAplicacoesFinanceiras",
     "prazoContasReceber",
     "prazoEstoques",
-    "prazoAtivosBiologicos",
+    "prazoOutrosCreditos",
     "prazoFornecedores",
     "prazoImpostosAPagar",
     "prazoObrigacoesSociais",
+    "prazoOutrasObrigacoes",
   ];
 
   const focusNext = (field: string, currentYear: number) => {
@@ -245,7 +245,7 @@ export function WorkingCapitalTable({
         ? [
             {
               key: "prazoCaixaEquivalentes",
-              label: "↳ Prazo Médio (dias) — Rec. Líquida",
+              label: "↳ Prazo Médio (dias) — Rec. Bruta",
               type: "premise" as RowType,
               parentKey: "caixa",
               premiseGroup: "ativoCirculante" as const,
@@ -255,37 +255,6 @@ export function WorkingCapitalTable({
                 sortedYears.map((y) => [
                   y,
                   getPremise("prazoCaixaEquivalentes", y),
-                ]),
-              ),
-            },
-          ]
-        : []),
-      {
-        key: "aplicacoes",
-        label: "Aplicações Financeiras",
-        type: "value",
-        hasChildPremise: hasPremises,
-        values: Object.fromEntries(
-          sortedYears.map((y) => [
-            y,
-            byYear[y]?.ativoCirculante.aplicacoesFinanceiras ?? null,
-          ]),
-        ),
-      },
-      ...(hasPremises
-        ? [
-            {
-              key: "prazoAplicacoesFinanceiras",
-              label: "↳ Prazo Médio (dias) — Rec. Líq.",
-              type: "premise" as RowType,
-              parentKey: "aplicacoes",
-              premiseGroup: "ativoCirculante" as const,
-              premiseField:
-                "prazoAplicacoesFinanceiras" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(
-                sortedYears.map((y) => [
-                  y,
-                  getPremise("prazoAplicacoesFinanceiras", y),
                 ]),
               ),
             },
@@ -351,40 +320,10 @@ export function WorkingCapitalTable({
           ]
         : []),
       {
-        key: "ativosBio",
-        label: "Ativos Biológicos",
-        type: "value",
-        hasChildPremise: hasPremises,
-        values: Object.fromEntries(
-          sortedYears.map((y) => [
-            y,
-            byYear[y]?.ativoCirculante.ativosBiologicos ?? null,
-          ]),
-        ),
-      },
-      ...(hasPremises
-        ? [
-            {
-              key: "prazoAtivosBiologicos",
-              label: "↳ Prazo Médio (dias) — Rec. Líq.",
-              type: "premise" as RowType,
-              parentKey: "ativosBio",
-              premiseGroup: "ativoCirculante" as const,
-              premiseField:
-                "prazoAtivosBiologicos" as keyof BalanceSheetProjectionInputs,
-              values: Object.fromEntries(
-                sortedYears.map((y) => [
-                  y,
-                  getPremise("prazoAtivosBiologicos", y),
-                ]),
-              ),
-            },
-          ]
-        : []),
-      {
         key: "outrosCreditos",
         label: "Outros Créditos",
         type: "value",
+        hasChildPremise: hasPremises,
         values: Object.fromEntries(
           sortedYears.map((y) => [
             y,
@@ -392,6 +331,25 @@ export function WorkingCapitalTable({
           ]),
         ),
       },
+      ...(hasPremises
+        ? [
+            {
+              key: "prazoOutrosCreditos",
+              label: "↳ Prazo Médio (dias) — Rec. Bruta",
+              type: "premise" as RowType,
+              parentKey: "outrosCreditos",
+              premiseGroup: "ativoCirculante" as const,
+              premiseField:
+                "prazoOutrosCreditos" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoOutrosCreditos", y),
+                ]),
+              ),
+            },
+          ]
+        : []),
       // ── PASSIVO CIRCULANTE ──
       {
         key: "hdr-pc",
@@ -456,7 +414,7 @@ export function WorkingCapitalTable({
         ? [
             {
               key: "prazoImpostosAPagar",
-              label: "↳ Prazo Médio (dias) — Imp. Devol.",
+              label: "↳ Prazo Médio (dias) — Imp. e Devoluções",
               type: "premise" as RowType,
               parentKey: "impostos",
               premiseGroup: "passivoCirculante" as const,
@@ -487,7 +445,7 @@ export function WorkingCapitalTable({
         ? [
             {
               key: "prazoObrigacoesSociais",
-              label: "↳ Prazo Médio (dias) — Desp. Oper.",
+              label: "↳ Prazo Médio (dias) — Desp. Operacionais",
               type: "premise" as RowType,
               parentKey: "obrigacoes",
               premiseGroup: "passivoCirculante" as const,
@@ -506,6 +464,7 @@ export function WorkingCapitalTable({
         key: "outrasObrig",
         label: "Outras Obrigações",
         type: "value",
+        hasChildPremise: hasPremises,
         values: Object.fromEntries(
           sortedYears.map((y) => [
             y,
@@ -513,6 +472,25 @@ export function WorkingCapitalTable({
           ]),
         ),
       },
+      ...(hasPremises
+        ? [
+            {
+              key: "prazoOutrasObrigacoes",
+              label: "↳ Prazo Médio (dias) — Rec. Bruta",
+              type: "premise" as RowType,
+              parentKey: "outrasObrig",
+              premiseGroup: "passivoCirculante" as const,
+              premiseField:
+                "prazoOutrasObrigacoes" as keyof BalanceSheetProjectionInputs,
+              values: Object.fromEntries(
+                sortedYears.map((y) => [
+                  y,
+                  getPremise("prazoOutrasObrigacoes", y),
+                ]),
+              ),
+            },
+          ]
+        : []),
       // ── Resultados ──
       {
         key: "capitalGiro",

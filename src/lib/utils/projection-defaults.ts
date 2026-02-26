@@ -74,24 +74,28 @@ export function generateBalanceSheetProjectionDefaults(
   numberOfYears: number = 5
 ): BalanceSheetProjectionInputs[] {
   const receitaBruta = dreBase.receitaBruta;
+  const cmv = dreBase.cmv;
+  const impostosEDevolucoes = dreBase.impostosEDevolucoes;
+  const despesasOperacionais = dreBase.despesasOperacionais;
 
-  // Calcular prazos médios do ano base (em dias)
-  const calculateDays = (value: number): number => {
-    if (receitaBruta === 0) return 0;
-    return parseFloat(((value / receitaBruta) * 360).toFixed(0));
+  // Helpers: prazo = (saldo / base) × 360
+  const calcDays = (value: number, base: number): number => {
+    if (base === 0) return 0;
+    return parseFloat(((value / base) * 360).toFixed(0));
   };
 
-  // Prazos médios - Ativo
-  const prazoCaixaEquivalentes = calculateDays(balanceBase.ativoCirculante.caixaEquivalentes) || 54;
-  const prazoAplicacoesFinanceiras = calculateDays(balanceBase.ativoCirculante.aplicacoesFinanceiras) || 18;
-  const prazoContasReceber = calculateDays(balanceBase.ativoCirculante.contasReceber) || 45;
-  const prazoEstoques = calculateDays(balanceBase.ativoCirculante.estoques) || 11;
-  const prazoAtivosBiologicos = calculateDays(balanceBase.ativoCirculante.ativosBiologicos) || 0;
+  // Prazos médios - Ativo (base: Receita Bruta, exceto Estoques → CMV)
+  const prazoCaixaEquivalentes = calcDays(balanceBase.ativoCirculante.caixaEquivalentes, receitaBruta) || 54;
+  const prazoContasReceber = calcDays(balanceBase.ativoCirculante.contasReceber, receitaBruta) || 45;
+  const prazoEstoques = calcDays(balanceBase.ativoCirculante.estoques, cmv) || 11;
+  const prazoAtivosBiologicos = calcDays(balanceBase.ativoCirculante.ativosBiologicos, receitaBruta) || 0;
+  const prazoOutrosCreditos = calcDays(balanceBase.ativoCirculante.outrosCreditos, receitaBruta) || 0;
 
-  // Prazos médios - Passivo
-  const prazoFornecedores = calculateDays(balanceBase.passivoCirculante.fornecedores) || 22;
-  const prazoImpostosAPagar = calculateDays(balanceBase.passivoCirculante.impostosAPagar) || 7;
-  const prazoObrigacoesSociais = calculateDays(balanceBase.passivoCirculante.obrigacoesSociaisETrabalhistas) || 11;
+  // Prazos médios - Passivo (bases específicas por conta)
+  const prazoFornecedores = calcDays(balanceBase.passivoCirculante.fornecedores, cmv) || 22;
+  const prazoImpostosAPagar = calcDays(balanceBase.passivoCirculante.impostosAPagar, impostosEDevolucoes) || 7;
+  const prazoObrigacoesSociais = calcDays(balanceBase.passivoCirculante.obrigacoesSociaisETrabalhistas, despesasOperacionais) || 11;
+  const prazoOutrasObrigacoes = calcDays(balanceBase.passivoCirculante.outrasObrigacoes, receitaBruta) || 0;
 
   // Gerar premissas para cada ano
   const projections: BalanceSheetProjectionInputs[] = [];
@@ -100,14 +104,16 @@ export function generateBalanceSheetProjectionDefaults(
       year,
       taxaDepreciacao: 20, // 20% ao ano (5 anos de vida útil)
       indiceImobilizadoVendas: 0.05, // CAPEX = 5% da receita bruta
+      taxaJurosAplicacoes: 8, // 8% a.a. sobre saldo de Aplicações Financeiras
       prazoCaixaEquivalentes,
-      prazoAplicacoesFinanceiras,
       prazoContasReceber,
       prazoEstoques,
       prazoAtivosBiologicos,
+      prazoOutrosCreditos,
       prazoFornecedores,
       prazoImpostosAPagar,
       prazoObrigacoesSociais,
+      prazoOutrasObrigacoes,
       taxaNovosEmprestimosCP: 5,  // 5% de crescimento da dívida CP
       taxaNovosEmprestimosLP: 5,  // 5% de crescimento da dívida LP
       taxaJurosEmprestimo: 12,    // 12% a.a. sobre dívida total (CDI + spread típico)

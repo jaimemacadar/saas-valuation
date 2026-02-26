@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { BalanceSheetProjectionInputs } from '@/core/types';
 import { saveBalanceSheetProjection } from '@/lib/actions/models';
 import { toast } from 'sonner';
@@ -19,6 +20,7 @@ export function useBPProjectionPersist({
   modelId,
   debounceMs = 800,
 }: UseBPProjectionPersistOptions): UseBPProjectionPersistResult {
+  const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +48,7 @@ export function useBPProjectionPersist({
 
         if (result.success) {
           setLastSavedAt(new Date());
+          router.refresh();
         } else {
           const errorMsg = result.error || 'Erro ao salvar premissas';
           setError(errorMsg);
@@ -60,7 +63,7 @@ export function useBPProjectionPersist({
         setIsSaving(false);
       }
     }, debounceMs);
-  }, [modelId, debounceMs]);
+  }, [modelId, debounceMs, router]);
 
   useEffect(() => {
     return () => {

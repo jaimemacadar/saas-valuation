@@ -3,11 +3,11 @@ status: filled
 generated: 2026-02-26
 agents:
   - type: "feature-developer"
-    role: "Implementar nova conta Caixa e Aplicações Financeiras no core e UI"
+    role: "Implementar lógica de Aplicações Financeiras com cálculo por saldo no core e UI"
   - type: "test-writer"
     role: "Escrever testes unitários para os novos cálculos"
   - type: "frontend-specialist"
-    role: "Criar tabela CashApplicationsTable seguindo Design System"
+    role: "Criar tabela FinancialApplicationsTable seguindo Design System"
 docs:
   - "project-overview.md"
   - "architecture.md"
@@ -29,16 +29,15 @@ phases:
     agent: "test-writer"
 ---
 
-# Aplicações Financeiras — Nova conta no Balanço Patrimonial
+# Aplicações Financeiras — Lógica de Saldo no Balanço Patrimonial
 
-> Substituir as contas separadas "Caixa e Equivalentes" e "Aplicações Financeiras" por uma conta unificada **"Caixa e Aplicações Financeiras"** no Balanço Patrimonial, com lógica de Saldo Inicial + Novas Aplicações + Receitas Financeiras, tabela dedicada e premissas editáveis.
+> Alterar a projeção de **Aplicações Financeiras** de prazo médio para lógica de saldo (Saldo Inicial + Novas Aplicações + Receitas Financeiras), mantendo **Caixa e Equivalentes** como conta separada com cálculo por prazo médio. Caixa permanece no Capital de Giro.
 
 ## Task Snapshot
 
-- **Primary goal:** Criar a conta "Caixa e Aplicações Financeiras" que substitui Caixa e Equivalentes no ativo circulante do BP, com cálculo baseado em saldo inicial + novas aplicações (fluxo de caixa a definir) + receitas financeiras (taxa de juros × saldo inicial).
-- **Success signal:** O BP projetado exibe a nova conta "Caixa e Aplicações Financeiras" no lugar de "Caixa e Equivalentes" e "Aplicações Financeiras", com tabela dedicada abaixo da InvestmentTable, premissa de Taxa de Juros editável e receitas financeiras calculadas automaticamente.
+- **Primary goal:** Mudar apenas a conta "Aplicações Financeiras" para cálculo baseado em saldo, adicionando receitas financeiras via taxa de juros. Manter "Caixa e Equivalentes" inalterado (prazo médio).
+- **Success signal:** O BP projetado exibe "Caixa e Equivalentes" (prazo médio) e "Aplicações Financeiras" (saldo) como contas separadas; tabela dedicada de Aplicações Financeiras com premissa de Taxa de Juros editável; Caixa continua na tabela de Capital de Giro.
 - **Key references:**
-  - [PRD](./PRD.md) — Estrutura de dados e fórmulas do BP
   - [Architecture](../docs/architecture.md) — Padrões de cálculo e tipos
   - [Design System](../docs/design-system.md) — Tokens, RowTypes, padrão de tabelas
 
@@ -48,35 +47,39 @@ phases:
 
 | Arquivo | Tipo de Mudança | Descrição |
 | --- | --- | --- |
-| `src/core/types/index.ts` | Modificação | Adicionar campos `caixaAplicacoesFinanceiras`, `receitasFinanceiras`, `novasAplicacoes` em `BalanceSheetCalculated`; adicionar `taxaJurosAplicacoes` em `BalanceSheetProjectionInputs`; remover/depreciar `prazoCaixaEquivalentes` e `prazoAplicacoesFinanceiras` |
-| `src/core/calculations/balanceSheet.ts` | Modificação | Substituir cálculo de `acCaixa` e `acAplicacoes` (prazo médio) pela nova lógica: Saldo Inicial + Novas Aplicações + Receitas Financeiras |
-| `src/components/tables/CashApplicationsTable.tsx` | **Novo** | Tabela de Caixa e Aplicações Financeiras (padrão InvestmentTable) |
-| `src/components/tables/InvestmentTable.tsx` | Nenhuma | Referência de padrão (não é modificado) |
-| `src/components/tables/BalanceSheetTable.tsx` | Modificação | Atualizar referências de Caixa/Aplicações → Caixa e Aplicações Financeiras |
-| `src/app/(dashboard)/model/[id]/balanco-patrimonial/page.tsx` | Modificação | Renderizar CashApplicationsTable abaixo de InvestmentTable |
-| Testes em `__tests__/` | **Novo/Modificação** | Testes para calculateBPBase e calculateBPProjetado com nova conta |
+| `src/core/types/index.ts` | Modificação | Adicionar `taxaJurosAplicacoes` em `BalanceSheetProjectionInputs`; remover `prazoAplicacoesFinanceiras`; manter `prazoCaixaEquivalentes`. Adicionar `receitasFinanceiras`, `novasAplicacoes` em `BalanceSheetCalculated`. Manter `caixaEquivalentes` e `aplicacoesFinanceiras` separados. |
+| `src/core/calculations/balanceSheet.ts` | Modificação | Apenas Aplicações Financeiras usa lógica de saldo. Caixa continua prazo médio. |
+| `src/components/tables/CashApplicationsTable.tsx` | **Novo** | Tabela de Aplicações Financeiras (padrão InvestmentTable) |
+| `src/components/tables/BalanceSheetTable.tsx` | Nenhuma | Mantém "Caixa e Equivalentes" e "Aplicações Financeiras" separados (sem mudança) |
+| `src/components/tables/WorkingCapitalTable.tsx` | Modificação | Manter Caixa e Equivalentes com prazo médio; remover apenas prazo de Aplicações Financeiras |
+| `src/app/(dashboard)/model/[id]/view/balance-sheet/page.tsx` | Modificação | Renderizar CashApplicationsTable em nova aba |
 
 ### Dependências entre Contas
 
 ```
-Caixa e Aplicações Financeiras (ano N) =
-    Saldo Inicial (= Caixa e Aplicações do ano N-1)
-  + Novas Aplicações (= conta de fluxo de caixa, a definir posteriormente → 0 por padrão)
+Caixa e Equivalentes (ano N) = Receita Bruta × prazoCaixaEquivalentes / 360
+  (SEM MUDANÇA — continua no Capital de Giro)
+
+Aplicações Financeiras (ano N) =
+    Saldo Inicial (= Aplicações Financeiras do ano N-1)
+  + Novas Aplicações (= 0 por padrão, FCFF futuro)
   + Receitas Financeiras (= Taxa de Juros × Saldo Inicial)
 
 Onde:
-  Saldo Inicial (ano 0) = Caixa e Equivalentes + Aplicações Financeiras (do BalanceSheetBaseInputs)
-  Taxa de Juros = premissa % editável por ano (taxaJurosAplicacoes em BalanceSheetProjectionInputs)
+  Saldo Inicial (ano 0) = aplicacoesFinanceiras do BalanceSheetBaseInputs
+  Taxa de Juros = premissa % editável (taxaJurosAplicacoes)
 ```
 
 ### Impacto no Ativo Circulante
 
 ```
 ANTES:
-  Ativo Circulante = Caixa + Aplicações + Contas a Receber + Estoques + Ativos Biológicos + Outros
+  AC = Caixa(prazo) + Aplicações(prazo) + Contas a Receber + Estoques + AtBio + Outros
 
 DEPOIS:
-  Ativo Circulante = Caixa e Aplicações Financeiras + Contas a Receber + Estoques + Ativos Biológicos + Outros
+  AC = Caixa(prazo) + Aplicações(saldo) + Contas a Receber + Estoques + AtBio + Outros
+       ^^^^^^^^^^^^   ^^^^^^^^^^^^^^^^
+       SEM MUDANÇA    NOVA LÓGICA
 ```
 
 ## Working Phases
@@ -84,54 +87,49 @@ DEPOIS:
 ### Phase 1 — Tipos e Premissas (PREVC: P)
 > **Primary Agent:** `feature-developer`
 
-**Objective:** Definir tipos TypeScript e premissas para a nova conta.
+**Objective:** Ajustar tipos TypeScript para suportar a nova lógica de Aplicações.
 
 **Tasks**
 
-| # | Task | Agent | Status | Deliverable |
-|---|------|-------|--------|-------------|
-| 1.1 | Adicionar campo `taxaJurosAplicacoes: number` (% a.a.) em `BalanceSheetProjectionInputs` | `feature-developer` | pending | Tipo atualizado |
-| 1.2 | Adicionar campos em `BalanceSheetCalculated.ativoCirculante`: substituir `caixaEquivalentes` e `aplicacoesFinanceiras` por `caixaAplicacoesFinanceiras` | `feature-developer` | pending | Tipo atualizado |
-| 1.3 | Adicionar contas auxiliares em `BalanceSheetCalculated`: `receitasFinanceiras`, `novasAplicacoes` | `feature-developer` | pending | Tipo atualizado |
-| 1.4 | Remover campos obsoletos: `prazoCaixaEquivalentes`, `prazoAplicacoesFinanceiras` de `BalanceSheetProjectionInputs` | `feature-developer` | pending | Tipo limpo |
-| 1.5 | Atualizar `BalanceSheetBaseInputs.ativoCirculante`: substituir `caixaEquivalentes` + `aplicacoesFinanceiras` por `caixaAplicacoesFinanceiras` (ou manter ambos e somar no calculateBPBase) | `feature-developer` | pending | Tipo definido |
-
-**Decisão 1.5:** Manter `caixaEquivalentes` e `aplicacoesFinanceiras` no `BalanceSheetBaseInputs` (input do ano base) para não quebrar formulários existentes. No `calculateBPBase`, somar ambos para criar `caixaAplicacoesFinanceiras`. No `BalanceSheetCalculated`, expor apenas `caixaAplicacoesFinanceiras`.
+| # | Task | Status | Deliverable |
+|---|------|--------|-------------|
+| 1.1 | Adicionar `taxaJurosAplicacoes: number` em `BalanceSheetProjectionInputs` | pending | Tipo atualizado |
+| 1.2 | Remover `prazoAplicacoesFinanceiras` de `BalanceSheetProjectionInputs` | pending | Campo removido |
+| 1.3 | **Manter** `prazoCaixaEquivalentes` em `BalanceSheetProjectionInputs` | pending | Campo mantido |
+| 1.4 | **Manter** `caixaEquivalentes` e `aplicacoesFinanceiras` separados em `BalanceSheetCalculated.ativoCirculante` | pending | Sem mudança no tipo |
+| 1.5 | Adicionar `receitasFinanceiras` e `novasAplicacoes` em `BalanceSheetCalculated` (contas auxiliares) | pending | Campos adicionados |
 
 ---
 
 ### Phase 2 — Lógica de Cálculo (PREVC: E)
 > **Primary Agent:** `feature-developer`
 
-**Objective:** Implementar os cálculos no motor de cálculo (`balanceSheet.ts`).
+**Objective:** Implementar cálculo de saldo para Aplicações Financeiras, mantendo Caixa por prazo médio.
 
 **Tasks**
 
-| # | Task | Agent | Status | Deliverable |
-|---|------|-------|--------|-------------|
-| 2.1 | **`calculateBPBase`**: Somar `caixaEquivalentes + aplicacoesFinanceiras` → `caixaAplicacoesFinanceiras`; remover campos individuais do resultado; ajustar totalAC | `feature-developer` | pending | Função atualizada |
-| 2.2 | **`calculateBPProjetado`**: Implementar nova lógica — `saldoInicial = bpAnterior.ativoCirculante.caixaAplicacoesFinanceiras`; `receitasFinanceiras = saldoInicial × (taxaJurosAplicacoes / 100)`; `novasAplicacoes = 0` (placeholder para FCFF futuro); `caixaAplicacoesFinanceiras = saldoInicial + novasAplicacoes + receitasFinanceiras` | `feature-developer` | pending | Função atualizada |
-| 2.3 | Remover cálculos de `acCaixa` e `acAplicacoes` (prazo médio / 360 × receita) | `feature-developer` | pending | Código limpo |
-| 2.4 | Atualizar totalAC para usar `caixaAplicacoesFinanceiras` em vez de `acCaixa + acAplicacoes` | `feature-developer` | pending | Total correto |
-| 2.5 | Garantir que `receitasFinanceiras` e `novasAplicacoes` são expostas em `BalanceSheetCalculated` para uso na tabela | `feature-developer` | pending | Campos exportados |
+| # | Task | Status | Deliverable |
+|---|------|--------|-------------|
+| 2.1 | **`calculateBPBase`**: Manter `caixaEquivalentes` e `aplicacoesFinanceiras` separados; receitasFinanceiras=0, novasAplicacoes=0 | pending | Função atualizada |
+| 2.2 | **`calculateBPProjetado`**: Manter cálculo de `caixaEquivalentes` por prazo médio | pending | Sem mudança |
+| 2.3 | **`calculateBPProjetado`**: Substituir cálculo de `aplicacoesFinanceiras` (prazo médio) pela nova lógica de saldo | pending | Nova fórmula |
+| 2.4 | totalAC = caixa + aplicações(saldo) + contasReceber + estoques + ativosBio + outros | pending | Total correto |
 
-**Fórmulas implementadas:**
+**Fórmulas:**
 
 ```typescript
-// Em calculateBPBase:
-const caixaAplicacoesFinanceiras = new Decimal(bpBase.ativoCirculante.caixaEquivalentes)
-  .plus(bpBase.ativoCirculante.aplicacoesFinanceiras);
-// receitasFinanceiras = 0 (ano base)
-// novasAplicacoes = 0 (ano base)
+// Caixa e Equivalentes — SEM MUDANÇA
+const acCaixa = receitaBruta.times(premissas.prazoCaixaEquivalentes).div(360);
 
-// Em calculateBPProjetado:
-const saldoInicial = new Decimal(bpAnterior.ativoCirculante.caixaAplicacoesFinanceiras);
-const taxaJurosAplicacoes = new Decimal(premissas.taxaJurosAplicacoes ?? 0).div(100);
-const receitasFinanceiras = saldoInicial.times(taxaJurosAplicacoes);
-const novasAplicacoes = new Decimal(0); // placeholder — será definido pelo FCFF
-const caixaAplicacoesFinanceiras = saldoInicial.plus(novasAplicacoes).plus(receitasFinanceiras);
+// Aplicações Financeiras — NOVA LÓGICA
+const saldoInicial = new Decimal(bpAnterior.ativoCirculante.aplicacoesFinanceiras);
+const taxaJuros = new Decimal(premissas.taxaJurosAplicacoes ?? 0).div(100);
+const receitasFinanceiras = saldoInicial.times(taxaJuros);
+const novasAplicacoes = new Decimal(0); // placeholder FCFF
+const acAplicacoes = saldoInicial.plus(novasAplicacoes).plus(receitasFinanceiras);
 
-// totalAC = caixaAplicacoesFinanceiras + contasReceber + estoques + ativosBio + outros
+// Total AC
+const totalAC = acCaixa.plus(acAplicacoes).plus(acContasReceber)...;
 ```
 
 ---
@@ -139,128 +137,58 @@ const caixaAplicacoesFinanceiras = saldoInicial.plus(novasAplicacoes).plus(recei
 ### Phase 3 — Tabela CashApplicationsTable (PREVC: E)
 > **Primary Agent:** `frontend-specialist`
 
-**Objective:** Criar componente de tabela para Caixa e Aplicações Financeiras, seguindo o padrão da InvestmentTable.
+**Objective:** Tabela dedicada para Aplicações Financeiras.
 
-**Tasks**
-
-| # | Task | Agent | Status | Deliverable |
-|---|------|-------|--------|-------------|
-| 3.1 | Criar `src/components/tables/CashApplicationsTable.tsx` seguindo estrutura da InvestmentTable | `frontend-specialist` | pending | Componente criado |
-| 3.2 | Implementar linhas da tabela (ver estrutura abaixo) | `frontend-specialist` | pending | Linhas corretas |
-| 3.3 | Implementar premissa editável para `taxaJurosAplicacoes` | `frontend-specialist` | pending | Input funcional |
-| 3.4 | Renderizar tabela na página de Balanço Patrimonial, abaixo da InvestmentTable | `frontend-specialist` | pending | Tabela visível |
-| 3.5 | Suportar auto-save com debounce (mesmo hook `useBPProjectionPersist`) | `frontend-specialist` | pending | Persistência OK |
-
-**Estrutura de Linhas da Tabela:**
+**Estrutura de Linhas:**
 
 | # | Label | RowType | Fonte do Valor |
 |---|-------|---------|----------------|
-| 1 | **Caixa e Aplicações (início)** | `header` | `bpAnterior.ativoCirculante.caixaAplicacoesFinanceiras` |
+| 1 | **Aplicações Financeiras (início)** | `header` | `bpAnterior.ativoCirculante.aplicacoesFinanceiras` |
 | 2 | (+) Novas Aplicações | `value` | `bp.novasAplicacoes` (= 0 por enquanto) |
 | 3 | (+) Receitas Financeiras | `value` | `bp.receitasFinanceiras` |
-| 4 | ↳ Taxa de Juros (%) | `premise` | `premissas.taxaJurosAplicacoes` — editável |
-| 5 | **(=) Caixa e Aplicações (final)** | `total` | `bp.ativoCirculante.caixaAplicacoesFinanceiras` |
-
-**Props do componente:**
-
-```typescript
-interface CashApplicationsTableProps {
-  data: BalanceSheetCalculated[];
-  projectionInputs?: BalanceSheetProjectionInputs[];
-  modelId?: string;
-  onProjectionChange?: (data: BalanceSheetProjectionInputs[]) => void;
-}
-```
-
-**Padrões visuais (do Design System):**
-- Container: `rounded-md border bg-card overflow-x-auto`
-- Coluna de label: `sticky left-0 z-10` com bg do tipo
-- RowType maps: `ROW_BG` e `CELL_BG` conforme design-system.md
-- Valores numéricos: `text-right tabular-nums`; negativos → `text-red-600`
-- Toggle Decimais + Exibir/Ocultar Premissas na toolbar
-- Navegação: Tab (próximo ano), Enter (próxima premissa), Escape (cancelar)
+| 4 | ↳ Taxa de Juros (% a.a.) | `premise` | `premissas.taxaJurosAplicacoes` — editável |
+| 5 | **(=) Aplicações Financeiras (final)** | `total` | `bp.ativoCirculante.aplicacoesFinanceiras` |
 
 ---
 
 ### Phase 4 — Atualização de Componentes Dependentes (PREVC: E)
-> **Primary Agent:** `feature-developer`
-
-**Objective:** Atualizar componentes que referenciam as contas antigas.
 
 **Tasks**
 
-| # | Task | Agent | Status | Deliverable |
-|---|------|-------|--------|-------------|
-| 4.1 | Atualizar `BalanceSheetTable.tsx` — substituir linhas de "Caixa e Equivalentes" e "Aplicações Financeiras" por "Caixa e Aplicações Financeiras" | `feature-developer` | pending | Tabela BP atualizada |
-| 4.2 | Atualizar `WorkingCapitalTable.tsx` se referencia Caixa separadamente | `feature-developer` | pending | Tabela CG atualizada |
-| 4.3 | Atualizar formulários de entrada do ano base se necessário (manter inputs separados, somar no cálculo) | `feature-developer` | pending | Formulários compatíveis |
-| 4.4 | Atualizar mock data em `src/lib/mock/` para refletir nova estrutura | `feature-developer` | pending | Mock atualizado |
-| 4.5 | Atualizar gráficos de Capital de Giro se referenciam Caixa separadamente | `feature-developer` | pending | Gráficos atualizados |
+| # | Task | Status | Deliverable |
+|---|------|--------|-------------|
+| 4.1 | `WorkingCapitalTable.tsx` — manter Caixa e Equivalentes com `prazoCaixaEquivalentes`; remover apenas prazo de Aplicações Financeiras (valor continua, sem premissa de prazo) | pending | Tabela CG atualizada |
+| 4.2 | `BalanceSheetTable.tsx` — nenhuma mudança (ambas as contas já aparecem separadas) | pending | Sem mudança |
+| 4.3 | Atualizar fixtures `sampleCompany.ts` — remover `prazoAplicacoesFinanceiras`, adicionar `taxaJurosAplicacoes` | pending | Fixtures atualizados |
+| 4.4 | Renderizar `CashApplicationsTable` na página de Balanço Patrimonial (nova aba) | pending | Aba visível |
 
 ---
 
 ### Phase 5 — Testes e Validação (PREVC: V)
-> **Primary Agent:** `test-writer`
 
-**Objective:** Garantir correção dos cálculos e integridade da UI.
-
-**Tasks**
-
-| # | Task | Agent | Status | Deliverable |
-|---|------|-------|--------|-------------|
-| 5.1 | Testes unitários para `calculateBPBase` com nova conta unificada | `test-writer` | pending | Testes passando |
-| 5.2 | Testes unitários para `calculateBPProjetado` — verificar saldo inicial + receitas financeiras | `test-writer` | pending | Testes passando |
-| 5.3 | Testar que totalAC é calculado corretamente com a nova conta | `test-writer` | pending | Testes passando |
-| 5.4 | Testar cenário com `taxaJurosAplicacoes = 0` (sem receitas financeiras) | `test-writer` | pending | Edge case coberto |
-| 5.5 | Testar cenário com `novasAplicacoes = 0` (placeholder FCFF) | `test-writer` | pending | Edge case coberto |
-| 5.6 | Verificar que `ativoTotal === passivoTotal` após mudanças (equilíbrio do balanço) | `test-writer` | pending | Invariante mantida |
-| 5.7 | Rodar `npm run typecheck` e `npm run lint` sem erros | `test-writer` | pending | CI verde |
+| # | Task | Status | Deliverable |
+|---|------|--------|-------------|
+| 5.1 | Testar `calculateBPBase` — caixaEquivalentes e aplicacoesFinanceiras separados | pending | Testes passando |
+| 5.2 | Testar `calculateBPProjetado` — caixa por prazo médio, aplicações por saldo | pending | Testes passando |
+| 5.3 | Testar receitas financeiras = taxaJuros × saldo inicial | pending | Testes passando |
+| 5.4 | Verificar `ativoTotal === passivoTotal` (equilíbrio do balanço) | pending | Invariante mantida |
+| 5.5 | `npm run typecheck` limpo | pending | CI verde |
 
 ---
 
-## Risk Assessment
+## Decisões de Design
 
-### Identified Risks
-
-| Risk | Probability | Impact | Mitigation Strategy | Owner |
-| --- | --- | --- | --- | --- |
-| Quebra de compatibilidade com modelos salvos no Supabase | Alta | Alta | Manter campos antigos no BaseInputs; migrar gradualmente | `feature-developer` |
-| Desequilíbrio do Balanço (Ativo ≠ Passivo+PL) | Média | Alta | Testes automatizados verificando invariante | `test-writer` |
-| Novas Aplicações = 0 pode confundir usuários | Baixa | Baixa | Tooltip explicativo na tabela: "Será calculado pelo FCFF" | `frontend-specialist` |
-| Impacto em FCFF/Valuation downstream | Baixa | Média | Receitas Financeiras não afetam EBIT; verificar FCFF | `feature-developer` |
-
-### Decisões de Design
-
-1. **Manter inputs separados no ano base:** `caixaEquivalentes` e `aplicacoesFinanceiras` continuam como inputs no formulário do ano base para não quebrar UX. São somados em `calculateBPBase`.
-2. **Conta unificada no resultado:** `BalanceSheetCalculated` expõe apenas `caixaAplicacoesFinanceiras` (sem os campos individuais).
-3. **Novas Aplicações = 0:** Placeholder — será conectado ao FCFF em implementação futura.
-4. **Receitas Financeiras sobre saldo inicial:** Evita circularidade (mesmo padrão usado para despesas financeiras de empréstimos).
-5. **Premissa `taxaJurosAplicacoes`:** Separada da `taxaJurosEmprestimo` existente — são taxas distintas (aplicações vs dívida).
+1. **Contas separadas no BP:** `caixaEquivalentes` e `aplicacoesFinanceiras` permanecem como campos distintos em `BalanceSheetCalculated`.
+2. **Caixa = prazo médio:** `caixaEquivalentes` continua com cálculo `receitaBruta × prazoCaixaEquivalentes / 360`.
+3. **Aplicações = saldo:** `aplicacoesFinanceiras` muda para `saldoInicial + novasAplicacoes + receitasFinanceiras`.
+4. **Caixa no Capital de Giro:** `caixaEquivalentes` permanece na `WorkingCapitalTable` com premissa de prazo médio.
+5. **Aplicações fora do Capital de Giro:** `aplicacoesFinanceiras` tem tabela própria (`CashApplicationsTable`), sem premissa de prazo na WorkingCapitalTable.
+6. **Novas Aplicações = 0:** Placeholder para FCFF futuro.
+7. **Receitas Financeiras sobre saldo inicial:** Evita circularidade.
+8. **Premissa `taxaJurosAplicacoes`:** Separada da `taxaJurosEmprestimo`.
 
 ## Rollback Plan
 
-### Rollback Triggers
-- Testes de equilíbrio do balanço falhando
-- Modelos existentes quebrando ao carregar
-- Erros de TypeScript em cascata em muitos arquivos
-
-### Rollback Procedures
-- **Git revert** dos commits da feature branch
-- Nenhum impacto em dados persistidos (campos novos são aditivos)
-- Restaurar tipos antigos via `git checkout main -- src/core/types/index.ts`
-
-## Evidence & Follow-up
-
-### Artifacts
-- PR com todas as mudanças
-- Testes unitários novos passando
-- Screenshot da CashApplicationsTable renderizada
-- `npm run typecheck` limpo
-
-### Follow-up Actions
-| Action | Owner | Due |
-|--------|-------|-----|
-| Conectar `novasAplicacoes` ao FCFF quando implementado | `feature-developer` | Próximo sprint |
-| Avaliar impacto das Receitas Financeiras na DRE (contra-partida) | `feature-developer` | Próximo sprint |
-| Adicionar CashApplicationsTable ao styleguide | `frontend-specialist` | Após merge |
-| Atualizar architecture.md com documentação da nova conta | `documentation-writer` | Após merge |
+- **Git revert** dos commits
+- Nenhum impacto em dados persistidos (campo novo `taxaJurosAplicacoes` é aditivo)
+- Restaurar `prazoAplicacoesFinanceiras` via revert

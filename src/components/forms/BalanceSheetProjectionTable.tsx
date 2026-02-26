@@ -56,14 +56,16 @@ export function BalanceSheetProjectionTable({
       year: (lastYear?.year || 0) + 1,
       taxaDepreciacao: lastYear?.taxaDepreciacao || 20,
       indiceImobilizadoVendas: lastYear?.indiceImobilizadoVendas || 0.05,
+      taxaJurosAplicacoes: lastYear?.taxaJurosAplicacoes || 8,
       prazoCaixaEquivalentes: lastYear?.prazoCaixaEquivalentes || 54,
-      prazoAplicacoesFinanceiras: lastYear?.prazoAplicacoesFinanceiras || 18,
       prazoContasReceber: lastYear?.prazoContasReceber || 45,
       prazoEstoques: lastYear?.prazoEstoques || 11,
       prazoAtivosBiologicos: lastYear?.prazoAtivosBiologicos || 0,
+      prazoOutrosCreditos: lastYear?.prazoOutrosCreditos || 0,
       prazoFornecedores: lastYear?.prazoFornecedores || 22,
       prazoImpostosAPagar: lastYear?.prazoImpostosAPagar || 7,
       prazoObrigacoesSociais: lastYear?.prazoObrigacoesSociais || 11,
+      prazoOutrasObrigacoes: lastYear?.prazoOutrasObrigacoes || 0,
       taxaNovosEmprestimosCP: lastYear?.taxaNovosEmprestimosCP || 5,
       taxaNovosEmprestimosLP: lastYear?.taxaNovosEmprestimosLP || 5,
       taxaJurosEmprestimo: lastYear?.taxaJurosEmprestimo || 12,
@@ -113,6 +115,21 @@ export function BalanceSheetProjectionTable({
             onChange={(e) => handleCellChange(row.index, "indiceImobilizadoVendas", e.target.value)}
             className="text-center h-8"
             placeholder="0.05"
+          />
+        ),
+      },
+      {
+        accessorKey: "taxaJurosAplicacoes",
+        header: () => <div className="text-center">Juros Aplicações<br/>(% a.a.)</div>,
+        cell: ({ row, getValue }) => (
+          <Input
+            type="number"
+            step="0.01"
+            min="0"
+            value={getValue() as number}
+            onChange={(e) => handleCellChange(row.index, "taxaJurosAplicacoes", e.target.value)}
+            className="text-center h-8"
+            placeholder="8.0"
           />
         ),
       },
@@ -199,21 +216,6 @@ export function BalanceSheetProjectionTable({
             max="360"
             value={getValue() as number}
             onChange={(e) => handleCellChange(row.index, "prazoCaixaEquivalentes", e.target.value)}
-            className="text-center h-8"
-          />
-        ),
-      },
-      {
-        accessorKey: "prazoAplicacoesFinanceiras",
-        header: () => <div className="text-center">Aplicações<br/>(dias)</div>,
-        cell: ({ row, getValue }) => (
-          <Input
-            type="number"
-            step="1"
-            min="0"
-            max="360"
-            value={getValue() as number}
-            onChange={(e) => handleCellChange(row.index, "prazoAplicacoesFinanceiras", e.target.value)}
             className="text-center h-8"
           />
         ),

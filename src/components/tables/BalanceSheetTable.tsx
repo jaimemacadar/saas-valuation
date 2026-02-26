@@ -75,11 +75,22 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
               {
                 label: "Caixa e Equivalentes",
                 type: "item" as const,
-                field: "caixa",
+                field: "caixaEquivalentes",
                 values: Object.fromEntries(
                   data.map((d) => [
                     d.year,
                     d.ativoCirculante.caixaEquivalentes,
+                  ]),
+                ),
+              },
+              {
+                label: "Aplicações Financeiras",
+                type: "item" as const,
+                field: "aplicacoesFinanceiras",
+                values: Object.fromEntries(
+                  data.map((d) => [
+                    d.year,
+                    d.ativoCirculante.aplicacoesFinanceiras,
                   ]),
                 ),
               },
@@ -99,6 +110,14 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                   data.map((d) => [d.year, d.ativoCirculante.estoques]),
                 ),
               },
+              {
+                label: "Outros Créditos",
+                type: "item" as const,
+                field: "outrosCreditos",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.ativoCirculante.outrosCreditos]),
+                ),
+              },
             ],
           },
           {
@@ -109,11 +128,27 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
             ),
             subRows: [
               {
+                label: "Investimentos",
+                type: "item" as const,
+                field: "investimentos",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.ativoRealizavelLP.investimentos]),
+                ),
+              },
+              {
                 label: "Imobilizado",
                 type: "item" as const,
                 field: "imobilizado",
                 values: Object.fromEntries(
                   data.map((d) => [d.year, d.ativoRealizavelLP.imobilizado]),
+                ),
+              },
+              {
+                label: "Intangível",
+                type: "item" as const,
+                field: "intangivel",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.ativoRealizavelLP.intangivel]),
                 ),
               },
             ],
@@ -140,6 +175,38 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
                   data.map((d) => [d.year, d.passivoCirculante.fornecedores]),
                 ),
               },
+              {
+                label: "Impostos a Pagar",
+                type: "item" as const,
+                field: "impostosAPagar",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.passivoCirculante.impostosAPagar]),
+                ),
+              },
+              {
+                label: "Obrig. Sociais e Trabalhistas",
+                type: "item" as const,
+                field: "obrigacoesSociaisETrabalhistas",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.passivoCirculante.obrigacoesSociaisETrabalhistas]),
+                ),
+              },
+              {
+                label: "Empréstimos e Financiamentos",
+                type: "item" as const,
+                field: "emprestimosFinanciamentosCP",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.passivoCirculante.emprestimosFinanciamentosCP]),
+                ),
+              },
+              {
+                label: "Outras Obrigações",
+                type: "item" as const,
+                field: "outrasObrigacoes",
+                values: Object.fromEntries(
+                  data.map((d) => [d.year, d.passivoCirculante.outrasObrigacoes]),
+                ),
+              },
             ],
           },
           {
@@ -150,7 +217,7 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
             ),
             subRows: [
               {
-                label: "Empréstimos e Financiamentos LP",
+                label: "Empréstimos e Financiamentos",
                 type: "item" as const,
                 field: "emprestimosFinanciamentosLP",
                 values: Object.fromEntries(
@@ -171,6 +238,24 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
         values: Object.fromEntries(
           data.map((d) => [d.year, d.patrimonioLiquido.total]),
         ),
+        subRows: [
+          {
+            label: "Capital Social",
+            type: "item" as const,
+            field: "capitalSocial",
+            values: Object.fromEntries(
+              data.map((d) => [d.year, d.patrimonioLiquido.capitalSocial]),
+            ),
+          },
+          {
+            label: "Lucros Acumulados",
+            type: "item" as const,
+            field: "lucrosAcumulados",
+            values: Object.fromEntries(
+              data.map((d) => [d.year, d.patrimonioLiquido.lucrosAcumulados]),
+            ),
+          },
+        ],
       },
     ],
     [data],
@@ -229,11 +314,9 @@ export function BalanceSheetTable({ data }: BalanceSheetTableProps) {
             <div
               className={cn(
                 "text-right tabular-nums",
-                rowType === "section" &&
-                  "font-bold border-t-2 border-t-foreground",
+                rowType === "section" && "font-bold",
                 rowType === "subtotal" && "font-semibold",
-                rowType === "total" &&
-                  "font-bold border-t-2 border-t-foreground",
+                rowType === "total" && "font-bold",
                 rowType === "item" && "text-muted-foreground",
               )}
             >
