@@ -96,7 +96,7 @@ export function FCFFChart({ data }: FCFFChartProps) {
             tick={{ fill: 'var(--foreground)' }}
             tickFormatter={(value) => formatCompactNumber(value)}
           />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.1)' }} />
           <Legend
             wrapperStyle={{
               paddingTop: '20px',
