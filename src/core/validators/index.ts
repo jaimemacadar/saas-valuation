@@ -62,9 +62,6 @@ export const BalanceSheetBaseInputsSchema = z.object({
       .number()
       .nonnegative("Contas a receber devem ser não-negativas"),
     estoques: z.number().nonnegative("Estoques devem ser não-negativos"),
-    ativosBiologicos: z
-      .number()
-      .nonnegative("Ativos biológicos devem ser não-negativos"),
     outrosCreditos: z
       .number()
       .nonnegative("Outros créditos devem ser não-negativos"),
@@ -141,10 +138,6 @@ export const BalanceSheetProjectionInputsSchema = z.object({
     .min(0)
     .max(360, "Prazo deve estar entre 0 e 360 dias"),
   prazoEstoques: z
-    .number()
-    .min(0)
-    .max(360, "Prazo deve estar entre 0 e 360 dias"),
-  prazoAtivosBiologicos: z
     .number()
     .min(0)
     .max(360, "Prazo deve estar entre 0 e 360 dias"),

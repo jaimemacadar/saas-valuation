@@ -14,6 +14,23 @@ import type {
   CalculationResult,
 } from "../types/index.js";
 
+const BP_PROJECTION_FALLBACKS = {
+  taxaDepreciacao: 20,
+  indiceImobilizadoVendas: 0.05,
+  taxaJurosAplicacoes: 0,
+  prazoCaixaEquivalentes: 54,
+  prazoContasReceber: 45,
+  prazoEstoques: 11,
+  prazoOutrosCreditos: 0,
+  prazoFornecedores: 22,
+  prazoImpostosAPagar: 7,
+  prazoObrigacoesSociais: 11,
+  prazoOutrasObrigacoes: 0,
+  taxaNovosEmprestimosCP: 0,
+  taxaNovosEmprestimosLP: 0,
+  taxaJurosEmprestimo: 0,
+} as const;
+
 /**
  * Calcula Balanço Patrimonial do ano base a partir dos inputs
  *
@@ -29,13 +46,11 @@ export function calculateBPBase(
     const acAplicacoes = new Decimal(bpBase.ativoCirculante.aplicacoesFinanceiras);
     const acContasReceber = new Decimal(bpBase.ativoCirculante.contasReceber);
     const acEstoques = new Decimal(bpBase.ativoCirculante.estoques);
-    const acAtivosBio = new Decimal(bpBase.ativoCirculante.ativosBiologicos);
     const acOutros = new Decimal(bpBase.ativoCirculante.outrosCreditos);
     const totalAC = acCaixa
       .plus(acAplicacoes)
       .plus(acContasReceber)
       .plus(acEstoques)
-      .plus(acAtivosBio)
       .plus(acOutros);
 
     // Ativo Realizável LP
@@ -101,7 +116,6 @@ export function calculateBPBase(
           aplicacoesFinanceiras: acAplicacoes.toNumber(),
           contasReceber: acContasReceber.toNumber(),
           estoques: acEstoques.toNumber(),
-          ativosBiologicos: acAtivosBio.toNumber(),
           outrosCreditos: acOutros.toNumber(),
           total: totalAC.toNumber(),
         },
@@ -169,12 +183,17 @@ export function calculateBPProjetado(
   premissas: BalanceSheetProjectionInputs,
 ): CalculationResult<BalanceSheetCalculated> {
   try {
+    const premissasSafe = {
+      ...BP_PROJECTION_FALLBACKS,
+      ...premissas,
+    };
+
     // Validar year
-    if (premissas.year <= bpAnterior.year) {
+    if (premissasSafe.year <= bpAnterior.year) {
       return {
         success: false,
         errors: [
-          `Ano de projeção ${premissas.year} deve ser maior que ano anterior ${bpAnterior.year}`,
+          `Ano de projeção ${premissasSafe.year} deve ser maior que ano anterior ${bpAnterior.year}`,
         ],
       };
     }
@@ -184,12 +203,12 @@ export function calculateBPProjetado(
     // ========== ATIVO CIRCULANTE ==========
     // Caixa e Equivalentes: prazo médio (sem mudança)
     const acCaixa = receitaBruta
-      .times(premissas.prazoCaixaEquivalentes)
+      .times(premissasSafe.prazoCaixaEquivalentes)
       .div(360);
 
     // Aplicações Financeiras: lógica de saldo
     const saldoInicialAplicacoes = new Decimal(bpAnterior.ativoCirculante.aplicacoesFinanceiras);
-    const taxaJurosAplicacoes = new Decimal(premissas.taxaJurosAplicacoes ?? 0).div(100);
+    const taxaJurosAplicacoes = new Decimal(premissasSafe.taxaJurosAplicacoes ?? 0).div(100);
     const receitasFinanceiras = saldoInicialAplicacoes.times(taxaJurosAplicacoes);
     const novasAplicacoes = new Decimal(0); // placeholder — será conectado ao FCFF
     const acAplicacoes = saldoInicialAplicacoes.plus(novasAplicacoes).plus(receitasFinanceiras);
@@ -201,21 +220,17 @@ export function calculateBPProjetado(
 
     // Prazos médios em dias
     const acContasReceber = receitaBruta
-      .times(premissas.prazoContasReceber)
+      .times(premissasSafe.prazoContasReceber)
       .div(360);
-    const acEstoques = cmv.times(premissas.prazoEstoques).div(360);
-    const acAtivosBio = receitaBruta
-      .times(premissas.prazoAtivosBiologicos)
-      .div(360);
+    const acEstoques = cmv.times(premissasSafe.prazoEstoques).div(360);
 
     // Outros Créditos: prazo médio sobre Receita Bruta
-    const acOutros = receitaBruta.times(premissas.prazoOutrosCreditos).div(360);
+    const acOutros = receitaBruta.times(premissasSafe.prazoOutrosCreditos).div(360);
 
     const totalAC = acCaixa
       .plus(acAplicacoes)
       .plus(acContasReceber)
       .plus(acEstoques)
-      .plus(acAtivosBio)
       .plus(acOutros);
 
     // ========== ATIVO REALIZÁVEL LP ==========
@@ -225,13 +240,13 @@ export function calculateBPProjetado(
     );
 
     // Imobilizado
-    const taxaDepreciacao = new Decimal(premissas.taxaDepreciacao).div(100);
+    const taxaDepreciacao = new Decimal(premissasSafe.taxaDepreciacao).div(100);
     const depreciacaoAnual = new Decimal(
       bpAnterior.ativoRealizavelLP.imobilizadoBruto,
     ).times(taxaDepreciacao);
 
     // CAPEX: Receita Bruta * Índice Imobilizado/Vendas
-    const capex = receitaBruta.times(premissas.indiceImobilizadoVendas);
+    const capex = receitaBruta.times(premissasSafe.indiceImobilizadoVendas);
 
     const arlpImobBruto = new Decimal(
       bpAnterior.ativoRealizavelLP.imobilizadoBruto,
@@ -252,13 +267,13 @@ export function calculateBPProjetado(
 
     // ========== PASSIVO CIRCULANTE ==========
     // Prazos médios com bases corretas por conta
-    const pcFornecedores = cmv.times(premissas.prazoFornecedores).div(360);
-    const pcImpostos = impostosEDevolucoes.times(premissas.prazoImpostosAPagar).div(360);
-    const pcObrigacoes = despesasOperacionais.times(premissas.prazoObrigacoesSociais).div(360);
+    const pcFornecedores = cmv.times(premissasSafe.prazoFornecedores).div(360);
+    const pcImpostos = impostosEDevolucoes.times(premissasSafe.prazoImpostosAPagar).div(360);
+    const pcObrigacoes = despesasOperacionais.times(premissasSafe.prazoObrigacoesSociais).div(360);
 
     // ========== DESPESAS FINANCEIRAS ==========
     // Calculadas sobre o saldo inicial (ano anterior) para evitar circularidade
-    const taxaJuros = new Decimal(premissas.taxaJurosEmprestimo ?? 0).div(100);
+    const taxaJuros = new Decimal(premissasSafe.taxaJurosEmprestimo ?? 0).div(100);
     const despesasFinanceirasCP = new Decimal(
       bpAnterior.passivoCirculante.emprestimosFinanciamentosCP,
     ).times(taxaJuros);
@@ -271,6 +286,7 @@ export function calculateBPProjetado(
     // Suporte a legado: fallback para taxaNovosEmprestimosFinanciamentos se CP/LP não existirem
     const taxaCP = new Decimal(
       premissas.taxaNovosEmprestimosCP ??
+      premissasSafe.taxaNovosEmprestimosCP ??
       (premissas as any).taxaNovosEmprestimosFinanciamentos ??
       0
     ).div(100);
@@ -282,7 +298,7 @@ export function calculateBPProjetado(
     ).plus(novosEmprestimosCP).minus(despesasFinanceirasCP);
 
     // Outras Obrigações: prazo médio sobre Receita Bruta
-    const pcOutras = receitaBruta.times(premissas.prazoOutrasObrigacoes).div(360);
+    const pcOutras = receitaBruta.times(premissasSafe.prazoOutrasObrigacoes).div(360);
 
     const totalPC = pcFornecedores
       .plus(pcImpostos)
@@ -294,6 +310,7 @@ export function calculateBPProjetado(
     // Empréstimos LP: início + novos - juros pagos
     const taxaLP = new Decimal(
       premissas.taxaNovosEmprestimosLP ??
+      premissasSafe.taxaNovosEmprestimosLP ??
       (premissas as any).taxaNovosEmprestimosFinanciamentos ??
       0
     ).div(100);
@@ -330,13 +347,12 @@ export function calculateBPProjetado(
     return {
       success: true,
       data: {
-        year: premissas.year,
+        year: premissasSafe.year,
         ativoCirculante: {
           caixaEquivalentes: acCaixa.toNumber(),
           aplicacoesFinanceiras: acAplicacoes.toNumber(),
           contasReceber: acContasReceber.toNumber(),
           estoques: acEstoques.toNumber(),
-          ativosBiologicos: acAtivosBio.toNumber(),
           outrosCreditos: acOutros.toNumber(),
           total: totalAC.toNumber(),
         },

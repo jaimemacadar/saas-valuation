@@ -60,7 +60,6 @@ export function BalanceSheetProjectionTable({
       prazoCaixaEquivalentes: lastYear?.prazoCaixaEquivalentes || 54,
       prazoContasReceber: lastYear?.prazoContasReceber || 45,
       prazoEstoques: lastYear?.prazoEstoques || 11,
-      prazoAtivosBiologicos: lastYear?.prazoAtivosBiologicos || 0,
       prazoOutrosCreditos: lastYear?.prazoOutrosCreditos || 0,
       prazoFornecedores: lastYear?.prazoFornecedores || 22,
       prazoImpostosAPagar: lastYear?.prazoImpostosAPagar || 7,

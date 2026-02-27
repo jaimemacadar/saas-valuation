@@ -46,6 +46,30 @@ describe("Balance Sheet Calculations", () => {
         expect(result.data.despesasFinanceiras).toBe(0);
       }
     });
+
+    it("deve refletir alteração de Caixa e Equivalentes do Ano Base no BP calculado", () => {
+      const caixaOriginal = sampleBalanceSheetBase.ativoCirculante.caixaEquivalentes;
+      const novoCaixa = caixaOriginal + 100_000;
+      const inputAlterado = {
+        ...sampleBalanceSheetBase,
+        ativoCirculante: {
+          ...sampleBalanceSheetBase.ativoCirculante,
+          caixaEquivalentes: novoCaixa,
+        },
+        patrimonioLiquido: {
+          ...sampleBalanceSheetBase.patrimonioLiquido,
+          // Mantém o balanço equilibrado para o teste
+          lucrosAcumulados:
+            sampleBalanceSheetBase.patrimonioLiquido.lucrosAcumulados + 100_000,
+        },
+      };
+
+      const result = calculateBPBase(inputAlterado);
+      expect(result.success).toBe(true);
+      if (result.data) {
+        expect(result.data.ativoCirculante.caixaEquivalentes).toBe(novoCaixa);
+      }
+    });
   });
 
   describe("calculateBPProjetado", () => {
@@ -135,9 +159,26 @@ describe("Balance Sheet Calculations", () => {
       expect(result.success).toBe(true);
       if (result.data) {
         const expectedCapitalGiro =
-          result.data.ativoCirculante.total - result.data.passivoCirculante.total;
+          result.data.ativoCirculante.total -
+          result.data.ativoCirculante.aplicacoesFinanceiras -
+          result.data.passivoCirculante.total;
         expect(result.data.capitalGiro).toBeCloseTo(expectedCapitalGiro, 0);
       }
+    });
+
+    it("deve calcular BP projetado mesmo com premissa faltante (legado)", () => {
+      const bpBase = calculateBPBase(sampleBalanceSheetBase).data!;
+      const premissaLegada = { ...sampleBalanceSheetProjection[0] } as any;
+      delete premissaLegada.prazoOutrasObrigacoes;
+
+      const result = calculateBPProjetado(
+        bpBase,
+        dreProjetado[1],
+        premissaLegada,
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.data).toBeDefined();
     });
 
     it("deve retornar erro se ano de projeção for <= ano anterior", () => {

@@ -35,6 +35,29 @@ interface ActionResult {
   };
 }
 
+const DEFAULT_BP_PROJECTION_PREMISES: Omit<BalanceSheetProjectionInputs, "year"> = {
+  taxaDepreciacao: 20,
+  indiceImobilizadoVendas: 0.05,
+  taxaJurosAplicacoes: 0,
+  prazoCaixaEquivalentes: 54,
+  prazoContasReceber: 45,
+  prazoEstoques: 11,
+  prazoOutrosCreditos: 0,
+  prazoFornecedores: 22,
+  prazoImpostosAPagar: 7,
+  prazoObrigacoesSociais: 11,
+  prazoOutrasObrigacoes: 0,
+  taxaNovosEmprestimosCP: 0,
+  taxaNovosEmprestimosLP: 0,
+  taxaJurosEmprestimo: 0,
+};
+
+function normalizeProjectionYears<T extends { year: number }>(projection: T[]): T[] {
+  if (projection.length === 0) return projection;
+  const sorted = [...projection].sort((a, b) => a.year - b.year);
+  return sorted.map((item, index) => ({ ...item, year: index + 1 }));
+}
+
 /**
  * Get authenticated user or redirect to login
  */
@@ -90,12 +113,8 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     const dreBase = currentModelData.dreBase as DREBaseInputs | undefined;
     const balanceSheetBase = currentModelData.balanceSheetBase as BalanceSheetBaseInputs | undefined;
 
-    console.log('[recalculateModel] dreBase:', dreBase);
-    console.log('[recalculateModel] balanceSheetBase:', balanceSheetBase);
-
     if (!dreBase || !balanceSheetBase) {
       // Não há dados suficientes para calcular
-      console.log('[recalculateModel] Dados base insuficientes');
       return {
         success: true,
         data: {},
@@ -106,17 +125,13 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     let dreProjection = currentModelData.dreProjection as DREProjectionInputs[] | undefined;
     let balanceSheetProjection = currentModelData.balanceSheetProjection as BalanceSheetProjectionInputs[] | undefined;
     const anosProjecao = currentModelData.anosProjecao || 5;
-
-    console.log('[recalculateModel] Configuração de anos:', {
-      anosProjecaoSalvo: currentModelData.anosProjecao,
-      anosProjecaoUsado: anosProjecao,
-      dreProjectionLength: dreProjection?.length,
-      balanceSheetProjectionLength: balanceSheetProjection?.length,
-    });
+    const hasValidDREProjection =
+      Array.isArray(dreProjection) && dreProjection.length > 0;
+    const hasValidBPProjection =
+      Array.isArray(balanceSheetProjection) && balanceSheetProjection.length > 0;
 
     // Se não existem premissas, gerar padrão (crescimento 5%)
-    if (!dreProjection || dreProjection.length === 0 || !balanceSheetProjection || balanceSheetProjection.length === 0) {
-      console.log('[recalculateModel] Gerando premissas padrão para', anosProjecao, 'anos');
+    if (!hasValidDREProjection || !hasValidBPProjection) {
       const defaultProjections = generateDefaultProjections(
         dreBase,
         balanceSheetBase,
@@ -125,16 +140,10 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       dreProjection = defaultProjections.dreProjection;
       balanceSheetProjection = defaultProjections.balanceSheetProjection;
     } else {
-      console.log('[recalculateModel] Usando premissas existentes:', {
-        dreProjection: dreProjection.length,
-        balanceSheetProjection: balanceSheetProjection.length,
-      });
-
       // IMPORTANTE: Se os arrays têm tamanhos diferentes, estender o menor
       // copiando os valores do último ano para os anos faltantes
       if (dreProjection.length !== balanceSheetProjection.length) {
         const maxLength = Math.max(dreProjection.length, balanceSheetProjection.length);
-        console.warn('[recalculateModel] Arrays com tamanhos diferentes! Estendendo para:', maxLength);
 
         // Estender DRE se necessário
         if (dreProjection.length < maxLength) {
@@ -145,7 +154,6 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
               year,
             });
           }
-          console.log('[recalculateModel] DRE estendido para', maxLength, 'anos');
         }
 
         // Estender BP se necessário
@@ -157,10 +165,22 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
               year,
             });
           }
-          console.log('[recalculateModel] BP estendido para', maxLength, 'anos');
         }
       }
     }
+
+    const dreProjectionNormalized = normalizeProjectionYears(dreProjection || []);
+    const balanceSheetProjectionNormalized = normalizeProjectionYears(balanceSheetProjection || [])
+      .map((premissa) => ({
+        ...DEFAULT_BP_PROJECTION_PREMISES,
+        ...premissa,
+      }));
+    const yearsWereNormalized =
+      JSON.stringify(dreProjection) !== JSON.stringify(dreProjectionNormalized) ||
+      JSON.stringify(balanceSheetProjection) !== JSON.stringify(balanceSheetProjectionNormalized);
+
+    dreProjection = dreProjectionNormalized;
+    balanceSheetProjection = balanceSheetProjectionNormalized;
 
     // ============================================================
     // Fluxo iterativo DRE → BP → DRE (integração sem circularidade)
@@ -169,16 +189,15 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     // Pass 3: DRE final com D&A e despesasFinanceiras do BP → lucroLiquido correto
     // Pass 4: BP final com DRE correto → lucrosAcumulados corretos
     // ============================================================
-    console.log('[recalculateModel] Calculando DRE (pass 1) com', dreProjection.length, 'anos');
     const drePass1 = calculateAllDRE(dreBase, dreProjection);
     if (!drePass1.success || !drePass1.data) {
       console.error('[recalculateModel] Erro ao calcular DRE pass 1:', drePass1.errors);
-      return { error: "Erro ao calcular DRE projetado" };
+      return { error: drePass1.errors?.[0] || "Erro ao calcular DRE projetado" };
     }
 
     const bpPass1 = calculateAllBalanceSheet(balanceSheetBase, drePass1.data, balanceSheetProjection);
     if (!bpPass1.success || !bpPass1.data) {
-      return { error: "Erro ao calcular Balanço Patrimonial projetado" };
+      return { error: bpPass1.errors?.[0] || "Erro ao calcular Balanço Patrimonial projetado" };
     }
 
     // Extrair D&A e despesasFinanceiras do BP para cada ano projetado
@@ -192,15 +211,9 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
 
     // DRE final com dados reais do BP
     const dreResult = calculateAllDRE(dreBase, dreProjection, bpDataForDRE);
-    console.log('[recalculateModel] Resultado DRE (final):', {
-      success: dreResult.success,
-      dataLength: dreResult.data?.length,
-      errors: dreResult.errors,
-    });
-
     if (!dreResult.success || !dreResult.data) {
       console.error('[recalculateModel] Erro ao calcular DRE final:', dreResult.errors);
-      return { error: "Erro ao calcular DRE projetado" };
+      return { error: dreResult.errors?.[0] || "Erro ao calcular DRE projetado" };
     }
 
     // BP final com DRE corrigido (lucrosAcumulados corretos)
@@ -210,13 +223,16 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       balanceSheetProjection
     );
     if (!balanceSheetResult.success || !balanceSheetResult.data) {
-      return { error: "Erro ao calcular Balanço Patrimonial projetado" };
+      return {
+        error:
+          balanceSheetResult.errors?.[0] ||
+          "Erro ao calcular Balanço Patrimonial projetado",
+      };
     }
-
     const fcffResult = calculateAllFCFF(dreResult.data, balanceSheetResult.data);
     if (!fcffResult.success || !fcffResult.data) {
       return {
-        error: "Erro ao calcular FCFF",
+        error: fcffResult.errors?.[0] || "Erro ao calcular FCFF",
       };
     }
 
@@ -224,7 +240,9 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     const indicadoresResult = calculateAllIndicadores(dreResult.data, balanceSheetResult.data);
     if (!indicadoresResult.success || !indicadoresResult.data) {
       return {
-        error: "Erro ao calcular indicadores financeiros",
+        error:
+          indicadoresResult.errors?.[0] ||
+          "Erro ao calcular indicadores financeiros",
       };
     }
 
@@ -237,7 +255,10 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     const updatedModelData = {
       ...currentModelData,
       // Salvar premissas se foram geradas automaticamente OU estendidas
-      ...((!currentModelData.dreProjection || !currentModelData.balanceSheetProjection || premissasForamEstendidas) && {
+      ...((!currentModelData.dreProjection ||
+        !currentModelData.balanceSheetProjection ||
+        premissasForamEstendidas ||
+        yearsWereNormalized) && {
         dreProjection,
         balanceSheetProjection,
         anosProjecao: Math.max(dreProjection.length, balanceSheetProjection.length),
@@ -248,13 +269,6 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       fcff: fcffResult.data,
       indicadores: indicadoresResult.data,
     };
-
-    console.log('[recalculateModel] Salvando dados:', {
-      dreCount: dreResult.data.length,
-      balanceSheetCount: balanceSheetResult.data.length,
-      fcffCount: fcffResult.data.length,
-      indicadoresCount: indicadoresResult.data.length,
-    });
 
     if (isMockMode()) {
       const updated = mockStore.updateModel(modelId, user.id, {
@@ -286,6 +300,8 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     }
 
     // Invalidar cache das páginas de visualização
+    revalidatePath(`/model/${modelId}`);
+    revalidatePath(`/model/${modelId}/input/base`);
     revalidatePath(`/model/${modelId}/view/balance-sheet`);
     revalidatePath(`/model/${modelId}/input/projections`);
 
@@ -300,8 +316,9 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
     };
   } catch (error) {
     console.error("Erro ao recalcular modelo:", error);
+    const message = error instanceof Error ? error.message : String(error);
     return {
-      error: "Erro ao recalcular modelo",
+      error: `Erro ao recalcular modelo: ${message}`,
     };
   }
 }

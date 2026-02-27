@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save, CheckCircle2 } from "lucide-react";
@@ -22,7 +23,6 @@ const getInitialFormData = (data?: BalanceSheetBaseInputs): BalanceSheetBaseInpu
       aplicacoesFinanceiras: 0,
       contasReceber: 0,
       estoques: 0,
-      ativosBiologicos: 0,
       outrosCreditos: 0,
     },
     ativoRealizavelLP: {
@@ -75,6 +75,7 @@ const getInitialFormData = (data?: BalanceSheetBaseInputs): BalanceSheetBaseInpu
 };
 
 export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseFormProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -110,6 +111,8 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
 
       if (result.success) {
         setSuccess(true);
+        // Garante que o App Router sincronize o estado server-side recalculado
+        router.refresh();
         setTimeout(() => setSuccess(false), 3000);
       } else {
         setError(result.error || "Erro ao salvar dados");
@@ -127,7 +130,6 @@ export function BalanceSheetBaseForm({ modelId, initialData }: BalanceSheetBaseF
     formData.ativoCirculante.aplicacoesFinanceiras +
     formData.ativoCirculante.contasReceber +
     formData.ativoCirculante.estoques +
-    formData.ativoCirculante.ativosBiologicos +
     formData.ativoCirculante.outrosCreditos;
 
   const imobilizado =

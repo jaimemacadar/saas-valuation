@@ -153,7 +153,6 @@ function generateMockBalanceSheet(modelData: any, dreData: any[]): any[] {
         aplicacoesFinanceiras: aplicacoes,
         contasReceber: contasReceber,
         estoques: estoques,
-        ativosBiologicos: 0,
         outrosCreditos: 0,
         total: ativoCirculante,
       },

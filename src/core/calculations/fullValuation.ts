@@ -217,7 +217,6 @@ export function executeQuickValuation(
       prazoCaixaEquivalentes: 54,
       prazoContasReceber: 45,
       prazoEstoques: 10,
-      prazoAtivosBiologicos: 0,
       prazoOutrosCreditos: 0,
       prazoFornecedores: 25,
       prazoImpostosAPagar: 7,
@@ -245,7 +244,6 @@ export function executeQuickValuation(
         aplicacoesFinanceiras: receita * 0.05,
         contasReceber: receita * 0.125,
         estoques: receita * 0.03,
-        ativosBiologicos: 0,
         outrosCreditos: receita * 0.025,
       },
       ativoRealizavelLP: {

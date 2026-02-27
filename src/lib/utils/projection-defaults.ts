@@ -88,7 +88,6 @@ export function generateBalanceSheetProjectionDefaults(
   const prazoCaixaEquivalentes = calcDays(balanceBase.ativoCirculante.caixaEquivalentes, receitaBruta) || 54;
   const prazoContasReceber = calcDays(balanceBase.ativoCirculante.contasReceber, receitaBruta) || 45;
   const prazoEstoques = calcDays(balanceBase.ativoCirculante.estoques, cmv) || 11;
-  const prazoAtivosBiologicos = calcDays(balanceBase.ativoCirculante.ativosBiologicos, receitaBruta) || 0;
   const prazoOutrosCreditos = calcDays(balanceBase.ativoCirculante.outrosCreditos, receitaBruta) || 0;
 
   // Prazos médios - Passivo (bases específicas por conta)
@@ -108,7 +107,6 @@ export function generateBalanceSheetProjectionDefaults(
       prazoCaixaEquivalentes,
       prazoContasReceber,
       prazoEstoques,
-      prazoAtivosBiologicos,
       prazoOutrosCreditos,
       prazoFornecedores,
       prazoImpostosAPagar,

@@ -87,7 +87,7 @@ function calcPatrimonioLiquidoLucroLiquido(
 
   const value = denominator.isZero()
     ? new Decimal(0)
-    : numerator.div(denominator).mul(100);
+    : numerator.div(denominator).times(100);
 
   return {
     year: dre.year,

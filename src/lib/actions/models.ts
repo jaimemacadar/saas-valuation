@@ -485,8 +485,10 @@ export async function saveDREBase(
 
     if (!calcResult.success) {
       console.error('[Auto-calculation failed]:', calcResult.error);
-      // Não retornamos erro pois os dados foram salvos com sucesso
-      // O cálculo pode ser refeito ao salvar premissas manualmente
+      return {
+        success: false,
+        error: calcResult.error || "Dados salvos, mas houve erro ao recalcular projeções",
+      };
     }
 
     return updateResult;
@@ -516,7 +518,6 @@ export async function saveBalanceSheetBase(
       balanceData.ativoCirculante.aplicacoesFinanceiras +
       balanceData.ativoCirculante.contasReceber +
       balanceData.ativoCirculante.estoques +
-      balanceData.ativoCirculante.ativosBiologicos +
       balanceData.ativoCirculante.outrosCreditos;
 
     const ativoRealizavelLPTotal =
@@ -591,8 +592,29 @@ export async function saveBalanceSheetBase(
 
     if (!calcResult.success) {
       console.error('[Auto-calculation failed]:', calcResult.error);
-      // Não retornamos erro pois os dados foram salvos com sucesso
-      // O cálculo pode ser refeito ao salvar premissas manualmente
+      return {
+        success: false,
+        error: calcResult.error || "Dados salvos, mas houve erro ao recalcular projeções",
+      };
+    }
+
+    const bpAnoBase = calcResult.data?.balanceSheet?.find((bp) => bp.year === 0);
+    if (!bpAnoBase) {
+      return {
+        success: false,
+        error: "Recálculo não gerou Balanço Patrimonial. Verifique se DRE do Ano Base e premissas de projeção estão preenchidas.",
+      };
+    }
+
+    const diffCaixa = Math.abs(
+      bpAnoBase.ativoCirculante.caixaEquivalentes -
+      balanceData.ativoCirculante.caixaEquivalentes,
+    );
+    if (diffCaixa > 0.01) {
+      return {
+        success: false,
+        error: "Recálculo inconsistente: o Caixa e Equivalentes salvo no Ano Base não foi refletido no Balanço calculado.",
+      };
     }
 
     return updateResult;
@@ -650,6 +672,10 @@ export async function saveDREProjection(
 
     if (!calcResult.success) {
       console.error('[Auto-calculation failed]:', calcResult.error);
+      return {
+        success: false,
+        error: calcResult.error || "Dados salvos, mas houve erro ao recalcular projeções",
+      };
     }
 
     revalidatePath(`/model/${modelId}`);
@@ -709,6 +735,10 @@ export async function saveBalanceSheetProjection(
 
     if (!calcResult.success) {
       console.error('[Auto-calculation failed]:', calcResult.error);
+      return {
+        success: false,
+        error: calcResult.error || "Dados salvos, mas houve erro ao recalcular projeções",
+      };
     }
 
     revalidatePath(`/model/${modelId}`);

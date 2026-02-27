@@ -5,7 +5,7 @@ description: Identify security vulnerabilities
 agentType: security-auditor
 phases: [R, V]
 generated: 2026-01-27
-status: unfilled
+status: filled
 scaffoldVersion: "2.0.0"
 ---
 

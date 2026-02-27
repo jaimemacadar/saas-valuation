@@ -168,7 +168,6 @@ export interface BalanceSheetBaseInputs {
     aplicacoesFinanceiras: number;
     contasReceber: number;
     estoques: number;
-    ativosBiologicos: number;
     outrosCreditos: number;
   };
   ativoRealizavelLP: {
@@ -209,7 +208,6 @@ export interface BalanceSheetProjectionInputs {
   prazoCaixaEquivalentes: number;
   prazoContasReceber: number;
   prazoEstoques: number;
-  prazoAtivosBiologicos: number;
   prazoOutrosCreditos: number;
 
   // Prazos médios - Passivo Circulante (dias)
@@ -236,7 +234,6 @@ export interface BalanceSheetCalculated {
     aplicacoesFinanceiras: number;
     contasReceber: number;
     estoques: number;
-    ativosBiologicos: number;
     outrosCreditos: number;
     total: number;
   };

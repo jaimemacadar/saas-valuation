@@ -11,12 +11,6 @@ export function isMockMode(): boolean {
   // Verifica a variável de ambiente NEXT_PUBLIC_USE_MOCK_DATA
   const useMock = process.env.NEXT_PUBLIC_USE_MOCK_DATA;
 
-  // Debug log
-  if (typeof window === "undefined" && process.env.NODE_ENV === "development") {
-    console.log("[MOCK CONFIG] NEXT_PUBLIC_USE_MOCK_DATA:", useMock);
-    console.log("[MOCK CONFIG] isMockMode:", useMock?.toLowerCase() === "true");
-  }
-
   // Retorna true se a variável está definida como 'true' (case-insensitive)
   return useMock?.toLowerCase() === "true";
 }
