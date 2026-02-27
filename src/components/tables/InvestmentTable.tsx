@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { Loader2, Check, Eye, EyeOff, ChevronRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -53,6 +53,9 @@ export function InvestmentTable({
   const [localProjections, setLocalProjections] = useState<BalanceSheetProjectionInputs[]>(
     projectionInputs || []
   );
+  useEffect(() => {
+    setLocalProjections(projectionInputs || []);
+  }, [projectionInputs]);
   const [showPremises, setShowPremises] = useState(false);
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(new Set());
   const [showDecimals, setShowDecimals] = useState(false);

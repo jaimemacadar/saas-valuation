@@ -1,12 +1,7 @@
 ---
-type: skill
 name: Code Review
 description: Review code quality, patterns, and best practices
-skillSlug: code-review
 phases: [R, V]
-generated: 2026-01-24
-status: filled
-scaffoldVersion: "2.0.0"
 ---
 
 # Code Review Guidelines

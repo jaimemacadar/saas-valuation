@@ -1,12 +1,7 @@
 ---
-type: skill
 name: Security Audit
 description: Security review checklist for code and infrastructure
-skillSlug: security-audit
 phases: [R, V]
-generated: 2026-01-24
-status: filled
-scaffoldVersion: "2.0.0"
 ---
 
 # Security Audit Guidelines

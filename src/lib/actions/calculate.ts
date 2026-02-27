@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { isMockMode } from "@/lib/mock/config";
 import { getMockUser } from "@/lib/mock/auth";
+import { mockStore } from "@/lib/mock/store";
 import { getModelById } from "./models";
 import { calculateAllDRE } from "@/core/calculations/dre";
 import { calculateAllBalanceSheet } from "@/core/calculations/balanceSheet";
@@ -255,21 +256,33 @@ export async function recalculateModel(modelId: string): Promise<ActionResult> {
       indicadoresCount: indicadoresResult.data.length,
     });
 
-    // Atualizar no banco de dados
-    const supabase = await createClient();
-    const { error: updateError } = await supabase
-      .from("financial_models")
-      .update({
+    if (isMockMode()) {
+      const updated = mockStore.updateModel(modelId, user.id, {
         model_data: updatedModelData,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", modelId)
-      .eq("user_id", user.id);
+      });
 
-    if (updateError) {
-      return {
-        error: "Erro ao salvar cálculos no banco de dados",
-      };
+      if (!updated) {
+        return {
+          error: "Erro ao salvar cálculos no mock store",
+        };
+      }
+    } else {
+      // Atualizar no banco de dados
+      const supabase = await createClient();
+      const { error: updateError } = await supabase
+        .from("financial_models")
+        .update({
+          model_data: updatedModelData,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", modelId)
+        .eq("user_id", user.id);
+
+      if (updateError) {
+        return {
+          error: "Erro ao salvar cálculos no banco de dados",
+        };
+      }
     }
 
     // Invalidar cache das páginas de visualização

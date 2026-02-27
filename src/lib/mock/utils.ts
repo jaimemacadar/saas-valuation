@@ -239,9 +239,10 @@ function generateMockFCFF(dreData: any[], balanceSheetData: any[]): any[] {
 export function processModelDataSync(
   model: MockFinancialModel
 ): MockFinancialModel {
-  // Verifica cache primeiro
-  if (processedModelsCache.has(model.id)) {
-    return processedModelsCache.get(model.id)!;
+  // Reusa cache apenas quando o modelo não mudou
+  const cachedModel = processedModelsCache.get(model.id);
+  if (cachedModel && cachedModel.updated_at === model.updated_at) {
+    return cachedModel;
   }
 
   const modelData = model.model_data as any;

@@ -1,12 +1,7 @@
 ---
-type: skill
 name: Refactoring
 description: Safe code refactoring with step-by-step approach
-skillSlug: refactoring
 phases: [E]
-generated: 2026-01-24
-status: filled
-scaffoldVersion: "2.0.0"
 ---
 
 # Refactoring Guidelines

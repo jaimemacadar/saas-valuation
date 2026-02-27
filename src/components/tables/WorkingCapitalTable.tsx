@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   Loader2,
   Check,
@@ -68,6 +68,9 @@ export function WorkingCapitalTable({
   const [localProjections, setLocalProjections] = useState<
     BalanceSheetProjectionInputs[]
   >(projectionInputs || []);
+  useEffect(() => {
+    setLocalProjections(projectionInputs || []);
+  }, [projectionInputs]);
   const [showAllPremises, setShowAllPremises] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [expandedAccounts, setExpandedAccounts] = useState<Set<string>>(

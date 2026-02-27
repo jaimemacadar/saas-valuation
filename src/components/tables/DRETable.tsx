@@ -65,6 +65,10 @@ export function DRETable({
     DREProjectionInputs[]
   >(projectionInputs || []);
 
+  useEffect(() => {
+    setLocalProjections(projectionInputs || []);
+  }, [projectionInputs]);
+
   // Estado de visibilidade das premissas
   const [showAllPremises, setShowAllPremises] = useState(false);
   const [showDecimals, setShowDecimals] = useState(false);

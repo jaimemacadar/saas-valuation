@@ -211,6 +211,35 @@ describe('DRETable', () => {
       });
     });
 
+    it('deve sincronizar premissas locais quando projectionInputs mudar por props', async () => {
+      const { rerender } = render(
+        <DRETable
+          data={mockDREData}
+          projectionInputs={mockProjectionInputs}
+          modelId="test-model"
+        />
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: /Exibir premissas/i }));
+      expect(screen.getAllByDisplayValue('5.00').length).toBeGreaterThan(0);
+
+      const updatedProjectionInputs: DREProjectionInputs[] = mockProjectionInputs.map((p) =>
+        p.year === 1 ? { ...p, receitaBrutaGrowth: 12 } : p
+      );
+
+      rerender(
+        <DRETable
+          data={mockDREData}
+          projectionInputs={updatedProjectionInputs}
+          modelId="test-model"
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getAllByDisplayValue('12.00').length).toBeGreaterThan(0);
+      });
+    });
+
     it('deve renderizar indicador de salvamento quando modelId está presente', () => {
       render(
         <DRETable

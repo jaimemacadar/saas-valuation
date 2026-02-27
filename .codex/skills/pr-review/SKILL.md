@@ -1,12 +1,7 @@
 ---
-type: skill
 name: Pr Review
 description: Review pull requests against team standards and best practices
-skillSlug: pr-review
 phases: [R, V]
-generated: 2026-01-24
-status: filled
-scaffoldVersion: "2.0.0"
 ---
 
 # PR Review Checklist
